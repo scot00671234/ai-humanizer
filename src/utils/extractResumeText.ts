@@ -1,6 +1,7 @@
 /**
  * Extract plain text from resume file uploads for the editor.
- * Supports: .txt, .pdf, .docx, .doc, .odt
+ * Supports: .txt, .pdf, .docx, .doc, .odt (Word, Google Docs export, Open Office).
+ * PDF: text layer only (no OCR). Max 20 pages.
  */
 
 import mammoth from 'mammoth'
@@ -11,6 +12,12 @@ const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingm
 const DOC_MIME = 'application/msword'
 const ODT_MIME = 'application/vnd.oasis.opendocument.text'
 const TEXT_MIME = 'text/plain'
+
+/** Max pages for PDF uploads (avoids timeouts and keeps UX fast). */
+export const MAX_PDF_PAGES = 20
+
+/** Max file size 15MB to avoid browser slowness. */
+const MAX_FILE_BYTES = 15 * 1024 * 1024
 
 /** ODT content.xml namespace for text elements */
 const ODT_TEXT_NS = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
@@ -43,6 +50,11 @@ async function extractPdfText(arrayBuffer: ArrayBuffer): Promise<string> {
   }
   const pdf = await getDocument({ data: arrayBuffer }).promise
   const numPages = pdf.numPages
+  if (numPages > MAX_PDF_PAGES) {
+    throw new Error(
+      `This PDF has ${numPages} pages. Maximum is ${MAX_PDF_PAGES} pages. You can copy and paste the text into the editor below instead.`
+    )
+  }
   const parts: string[] = []
   for (let i = 1; i <= numPages; i++) {
     const page = await pdf.getPage(i)
@@ -84,11 +96,18 @@ async function extractOdtText(arrayBuffer: ArrayBuffer): Promise<string> {
 
 /**
  * Extract plain text from an uploaded resume file.
- * Supported: .txt, .pdf, .doc, .docx, .odt
+ * Supported: .txt, .pdf, .doc, .docx, .odt (Word, Google Docs, Open Office).
+ * PDF: up to MAX_PDF_PAGES pages. File size limit applies.
  */
 export async function extractResumeText(file: File): Promise<string> {
   const type = file.type
   const name = (file.name || '').toLowerCase()
+
+  if (file.size > MAX_FILE_BYTES) {
+    throw new Error(
+      'This file is too large. Use a shorter document or copy and paste the text into the editor below.'
+    )
+  }
 
   if (type === TEXT_MIME || name.endsWith('.txt')) {
     return readFileAsText(file)
@@ -108,7 +127,9 @@ export async function extractResumeText(file: File): Promise<string> {
     return extractOdtText(arrayBuffer)
   }
 
-  throw new Error(`Unsupported file type: ${type || file.name}. Use .txt, .pdf, .doc, .docx, or .odt.`)
+  throw new Error(
+    `Unsupported file type. Use Word (.doc, .docx), Google Docs (export as .docx), Open Office (.odt), PDF, or Text (.txt). You can also paste your text into the editor below.`
+  )
 }
 
 /** Accept attribute for file input */

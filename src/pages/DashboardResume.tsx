@@ -5,6 +5,8 @@ import ResumePreview from '../components/ResumePreview'
 import ResumeAnalysisFeedback from '../components/ResumeAnalysisFeedback'
 import { api } from '../api/client'
 import { extractResumeText, RESUME_UPLOAD_ACCEPT } from '../utils/extractResumeText'
+
+const UPLOAD_PASTE_HINT = ' Can\'t upload? Copy and paste your text into the editor below.'
 import { getPendingRewrite, clearPendingRewrite } from '../utils/landingPendingRewrite'
 import type { Content } from '@tiptap/react'
 
@@ -228,7 +230,7 @@ export default function DashboardResume() {
     try {
       const text = await extractResumeText(file)
       if (!text.trim()) {
-        setEditorError('No text could be extracted from this file.')
+        setEditorError('No text could be extracted from this file (it may be a scanned image).' + UPLOAD_PASTE_HINT)
         return
       }
       setOriginalContent((prev) => (prev ? prev : text))
@@ -241,7 +243,8 @@ export default function DashboardResume() {
         return text
       })
     } catch (err) {
-      setEditorError(err instanceof Error ? err.message : 'Could not read file. Try .txt, .pdf, .doc, .docx, or .odt.')
+      const message = err instanceof Error ? err.message : 'Could not read file.'
+      setEditorError(message.includes('paste') ? message : message + UPLOAD_PASTE_HINT)
     } finally {
       setUploadLoading(false)
     }
@@ -356,10 +359,14 @@ export default function DashboardResume() {
               className="resumeFileInput"
               id="resume-upload"
               disabled={uploadLoading}
+              aria-describedby="resume-upload-hint"
             />
             <label htmlFor="resume-upload" className="dashboardBtn dashboardBtnSecondary">
               {uploadLoading ? 'Reading…' : 'Upload file'}
             </label>
+            <p id="resume-upload-hint" className="resumeUploadHint">
+              Word, Google Docs (.docx), Open Office (.odt), PDF (up to 20 pages), or Text. Can&apos;t upload? Paste your text into the editor below.
+            </p>
             <button
               type="button"
               className="dashboardBtn dashboardBtnPrimary"

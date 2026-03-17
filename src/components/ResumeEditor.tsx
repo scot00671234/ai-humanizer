@@ -108,10 +108,13 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
 
   useEffect(() => {
     if (!editor || content === undefined || content === null || typeof content !== 'string') return
-    const isHtml = content.trim().startsWith('<')
+    const trimmed = content.trim()
+    if (!trimmed) return
+    const isHtml = trimmed.startsWith('<')
+    const toSet = isHtml ? trimmed : trimmed.split(/\n/).map((p) => `<p>${p.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`).join('')
     const current = isHtml ? editor.getHTML() : editor.getText()
-    if (content.trim() !== current.trim()) {
-      editor.commands.setContent(content, false)
+    if (trimmed !== current.trim()) {
+      editor.commands.setContent(toSet, false)
     }
   }, [content, editor])
 
