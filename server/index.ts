@@ -57,4 +57,7 @@ app.listen(config.port, () => {
   if (isProduction && /localhost|127\.0\.0\.1/.test(config.app.baseUrl)) {
     console.warn('WARNING: APP_BASE_URL is set to localhost. Set APP_BASE_URL to your production URL (e.g. https://your-app.com) so verification links in emails work.')
   }
+  if (config.resend.apiKey && /resend\.dev|onboarding@resend/.test(config.resend.from)) {
+    console.warn('WARNING: RESEND_FROM is default (resend.dev). Set RESEND_FROM to an address on your verified domain (e.g. "Resume AI <noreply@bioqz.com>") so confirmation emails can be sent to any user.')
+  }
 })

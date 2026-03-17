@@ -57,13 +57,28 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
       confirmUrl,
       expiresInHours,
     })
-    await emailService.send({ to: normalizedEmail, subject, html, text })
+    try {
+      await emailService.send({ to: normalizedEmail, subject, html, text })
+    } catch (emailErr) {
+      // Account was created; email failed (e.g. Resend: "only testing to your own email" until domain verified)
+      console.error('Register: verification email failed (user created). Verify domain in Resend and set RESEND_FROM:', emailErr)
+      res.status(201).json({
+        message: 'Account created. We couldn\'t send the verification email yet. Use "Resend verification email" on the sign-up page or contact support.',
+        email: normalizedEmail,
+      })
+      return
+    }
 
     res.status(201).json({
       message: 'Registration successful. Please check your email to verify your account.',
       email: normalizedEmail,
     })
-  } catch (err) {
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code
+    if (code === '23505') {
+      res.status(409).json({ error: 'An account with this email already exists' })
+      return
+    }
     console.error('Register error:', err)
     res.status(500).json({ error: 'Registration failed' })
   }
