@@ -11,6 +11,20 @@ const TEMPLATES = [
   { id: 'creative', label: 'Creative' },
 ] as const
 
+const REWRITE_LANGUAGES = [
+  { value: 'same', label: 'Same as input' },
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+  { value: 'fr', label: 'French' },
+  { value: 'de', label: 'German' },
+  { value: 'pt', label: 'Portuguese' },
+  { value: 'it', label: 'Italian' },
+  { value: 'nl', label: 'Dutch' },
+  { value: 'pl', label: 'Polish' },
+  { value: 'ja', label: 'Japanese' },
+  { value: 'zh', label: 'Chinese' },
+] as const
+
 export default function DashboardResume() {
   const { user, refreshUser } = useAuth()
   const [originalContent, setOriginalContent] = useState('')
@@ -27,6 +41,8 @@ export default function DashboardResume() {
   const [scoreError, setScoreError] = useState<string | null>(null)
   const [exportLoading, setExportLoading] = useState(false)
   const [exportError, setExportError] = useState<string | null>(null)
+  const [rewriteLanguage, setRewriteLanguage] = useState('same')
+  const [rewriteContext, setRewriteContext] = useState('')
   const editorRef = useRef<ResumeEditorHandle>(null)
 
   const handleEditorChange = useCallback((html: string, text: string) => {
@@ -43,7 +59,10 @@ export default function DashboardResume() {
     setRewriteError(null)
     setRewriteLoading(true)
     try {
-      const res = await api.ai.rewrite(text)
+      const res = await api.ai.rewrite(text, {
+        language: rewriteLanguage,
+        context: rewriteContext.trim() || undefined,
+      })
       if (res.rewritten) {
         editorRef.current?.replaceSelection(res.rewritten)
       }
@@ -53,7 +72,7 @@ export default function DashboardResume() {
     } finally {
       setRewriteLoading(false)
     }
-  }, [refreshUser])
+  }, [refreshUser, rewriteLanguage, rewriteContext])
 
 
   const handleScore = useCallback(async () => {
@@ -163,6 +182,32 @@ export default function DashboardResume() {
         <section className="resumeSection resumeCard">
           <h2 className="resumeStepTitle">2. Resume content</h2>
           <p className="resumeStepHint">Upload a .txt file or paste your resume into the editor. Select text to rewrite with AI.</p>
+          <div className="resumeRewriteOptions">
+            <label className="resumeRewriteOption">
+              <span className="resumeRewriteOptionLabel">Rewrite in</span>
+              <select
+                className="resumeRewriteSelect"
+                value={rewriteLanguage}
+                onChange={(e) => setRewriteLanguage(e.target.value)}
+                aria-label="Output language for AI rewrite"
+              >
+                {REWRITE_LANGUAGES.map((l) => (
+                  <option key={l.value} value={l.value}>{l.label}</option>
+                ))}
+              </select>
+            </label>
+            <label className="resumeRewriteOption resumeRewriteContextWrap">
+              <span className="resumeRewriteOptionLabel">Instructions for AI (optional)</span>
+              <input
+                type="text"
+                className="resumeRewriteContext"
+                placeholder="e.g. More formal, focus on leadership, add metrics"
+                value={rewriteContext}
+                onChange={(e) => setRewriteContext(e.target.value)}
+                aria-label="Additional instructions for AI rewrite"
+              />
+            </label>
+          </div>
           <div className="resumeToolbar">
             <input
               type="file"

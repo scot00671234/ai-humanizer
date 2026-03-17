@@ -12,13 +12,13 @@ const SEARCH_ITEMS = [
 function MenuIcon({ open }: { open: boolean }) {
   if (open) {
     return (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M18 6L6 18M6 6l12 12" />
       </svg>
     )
   }
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M3 12h18M3 6h18M3 18h18" />
     </svg>
   )
@@ -67,17 +67,17 @@ export default function DashboardLayout() {
 
   return (
     <div className={`dashboard ${sidebarOpen ? '' : 'dashboard--sidebarCollapsed'}`}>
-      <button
-        type="button"
-        className={`dashboardSidebarToggle ${sidebarOpen ? 'dashboardSidebarToggle--inside' : 'dashboardSidebarToggle--float'}`}
-        onClick={() => setSidebarOpen((o) => !o)}
-        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
-        title={sidebarOpen ? 'Close menu' : 'Open menu'}
-      >
-        <MenuIcon open={sidebarOpen} />
-      </button>
-
       <aside className={`dashboardSidebar ${sidebarOpen ? '' : 'dashboardSidebar--collapsed'}`}>
+        <button
+          type="button"
+          className="dashboardSidebarToggle"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+          title={sidebarOpen ? 'Close menu' : 'Open menu'}
+        >
+          <MenuIcon open={sidebarOpen} />
+        </button>
+        <div className={`dashboardSidebarContent ${sidebarOpen ? '' : 'dashboardSidebarContent--hidden'}`}>
         <Link to={basePath} className="dashboardBrand">
           <img src="/logo.svg" alt="" className="dashboardLogo" width="24" height="24" />
           <span className="dashboardBrandText">Resume AI</span>
@@ -106,7 +106,6 @@ export default function DashboardLayout() {
 
         <div className="dashboardSidebarTheme">
           <ThemeToggle />
-          <span className="dashboardSidebarThemeLabel">Theme</span>
         </div>
 
         <div className="dashboardSearchWrap" ref={searchRef}>
@@ -156,6 +155,7 @@ export default function DashboardLayout() {
           <button type="button" className="dashboardLogout" onClick={() => { logout(); navigate('/') }}>
             Log out
           </button>
+        </div>
         </div>
       </aside>
 

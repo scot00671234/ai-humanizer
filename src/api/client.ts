@@ -117,10 +117,10 @@ export const api = {
   },
 
   ai: {
-    rewrite: (text: string) =>
+    rewrite: (text: string, options?: { language?: string; context?: string }) =>
       request<{ rewritten: string; tokensUsed?: number }>('/api/ai/rewrite', {
         method: 'POST',
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, language: options?.language, context: options?.context }),
       }),
     score: (resumeText: string, jobDescription: string) =>
       request<{ score: number; breakdown?: Record<string, number>; keywords?: string[] }>('/api/ai/score', {

@@ -897,6 +897,7 @@
   min-width: 260px;
   flex-shrink: 0;
   padding: 1.5rem 1rem;
+  padding-top: 3rem;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -906,23 +907,23 @@
   gap: 1.25rem;
   transition: width 0.2s ease, min-width 0.2s ease, padding 0.2s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .dashboardSidebar--collapsed {
-  width: 0;
-  min-width: 0;
-  padding-left: 0;
-  padding-right: 0;
-  border-right-width: 0;
+  width: 52px;
+  min-width: 52px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.5rem;
 }
 
 .dashboardSidebarToggle {
   position: absolute;
-  z-index: 30;
-  top: 1rem;
-  left: 1rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -931,7 +932,9 @@
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, left 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-shadow: var(--shadow-glass);
+  z-index: 10;
 }
 
 .dashboardSidebarToggle:hover {
@@ -939,20 +942,23 @@
   color: var(--text-primary);
 }
 
-.dashboardSidebarToggle {
-  position: fixed;
-  top: 1rem;
-  z-index: 100;
-  transition: left 0.2s ease;
-  box-shadow: var(--shadow-glass);
+.dashboardSidebarContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  transition: opacity 0.15s ease;
 }
 
-.dashboard .dashboardSidebarToggle {
-  left: 1rem;
-}
-
-.dashboard:not(.dashboard--sidebarCollapsed) .dashboardSidebarToggle {
-  left: calc(260px - 2.5rem - 0.5rem);
+.dashboardSidebarContent--hidden {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+  min-width: 0;
+  padding: 0;
 }
 
 .dashboardBrandText {
@@ -970,11 +976,6 @@
   flex-shrink: 0;
 }
 
-.dashboardSidebarThemeLabel {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
 
 .dashboardBrand {
   display: inline-flex;
@@ -1298,6 +1299,65 @@
 
 .resumeSection {
   margin-bottom: 0;
+}
+
+.resumeRewriteOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.resumeRewriteOption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.resumeRewriteOptionLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.resumeRewriteSelect {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  min-width: 140px;
+}
+
+.resumeRewriteContextWrap {
+  flex: 1;
+  min-width: 200px;
+}
+
+.resumeRewriteContext {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+.resumeRewriteContext::placeholder {
+  color: var(--text-muted);
+}
+
+.resumeRewriteContext:focus,
+.resumeRewriteSelect:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .resumeToolbar {

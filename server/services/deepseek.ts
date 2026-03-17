@@ -1,14 +1,54 @@
 import { config } from '../config'
 
-const REWRITE_PROMPT = `Rewrite this resume bullet like a top candidate: strong verbs, quantify wins, keep tone professional/human. Add metrics if missing. Return only the rewritten bullet, no explanation.`
+const LANGUAGE_MAP: Record<string, string> = {
+  same: 'the same language as the input text',
+  en: 'English',
+  es: 'Spanish',
+  fr: 'French',
+  de: 'German',
+  pt: 'Portuguese',
+  it: 'Italian',
+  nl: 'Dutch',
+  pl: 'Polish',
+  ja: 'Japanese',
+  zh: 'Chinese',
+}
+
+export type RewriteOptions = {
+  language?: string
+  context?: string
+}
+
+function buildRewritePrompt(text: string, options: RewriteOptions): string {
+  const langKey = (options.language || 'same').toLowerCase()
+  const languageInstruction = LANGUAGE_MAP[langKey] ?? (langKey === 'same' ? 'the same language as the input text' : langKey)
+  const parts: string[] = [
+    `You are an expert resume editor. Rewrite the following resume content so it is strong, ATS-friendly, and professional.`,
+    `Rules:`,
+    `- Output in ${languageInstruction}.`,
+    `- PRESERVE STRUCTURE: Keep the same number of bullets, paragraphs, and line breaks. Do NOT merge multiple bullets or paragraphs into one sentence. Improve each bullet/paragraph in place.`,
+    `- Use strong action verbs (e.g. Led, Delivered, Improved, Built, Launched).`,
+    `- Add or keep concrete metrics and outcomes where relevant (%, $, time saved, team size).`,
+    `- Be concise; remove filler. No generic phrases.`,
+    `- Return ONLY the rewritten text, no preamble or explanation.`,
+  ]
+  if (options.context?.trim()) {
+    parts.push('', 'Additional instructions from the user:', options.context.trim())
+  }
+  parts.push('', '---', '', 'Resume content to rewrite:', '', text)
+  return parts.join('\n')
+}
 
 export type DeepSeekResult = { text: string; usage: { prompt_tokens: number; completion_tokens: number } }
 
-export async function rewriteWithDeepSeek(text: string): Promise<DeepSeekResult> {
+export async function rewriteWithDeepSeek(text: string, options: RewriteOptions = {}): Promise<DeepSeekResult> {
   const apiKey = config.deepseek?.apiKey
   if (!apiKey) {
     throw new Error('DEEPSEEK_API_KEY is not set')
   }
+
+  const userContent = buildRewritePrompt(text, options)
+  const maxTokens = Math.min(2048, 600 + Math.ceil(text.length / 4))
 
   const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
     method: 'POST',
@@ -18,11 +58,9 @@ export async function rewriteWithDeepSeek(text: string): Promise<DeepSeekResult>
     },
     body: JSON.stringify({
       model: 'deepseek-chat',
-      messages: [
-        { role: 'user', content: `${REWRITE_PROMPT}\n\n---\n\n${text}` },
-      ],
-      max_tokens: 500,
-      temperature: 0.3,
+      messages: [{ role: 'user', content: userContent }],
+      max_tokens: maxTokens,
+      temperature: 0.35,
     }),
   })
 

@@ -16,7 +16,7 @@ router.use(requireAuth)
 /** POST /api/ai/rewrite */
 router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
-  const { text } = req.body as { text?: string }
+  const { text, language, context } = req.body as { text?: string; language?: string; context?: string }
   if (!text || typeof text !== 'string') {
     res.status(400).json({ error: 'Missing or invalid text' })
     return
@@ -25,6 +25,7 @@ router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response):
     res.status(400).json({ error: 'Text is too long. Select a shorter passage to rewrite.' })
     return
   }
+  const contextStr = typeof context === 'string' ? context.slice(0, 500) : undefined
 
   if (!config.deepseek?.apiKey) {
     res.status(503).json({ error: 'AI service is not configured. Please set DEEPSEEK_API_KEY.' })
@@ -32,7 +33,7 @@ router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response):
   }
 
   try {
-    const result = await rewriteWithDeepSeek(text)
+    const result = await rewriteWithDeepSeek(text, { language, context: contextStr })
     const tokensUsed = result.usage.prompt_tokens + result.usage.completion_tokens
     await insertUsageLog(user.userId, 'rewrite', tokensUsed)
     res.json({ rewritten: result.text, tokensUsed })
