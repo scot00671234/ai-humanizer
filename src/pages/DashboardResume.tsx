@@ -78,14 +78,14 @@ export default function DashboardResume() {
     setEditorText(text)
   }, [])
 
-  // Load projects list
+  // Load projects list (dropdown); failure leaves list empty
   useEffect(() => {
     api.projects.list()
       .then((res) => setProjects(res.projects.map((p) => ({ id: p.id, title: p.title || 'Untitled' }))))
-      .catch(() => {})
+      .catch((err) => console.warn('Projects list failed:', err))
   }, [])
 
-  // Load project when URL has projectId
+  // Load project when URL has projectId (ignore response if id changed before it resolved)
   useEffect(() => {
     if (!projectIdFromUrl) {
       setCurrentProjectId(null)
@@ -95,8 +95,10 @@ export default function DashboardResume() {
     }
     setProjectLoading(true)
     setSaveError(null)
+    let cancelled = false
     api.projects.get(projectIdFromUrl)
       .then((proj) => {
+        if (cancelled || projectIdFromUrl !== proj.id) return
         setCurrentProjectId(proj.id)
         setCurrentProjectTitle(proj.title || 'Untitled')
         setEditorContent(proj.content || '')
@@ -107,8 +109,9 @@ export default function DashboardResume() {
         })() : '')
         setProjects((prev) => prev.some((p) => p.id === proj.id) ? prev : [...prev, { id: proj.id, title: proj.title || 'Untitled' }])
       })
-      .catch(() => setSaveError('Failed to load project'))
-      .finally(() => setProjectLoading(false))
+      .catch(() => { if (!cancelled) setSaveError('Failed to load project') })
+      .finally(() => { if (!cancelled) setProjectLoading(false) })
+    return () => { cancelled = true }
   }, [projectIdFromUrl])
 
   const handleSave = useCallback(async () => {
