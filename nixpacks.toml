@@ -7,3 +7,6 @@ nixPkgs = ["nodejs_20", "npm-9_x"]
 # Rollup (via Vite) relies on platform-specific optional deps (e.g. @rollup/rollup-linux-x64-gnu).
 # Using --no-optional can break builds in Linux containers.
 cmds = ["npm ci"]
+
+[start]
+cmd = "npm start"
