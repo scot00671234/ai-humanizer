@@ -14,6 +14,8 @@ export type User = {
   email_verified_at: Date | null
   confirmation_token: string | null
   confirmation_token_expires_at: Date | null
+  password_reset_token: string | null
+  password_reset_token_expires_at: Date | null
   created_at: Date
   updated_at: Date
 }

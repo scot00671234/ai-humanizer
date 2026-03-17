@@ -24,8 +24,8 @@ export default function VerifyEmail() {
         setMessage(res.message)
       })
       .catch((err) => {
-        setStatus('error')
-        setMessage(err.message || 'Verification failed.')
+        setStatus((s) => (s === 'loading' ? 'error' : s))
+        setMessage((m) => m || err.message || 'Verification failed.')
       })
   }, [token])
 

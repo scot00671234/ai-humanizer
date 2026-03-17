@@ -1,19 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api, clearToken } from '../api/client'
 
 export default function DashboardSettings() {
-  const { user, logout } = useAuth()
+  const { user, logout, refreshUser } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [billingLoading, setBillingLoading] = useState<'upgrade' | 'cancel' | null>(null)
+  const [billingLoading, setBillingLoading] = useState<'upgrade' | 'portal' | null>(null)
   const [billingError, setBillingError] = useState<string | null>(null)
 
-  // Placeholder – replace with real plan from API when you have subscription state
-  const currentPlan = 'Pro'
+  const isPro = user?.isPro === true
+
+  useEffect(() => {
+    if (searchParams.get('session_id')) {
+      refreshUser()
+      window.history.replaceState({}, '', '/dashboard/settings')
+    }
+  }, [searchParams, refreshUser])
 
   async function handleUpgrade() {
     setBillingError(null)
@@ -30,7 +37,7 @@ export default function DashboardSettings() {
 
   async function handleCancelSubscription() {
     setBillingError(null)
-    setBillingLoading('cancel')
+    setBillingLoading('portal')
     try {
       const { url } = await api.auth.createPortalSession()
       if (url) window.location.href = url
@@ -65,29 +72,38 @@ export default function DashboardSettings() {
         <h2 className="dashboardSettingsHeading">Subscription</h2>
         <div className="dashboardCard">
           <p className="dashboardSettingsPlan">
-            Current plan: <strong>{currentPlan}</strong>
+            Current plan: <strong>{isPro ? 'Pro' : 'Free'}</strong>
+            {isPro && user?.rewriteLimit != null && (
+              <span className="dashboardSettingsPlanHint"> — {user.rewriteLimit} rewrites/day</span>
+            )}
           </p>
           <p className="dashboardSettingsHint">
-            Billing is managed with Stripe. Upgrade opens checkout; cancel opens the billing portal where you can cancel your subscription.
+            {isPro
+              ? 'Billing is managed with Stripe. Use the portal to update payment or cancel your subscription.'
+              : 'Upgrade to Pro for more daily rewrites. Billing is managed with Stripe.'}
           </p>
           {billingError && <p className="dashboardSettingsError">{billingError}</p>}
           <div className="dashboardSettingsActions">
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnPrimary"
-              onClick={handleUpgrade}
-              disabled={!user || billingLoading !== null}
-            >
-              {billingLoading === 'upgrade' ? 'Opening…' : 'Upgrade plan'}
-            </button>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnSecondary"
-              onClick={handleCancelSubscription}
-              disabled={!user || billingLoading !== null}
-            >
-              {billingLoading === 'cancel' ? 'Opening…' : 'Cancel subscription'}
-            </button>
+            {!isPro && (
+              <button
+                type="button"
+                className="dashboardBtn dashboardBtnPrimary"
+                onClick={handleUpgrade}
+                disabled={!user || billingLoading !== null}
+              >
+                {billingLoading === 'upgrade' ? 'Opening…' : 'Upgrade plan'}
+              </button>
+            )}
+            {isPro && (
+              <button
+                type="button"
+                className="dashboardBtn dashboardBtnSecondary"
+                onClick={handleCancelSubscription}
+                disabled={!user || billingLoading !== null}
+              >
+                {billingLoading === 'portal' ? 'Opening…' : 'Manage subscription'}
+              </button>
+            )}
           </div>
         </div>
       </section>

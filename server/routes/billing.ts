@@ -121,6 +121,21 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
       }
     }
   }
+  if (event.type === 'customer.subscription.created' && event.data.object) {
+    const sub = event.data.object as Stripe.Subscription
+    const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id
+    const isActive = sub.status === 'active'
+    if (customerId && pool) {
+      try {
+        await pool.query(
+          'UPDATE users SET is_pro = $1, updated_at = now() WHERE stripe_customer_id = $2',
+          [isActive, customerId]
+        )
+      } catch (err) {
+        console.error('Webhook subscription.created is_pro failed:', err)
+      }
+    }
+  }
   if (event.type === 'customer.subscription.updated' && event.data.object) {
     const sub = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id

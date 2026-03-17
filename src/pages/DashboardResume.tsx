@@ -1,8 +1,10 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import ResumeEditor, { type ResumeEditorHandle } from '../components/ResumeEditor'
 import ResumePreview from '../components/ResumePreview'
 import { api } from '../api/client'
+import { extractResumeText, RESUME_UPLOAD_ACCEPT } from '../utils/extractResumeText'
+import { getPendingRewrite, clearPendingRewrite } from '../utils/landingPendingRewrite'
 import type { Content } from '@tiptap/react'
 
 const TEMPLATES = [
@@ -96,6 +98,10 @@ export default function DashboardResume() {
 
   const handleExport = useCallback(async () => {
     setExportError(null)
+    if (!editorText?.trim()) {
+      setExportError('Add resume content before exporting.')
+      return
+    }
     setExportLoading(true)
     try {
       const blob = await api.resume.exportPdf(editorText)
@@ -127,27 +133,65 @@ export default function DashboardResume() {
     })
   }, [])
 
-  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const text = String(reader.result ?? '')
-      setOriginalContent((prev) => (prev ? prev : text))
-      setEditorContent(text)
-      setEditorText(text)
-    }
-    if (file.type === 'application/pdf') {
-      setEditorError('PDF: paste text from your PDF here, or upload a .txt file.')
-      e.target.value = ''
-      return
-    }
-    setEditorError(null)
-    reader.readAsText(file)
     e.target.value = ''
+    setEditorError(null)
+    setUploadLoading(true)
+    try {
+      const text = await extractResumeText(file)
+      if (!text.trim()) {
+        setEditorError('No text could be extracted from this file.')
+        return
+      }
+      setOriginalContent((prev) => (prev ? prev : text))
+      setEditorContent((prev) => {
+        if (typeof prev === 'string' && prev.trim().length > 0) return prev
+        return text
+      })
+      setEditorText((prev) => {
+        if (prev.trim().length > 0) return prev
+        return text
+      })
+    } catch (err) {
+      setEditorError(err instanceof Error ? err.message : 'Could not read file. Try .txt, .pdf, .doc, .docx, or .odt.')
+    } finally {
+      setUploadLoading(false)
+    }
   }, [])
 
   const [editorError, setEditorError] = useState<string | null>(null)
+  const [uploadLoading, setUploadLoading] = useState(false)
+  const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
+
+  useEffect(() => {
+    const pending = getPendingRewrite()
+    if (!pending?.text?.trim()) return
+    clearPendingRewrite()
+    const text = pending.text.trim()
+    setLandingRewriteLoading(true)
+    setRewriteError(null)
+    api.ai
+      .rewrite(text)
+      .then((res) => {
+        if (res.rewritten) {
+          setOriginalContent(text)
+          setEditorContent(res.rewritten)
+          setEditorText(res.rewritten)
+        }
+      })
+      .catch((err) => {
+        setRewriteError(err instanceof Error ? err.message : 'Could not run your rewrite.')
+        setOriginalContent(text)
+        setEditorContent(text)
+        setEditorText(text)
+      })
+      .finally(() => {
+        setLandingRewriteLoading(false)
+        refreshUser()
+      })
+  }, [refreshUser])
 
   const used = user?.rewriteCountToday ?? 0
   const limit = user?.rewriteLimit ?? 50
@@ -163,6 +207,11 @@ export default function DashboardResume() {
           Rewrites today: {used} / {limit}
           {user?.isPro && ' (Pro)'}
         </div>
+        {landingRewriteLoading && (
+          <p className="resumeLandingBanner" role="status">
+            Generating your rewrite from the landing page…
+          </p>
+        )}
       </header>
 
       <div className="resumeFlow">
@@ -181,7 +230,7 @@ export default function DashboardResume() {
 
         <section className="resumeSection resumeCard">
           <h2 className="resumeStepTitle">2. Resume content</h2>
-          <p className="resumeStepHint">Upload a .txt file or paste your resume into the editor. Select text to rewrite with AI.</p>
+          <p className="resumeStepHint">Upload a file (TXT, PDF, Word, Google Docs export, OpenOffice) or paste your resume. Select text to rewrite with AI.</p>
           <div className="resumeRewriteOptions">
             <label className="resumeRewriteOption">
               <span className="resumeRewriteOptionLabel">Rewrite in</span>
@@ -211,13 +260,14 @@ export default function DashboardResume() {
           <div className="resumeToolbar">
             <input
               type="file"
-              accept=".txt"
+              accept={RESUME_UPLOAD_ACCEPT}
               onChange={handleFileUpload}
               className="resumeFileInput"
               id="resume-upload"
+              disabled={uploadLoading}
             />
             <label htmlFor="resume-upload" className="dashboardBtn dashboardBtnSecondary">
-              Upload .txt
+              {uploadLoading ? 'Reading…' : 'Upload file'}
             </label>
             <button
               type="button"

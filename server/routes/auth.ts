@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import { pool } from '../db'
 import { config } from '../config'
-import { emailService, buildVerificationEmail } from '../services/email'
+import { emailService, buildVerificationEmail, buildPasswordResetEmail } from '../services/email'
 import { requireAuth } from '../middleware/auth'
 import type { JwtPayload } from '../middleware/auth'
 
@@ -218,6 +218,107 @@ router.post('/resend-verification', async (req: Request, res: Response): Promise
   } catch (err) {
     console.error('Resend verification error:', err)
     res.status(500).json({ error: 'Failed to send verification email' })
+  }
+})
+
+/** POST /api/auth/forgot-password — request password reset email (does not reveal if email exists). */
+router.post('/forgot-password', async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body as { email?: string }
+  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
+
+  if (!normalizedEmail) {
+    res.status(400).json({ error: 'Email is required' })
+    return
+  }
+
+  if (!pool) {
+    res.status(503).json({ error: 'Database not configured' })
+    return
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT id FROM users WHERE email = $1',
+      [normalizedEmail]
+    )
+    const user = result.rows[0]
+    if (!user) {
+      res.json({ message: 'If an account exists with this email, you will receive a password reset link.' })
+      return
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex')
+    const expiresAt = new Date(Date.now() + config.passwordReset.tokenExpiresMinutes * 60 * 1000)
+
+    await pool.query(
+      `UPDATE users SET password_reset_token = $1, password_reset_token_expires_at = $2, updated_at = now() WHERE id = $3`,
+      [resetToken, expiresAt, user.id]
+    )
+
+    const resetUrl = `${config.app.baseUrl}/reset-password?token=${resetToken}`
+    const expiresInHours = Math.max(1, Math.round(config.passwordReset.tokenExpiresMinutes / 60))
+    const { subject, html, text } = buildPasswordResetEmail({ resetUrl, expiresInHours })
+    try {
+      await emailService.send({ to: normalizedEmail, subject, html, text })
+    } catch (emailErr) {
+      await pool.query(
+        'UPDATE users SET password_reset_token = NULL, password_reset_token_expires_at = NULL, updated_at = now() WHERE id = $1',
+        [user.id]
+      )
+      console.error('Forgot password: email failed:', emailErr)
+      res.status(500).json({ error: 'Failed to send reset email. Please try again later.' })
+      return
+    }
+
+    res.json({ message: 'If an account exists with this email, you will receive a password reset link.' })
+  } catch (err) {
+    console.error('Forgot password error:', err)
+    res.status(500).json({ error: 'Something went wrong. Please try again.' })
+  }
+})
+
+/** POST /api/auth/reset-password — set new password using token from email. */
+router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+  const { token, newPassword } = req.body as { token?: string; newPassword?: string }
+
+  if (!token?.trim() || !newPassword || typeof newPassword !== 'string') {
+    res.status(400).json({ error: 'Token and new password are required' })
+    return
+  }
+
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: 'Password must be at least 8 characters' })
+    return
+  }
+
+  if (!pool) {
+    res.status(503).json({ error: 'Database not configured' })
+    return
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT id FROM users
+       WHERE password_reset_token = $1 AND password_reset_token_expires_at > now()`,
+      [token.trim()]
+    )
+    if (result.rows.length === 0) {
+      res.status(400).json({ error: 'Invalid or expired reset link. Request a new one.' })
+      return
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+    await pool.query(
+      `UPDATE users
+       SET password_hash = $1, password_reset_token = NULL, password_reset_token_expires_at = NULL, updated_at = now()
+       WHERE id = $2`,
+      [passwordHash, result.rows[0].id]
+    )
+
+    res.json({ message: 'Password reset successfully. You can now sign in.' })
+  } catch (err) {
+    console.error('Reset password error:', err)
+    res.status(500).json({ error: 'Failed to reset password' })
   }
 })
 

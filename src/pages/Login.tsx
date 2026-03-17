@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { hasPendingRewrite } from '../utils/landingPendingRewrite'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -8,6 +9,7 @@ export default function Login() {
   const { login, error, clearError } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const successMessage = (location.state as { message?: string } | null)?.message
 
   useEffect(() => { clearError() }, [clearError])
 
@@ -17,7 +19,8 @@ export default function Login() {
     try {
       await login(email, password)
       const from = (location.state as { from?: { pathname: string } })?.from?.pathname
-      navigate(from && from.startsWith('/dashboard') ? from : '/dashboard', { replace: true })
+      const goTo = from && from.startsWith('/dashboard') ? from : (hasPendingRewrite() ? '/dashboard/resume' : '/dashboard')
+      navigate(goTo, { replace: true })
     } catch (err) {
       // error set in context if API returns message
     }
@@ -28,6 +31,7 @@ export default function Login() {
       <div className="authCard">
         <h1 className="authTitle">Sign in</h1>
         <p className="authSubtitle">Welcome back. Sign in to your account.</p>
+        {successMessage && <div className="authSuccess" role="status">{successMessage}</div>}
         {error && <div className="authError" role="alert">{error}</div>}
         <form onSubmit={handleSubmit} className="authForm">
           <label className="authLabel">
@@ -52,6 +56,9 @@ export default function Login() {
               autoComplete="current-password"
             />
           </label>
+          <p className="authForgotWrap">
+            <Link to="/forgot-password">Forgot your password?</Link>
+          </p>
           <button type="submit" className="authSubmit">Sign in</button>
         </form>
         <p className="authFooter">

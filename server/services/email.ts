@@ -69,3 +69,25 @@ export function buildVerificationEmail(options: {
   `.trim()
   return { subject, html, text }
 }
+
+/** Build password reset email — same branding, reset link. */
+export function buildPasswordResetEmail(options: {
+  resetUrl: string
+  expiresInHours: number
+}): { subject: string; html: string; text: string } {
+  const { resetUrl, expiresInHours } = options
+  const subject = `Reset your ${APP_NAME} password`
+  const text = `You requested a password reset for ${APP_NAME}. Open this link to set a new password: ${resetUrl}. The link expires in ${expiresInHours} hour(s). If you didn't request this, you can ignore this email.`
+  const html = `
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+      <h2 style="color: #1a1a1a; margin-bottom: 16px;">Reset your password</h2>
+      <p>Someone requested a password reset for your <strong>${APP_NAME}</strong> account. Click the button below to set a new password.</p>
+      <p style="margin: 24px 0;">
+        <a href="${resetUrl}" style="display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">Reset password</a>
+      </p>
+      <p style="color: #64748b; font-size: 14px;">This link expires in ${expiresInHours} hour(s). If you didn't request a reset, you can ignore this email.</p>
+      <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">— ${APP_NAME}</p>
+    </div>
+  `.trim()
+  return { subject, html, text }
+}

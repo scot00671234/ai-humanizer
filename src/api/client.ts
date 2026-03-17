@@ -53,7 +53,8 @@ async function request<T>(
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({})) as ApiError
-    throw new Error(data.error || res.statusText || 'Request failed')
+    const message = typeof data?.error === 'string' ? data.error : res.statusText || 'Request failed'
+    throw new Error(message)
   }
   return res.json() as Promise<T>
 }
@@ -72,7 +73,8 @@ async function requestBlob(
   const res = await fetch(url, { ...init, headers, body })
   if (!res.ok) {
     const data = await res.json().catch(() => ({})) as ApiError
-    throw new Error(data.error || res.statusText || 'Request failed')
+    const message = typeof data?.error === 'string' ? data.error : res.statusText || 'Request failed'
+    throw new Error(message)
   }
   return res.blob()
 }
@@ -98,6 +100,18 @@ export const api = {
       request<{ message: string }>('/api/auth/resend-verification', {
         method: 'POST',
         body: JSON.stringify({ email }),
+      }),
+
+    requestPasswordReset: (email: string) =>
+      request<{ message: string }>('/api/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+
+    resetPassword: (token: string, newPassword: string) =>
+      request<{ message: string }>('/api/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, newPassword }),
       }),
 
     me: () =>

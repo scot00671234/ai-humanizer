@@ -357,6 +357,114 @@
   line-height: 1.3;
 }
 
+.landingTrySection {
+  padding-top: 2rem;
+}
+
+.landingTrySubtitle {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landingTryCard {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.landingTryLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.landingTryInput {
+  width: 100%;
+  min-height: 6rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--input-bg, var(--bg));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  resize: vertical;
+  transition: border-color 0.15s ease;
+}
+
+.landingTryInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.landingTryInput::placeholder {
+  color: var(--text-muted);
+}
+
+.landingTryHint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.landingTryError {
+  font-size: 0.875rem;
+  color: var(--error-text);
+}
+
+.landingTryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--btn-primary-text);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.landingTryCta:hover {
+  background: var(--accent-strong);
+}
+
+.landingTryCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.landingTryLogin {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.landingTryLogin a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.landingTryLogin a:hover {
+  text-decoration: underline;
+}
+
 .aboutContent {
   max-width: 36rem;
   margin: 0 auto;
@@ -697,6 +805,33 @@
   font-size: 0.875rem;
   color: var(--error-text);
   margin-bottom: 1rem;
+}
+
+.authSuccess {
+  padding: 0.75rem 1rem;
+  background: var(--success-bg, rgba(34, 197, 94, 0.12));
+  border: 1px solid var(--success-border, rgba(34, 197, 94, 0.35));
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--success-text, #15803d);
+  margin-bottom: 1rem;
+}
+
+.authForgotWrap {
+  text-align: right;
+  margin-top: -0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.authForgotWrap a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.authForgotWrap a:hover {
+  text-decoration: underline;
 }
 
 .authForm {
@@ -1127,6 +1262,20 @@
   max-width: 640px;
 }
 
+.dashboardPageOverview .dashboardOverviewCard {
+  padding: 2.5rem 2rem;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dashboardPageOverview .dashboardOverviewCard .dashboardCardText {
+  margin: 0;
+  max-width: 28em;
+}
+
 .dashboardPageTitle {
   font-size: 1.5rem;
   font-weight: 600;
@@ -1172,6 +1321,11 @@
   font-size: 0.9375rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.dashboardSettingsPlanHint {
+  font-weight: normal;
+  color: var(--text-muted, var(--text-secondary));
 }
 
 .dashboardSettingsHint {
@@ -1266,6 +1420,15 @@
   font-size: 0.8125rem;
   color: var(--text-muted);
   margin-bottom: 0;
+}
+
+.resumeLandingBanner {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
 }
 
 .resumeFlow {

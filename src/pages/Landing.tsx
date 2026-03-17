@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+import { useState, FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { setPendingRewrite } from '../utils/landingPendingRewrite'
 
 function BlobTop() {
   return (
@@ -58,7 +60,29 @@ const PLANS = [
   { name: 'Team', price: 59, period: 'month', description: 'Unlimited ambition. No compromise on rewrites.', features: ['1,500 AI rewrites per day', 'Everything in Pro', 'Highest priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
+const LANDING_TRY_MAX_LENGTH = 800
+
 export default function Landing() {
+  const navigate = useNavigate()
+  const [tryText, setTryText] = useState('')
+  const [tryError, setTryError] = useState<string | null>(null)
+
+  function handleTrySubmit(e: FormEvent) {
+    e.preventDefault()
+    setTryError(null)
+    const trimmed = tryText.trim()
+    if (!trimmed) {
+      setTryError('Paste a resume bullet or sentence to continue.')
+      return
+    }
+    if (trimmed.length > LANDING_TRY_MAX_LENGTH) {
+      setTryError(`Keep it under ${LANDING_TRY_MAX_LENGTH} characters for this preview.`)
+      return
+    }
+    setPendingRewrite(trimmed.slice(0, LANDING_TRY_MAX_LENGTH))
+    navigate('/register', { state: { fromLandingTry: true }, replace: false })
+  }
+
   return (
     <>
       <main className="hero">
@@ -80,6 +104,37 @@ export default function Landing() {
           <Link to="/register" className="heroCta">Make my resume stand out</Link>
         </div>
       </main>
+
+      <section className="section landingTrySection" id="try">
+        <div className="sectionHeader">
+          <p className="sectionLabel">Try it</p>
+          <h2 className="sectionTitle">Paste a bullet. See what AI can do.</h2>
+          <p className="landingTrySubtitle">We’ll rewrite it once you’re in—sign up free to get your result.</p>
+        </div>
+        <form onSubmit={handleTrySubmit} className="landingTryCard">
+          <label className="landingTryLabel" htmlFor="landing-try-text">
+            Resume bullet or sentence
+          </label>
+          <textarea
+            id="landing-try-text"
+            className="landingTryInput"
+            placeholder="e.g. Worked with the engineering team to ship new features."
+            value={tryText}
+            onChange={(e) => setTryText(e.target.value)}
+            maxLength={LANDING_TRY_MAX_LENGTH + 100}
+            rows={3}
+            aria-describedby={tryError ? 'landing-try-error' : undefined}
+          />
+          <p className="landingTryHint">{tryText.length} / {LANDING_TRY_MAX_LENGTH} characters</p>
+          {tryError && <p id="landing-try-error" className="landingTryError" role="alert">{tryError}</p>}
+          <button type="submit" className="landingTryCta">
+            Get my AI rewrite — Sign up free
+          </button>
+          <p className="landingTryLogin">
+            Already have an account? <Link to="/login" state={{ fromLandingTry: true }}>Sign in</Link>
+          </p>
+        </form>
+      </section>
 
       <section className="section" id="about">
         <div className="sectionHeader">

@@ -17,6 +17,11 @@ export const config = {
     tokenExpiresMinutes: Number(process.env.CONFIRMATION_EXPIRES_MINUTES) || 60 * 24, // 24h
   },
 
+  /** Password reset link expiry (default 1 hour). */
+  passwordReset: {
+    tokenExpiresMinutes: Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES) || 60,
+  },
+
   app: {
     baseUrl: process.env.APP_BASE_URL || 'http://localhost:5173',
   },
