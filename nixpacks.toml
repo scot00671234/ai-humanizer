@@ -1,7 +1,4 @@
-# Force Node 22 (avoids cached nodejs_20; pdfjs-dist requires >=20.19 or >=22)
-[phases.setup]
-nixPkgs = ["nodejs_22", "npm-9_x"]
-
-# Fewer optional deps to reduce disk use; if ENOSPC persists, free disk or clear Docker build cache on the server
+# Use default Node (cached nodejs_20) to avoid fetching large nixpkgs for nodejs_22 (saves disk during setup)
+# Keep install --no-optional to reduce disk use during npm install
 [phases.install]
 cmds = ["npm install --no-optional"]
