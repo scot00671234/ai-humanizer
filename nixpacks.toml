@@ -1,4 +1,7 @@
-# Use default Node (cached nodejs_20) to avoid fetching large nixpkgs for nodejs_22 (saves disk during setup)
-# Keep install --no-optional to reduce disk use during npm install
+# FORCE nodejs_20 so the plan never uses nodejs_22 (which triggers ffeebf0a nixpkgs fetch that fails with
+# "writing a blob / pack entry" on the server). nodejs_20 uses the base/cached nixpkgs layer.
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm-9_x"]
+
 [phases.install]
 cmds = ["npm install --no-optional"]
