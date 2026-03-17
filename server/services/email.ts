@@ -21,6 +21,9 @@ export const stubEmailService: EmailService = {
   async send({ to, subject, html, text }) {
     if (process.env.NODE_ENV !== 'test') {
       console.log('[Email]', { to, subject, text: text || html.slice(0, 80) + '...' })
+      // So you can copy the link when testing without real email
+      const match = typeof text === 'string' && text.match(/(https?:\/\/\S+?)\.?\s/);
+      if (match) console.log('[Email] Verification link (copy this):', match[1])
     }
   },
 }

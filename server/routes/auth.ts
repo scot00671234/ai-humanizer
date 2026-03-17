@@ -103,7 +103,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    if (!user.email_verified_at) {
+    if (!user.email_verified_at && !config.dev.allowLoginWithoutVerification) {
       res.status(403).json({
         error: 'Please verify your email before signing in.',
         code: 'EMAIL_NOT_VERIFIED',
@@ -216,24 +216,63 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
     return
   }
   try {
-    const result = await pool.query(
-      'SELECT id, email, email_verified_at, created_at FROM users WHERE id = $1',
-      [user.userId]
-    )
-    const row = result.rows[0]
+    const [userResult, usageResult] = await Promise.all([
+      pool.query(
+        'SELECT id, email, email_verified_at, created_at, is_pro FROM users WHERE id = $1',
+        [user.userId]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS c FROM usage_logs WHERE user_id = $1 AND action_type = 'rewrite' AND timestamp > now() - interval '24 hours'`,
+        [user.userId]
+      ),
+    ])
+    const row = userResult.rows[0]
     if (!row) {
       res.status(404).json({ error: 'User not found' })
       return
     }
+    const rewriteCountToday = usageResult.rows[0]?.c ?? 0
+    const rewriteLimit = row.is_pro === true ? 500 : 50
     res.json({
       user: {
         id: row.id,
         email: row.email,
         emailVerified: !!row.email_verified_at,
         createdAt: row.created_at,
+        isPro: !!row.is_pro,
+        rewriteCountToday,
+        rewriteLimit,
       },
     })
   } catch (err) {
+    const msg = err instanceof Error ? err.message : ''
+    if (msg.includes('is_pro') || msg.includes('usage_logs') || msg.includes('column') || msg.includes('relation')) {
+      try {
+        const fallback = await pool.query(
+          'SELECT id, email, email_verified_at, created_at FROM users WHERE id = $1',
+          [user.userId]
+        )
+        const row = fallback.rows[0]
+        if (!row) {
+          res.status(404).json({ error: 'User not found' })
+          return
+        }
+        res.json({
+          user: {
+            id: row.id,
+            email: row.email,
+            emailVerified: !!row.email_verified_at,
+            createdAt: row.created_at,
+            isPro: false,
+            rewriteCountToday: 0,
+            rewriteLimit: 50,
+          },
+        })
+        return
+      } catch {
+        /* fall through to 500 */
+      }
+    }
     console.error('Me error:', err)
     res.status(500).json({ error: 'Failed to load user' })
   }

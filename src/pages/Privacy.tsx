@@ -23,7 +23,7 @@ export default function Privacy() {
             You may access, correct, or delete your personal data through your account settings or by contacting us.
           </p>
           <p>
-            For questions about this policy, contact us at privacy@frosted.example.
+            For questions about this policy, contact us at privacy@resumeai.example.
           </p>
         </div>
         <Link to="/" className="contentBack">← Back to home</Link>

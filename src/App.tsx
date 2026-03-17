@@ -7,6 +7,7 @@ import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import DashboardLayout from './components/DashboardLayout'
 import DashboardHome from './pages/DashboardHome'
+import DashboardResume from './pages/DashboardResume'
 import DashboardSettings from './pages/DashboardSettings'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
@@ -22,7 +23,7 @@ function Nav() {
       <div className="navInner">
         <Link to="/" className="navBrand">
           <img src="/logo.svg" alt="" className="navLogo" width="28" height="28" />
-          <span>Frosted</span>
+          <span>Resume AI</span>
         </Link>
         <div className="navLinks">
           <a href="/#about">About</a>
@@ -61,6 +62,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
+          <Route path="resume" element={<DashboardResume />} />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>
         <Route path="/contact" element={<Contact />} />

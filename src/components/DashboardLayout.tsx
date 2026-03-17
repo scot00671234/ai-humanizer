@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 
 const SEARCH_ITEMS = [
   { label: 'Dashboard', path: '' },
+  { label: 'Resume', path: '/resume' },
   { label: 'Settings', path: '/settings' },
 ]
 
@@ -40,9 +41,10 @@ export default function DashboardLayout() {
   }
 
   function handleSearchKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && matches.length > 0) {
+    const first = matches[0]
+    if (e.key === 'Enter' && first) {
       e.preventDefault()
-      handleSearchSelect(matches[0].path)
+      handleSearchSelect(first.path)
     }
   }
 
@@ -51,7 +53,7 @@ export default function DashboardLayout() {
       <aside className="dashboardSidebar">
         <Link to={basePath} className="dashboardBrand">
           <img src="/logo.svg" alt="" className="dashboardLogo" width="24" height="24" />
-          <span>Frosted</span>
+          <span>Resume AI</span>
         </Link>
 
         <nav className="dashboardNav">
@@ -60,6 +62,12 @@ export default function DashboardLayout() {
             className={`dashboardNavLink ${location.pathname === basePath ? 'dashboardNavLinkActive' : ''}`}
           >
             Dashboard
+          </Link>
+          <Link
+            to={`${basePath}/resume`}
+            className={`dashboardNavLink ${location.pathname === `${basePath}/resume` ? 'dashboardNavLinkActive' : ''}`}
+          >
+            Resume
           </Link>
           <Link
             to={`${basePath}/settings`}

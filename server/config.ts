@@ -21,10 +21,23 @@ export const config = {
     baseUrl: process.env.APP_BASE_URL || 'http://localhost:5173',
   },
 
+  /** In development, allow sign-in without email verification (no verification link needed). */
+  dev: {
+    allowLoginWithoutVerification: process.env.NODE_ENV !== 'production',
+  },
+
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,
     pricePro: process.env.STRIPE_PRICE_PRO || '',
     priceEnterprise: process.env.STRIPE_PRICE_ENTERPRISE || '',
+  },
+
+  deepseek: {
+    apiKey: process.env.DEEPSEEK_API_KEY,
+  },
+
+  redis: {
+    url: process.env.REDIS_URL,
   },
 } as const
 

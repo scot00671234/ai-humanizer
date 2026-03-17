@@ -1,0 +1,39 @@
+/**
+ * Runs server/schema.sql and server/migrations/002_resume_builder.sql
+ * using DATABASE_URL from .env. No psql required.
+ */
+import 'dotenv/config'
+import pg from 'pg'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const root = path.join(__dirname, '..')
+
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  console.error('Missing DATABASE_URL in .env')
+  process.exit(1)
+}
+
+const client = new pg.Client({ connectionString })
+
+function runFile(filePath) {
+  const fullPath = path.join(root, filePath)
+  const sql = fs.readFileSync(fullPath, 'utf8')
+  return client.query(sql)
+}
+
+export async function runMigrations() {
+  await client.connect()
+  try {
+    console.log('Running server/schema.sql...')
+    await runFile('server/schema.sql')
+    console.log('Running server/migrations/002_resume_builder.sql...')
+    await runFile('server/migrations/002_resume_builder.sql')
+    console.log('Migrations done.')
+  } finally {
+    await client.end()
+  }
+}

@@ -113,7 +113,7 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
     if (customerId && email && pool) {
       try {
         await pool.query(
-          'UPDATE users SET stripe_customer_id = $1, updated_at = now() WHERE email = $2',
+          'UPDATE users SET stripe_customer_id = $1, is_pro = true, updated_at = now() WHERE email = $2',
           [customerId, email.toLowerCase()]
         )
       } catch (err) {
@@ -121,5 +121,36 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
       }
     }
   }
+  if (event.type === 'customer.subscription.updated' && event.data.object) {
+    const sub = event.data.object as Stripe.Subscription
+    const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id
+    const isActive = sub.status === 'active'
+    if (customerId && pool) {
+      try {
+        await pool.query(
+          'UPDATE users SET is_pro = $1, updated_at = now() WHERE stripe_customer_id = $2',
+          [isActive, customerId]
+        )
+      } catch (err) {
+        console.error('Webhook subscription.updated is_pro failed:', err)
+      }
+    }
+  }
+  if (event.type === 'customer.subscription.deleted' && event.data.object) {
+    const sub = event.data.object as Stripe.Subscription
+    const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id
+    if (customerId && pool) {
+      try {
+        await pool.query(
+          'UPDATE users SET is_pro = false, updated_at = now() WHERE stripe_customer_id = $1',
+          [customerId]
+        )
+      } catch (err) {
+        console.error('Webhook subscription.deleted is_pro failed:', err)
+      }
+    }
+  }
   res.json({ received: true })
 })
+
+export default router

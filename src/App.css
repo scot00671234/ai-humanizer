@@ -1160,3 +1160,205 @@
   color: var(--error-text);
   margin-bottom: 0.75rem;
 }
+
+/* —— Resume Builder —— */
+.dashboardResume {
+  max-width: 900px;
+}
+
+.resumeUsage {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.resumeSection {
+  margin-bottom: 1.5rem;
+}
+
+.resumeSectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.resumeJobDesc {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 100px;
+}
+
+.resumeJobDesc:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.resumeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.resumeFileInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.resumeScore {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.resumeScoreValue {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.resumeScoreMax {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.resumeScoreBreakdown {
+  width: 100%;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.resumeScoreBreakdown span {
+  margin-right: 1rem;
+}
+
+.resumeTemplates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Resume editor (Tiptap) */
+.resumeEditor {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  overflow: hidden;
+}
+
+.resumeEditorToolbar {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+}
+
+.resumeEditorToolbar button {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.resumeEditorToolbar button:hover {
+  color: var(--text-primary);
+  background: var(--accent-soft);
+}
+
+.resumeEditorToolbar .resumeEditorBtnActive {
+  color: var(--text-primary);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.resumeEditor .ProseMirror {
+  min-height: 280px;
+  padding: 1rem 1rem 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.resumeEditor .ProseMirror:focus {
+  outline: none;
+}
+
+.resumeEditor .ProseMirror p {
+  margin-bottom: 0.5rem;
+}
+
+.resumeEditor .ProseMirror ul,
+.resumeEditor .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Resume preview side-by-side */
+.resumePreview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .resumePreview {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resumePreviewPanel {
+  padding: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.resumePreviewTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.resumePreviewContent {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.resumePreviewContent p {
+  margin-bottom: 0.35rem;
+}
+
+.resumePreviewMuted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.resumePreviewHighlight {
+  background: rgba(250, 204, 21, 0.35);
+  padding: 0 2px;
+  border-radius: 2px;
+}

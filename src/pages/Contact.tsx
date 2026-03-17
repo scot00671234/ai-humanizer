@@ -12,11 +12,11 @@ export default function Contact() {
           </p>
           <p>
             <strong>Email</strong><br />
-            support@frosted.example
+            support@resumeai.example
           </p>
           <p>
             <strong>General inquiries</strong><br />
-            hello@frosted.example
+            hello@resumeai.example
           </p>
           <p>
             We typically respond within one business day.

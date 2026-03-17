@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { api, getToken, setToken, clearToken } from '../api/client'
 
-export type User = { id: string; email: string; emailVerified?: boolean; createdAt?: string }
+export type User = { id: string; email: string; emailVerified?: boolean; createdAt?: string; isPro?: boolean; rewriteCountToday?: number; rewriteLimit?: number }
 
 type AuthState = {
   user: User | null

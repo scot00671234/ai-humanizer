@@ -47,15 +47,15 @@ function BlobBottom() {
 }
 
 const FEATURES = [
-  { icon: '◇', title: 'Analytics', description: 'Real-time insights and dashboards so you can make decisions with confidence.' },
-  { icon: '◆', title: 'Integrations', description: 'Connect your tools with a single API. Slack, Notion, and 50+ apps ready to go.' },
-  { icon: '○', title: 'Security', description: 'SOC 2 compliant with encryption at rest and in transit. Your data stays yours.' },
+  { icon: '◇', title: 'Sound like a top candidate', description: 'Select any bullet. One click. Your wording gets sharper—strong verbs, real metrics, the kind recruiters actually notice. No fluff, no generic phrases.' },
+  { icon: '◆', title: 'Know exactly where you stand', description: 'Paste the job description. Get a 0–100 score and a clear breakdown: keyword match, verb strength, length, ATS safety. Fix the gaps before you hit submit.' },
+  { icon: '○', title: 'Submit with confidence', description: 'One-click PDF. Clean, professional layouts that pass every ATS. Three templates—pick the one that fits your industry and your story.' },
 ] as const
 
 const PLANS = [
-  { name: 'Starter', price: 0, period: 'month', description: 'For individuals and side projects.', features: ['Up to 3 projects', '1 GB storage', 'Email support', 'Basic analytics'], cta: 'Get started', ctaTo: '/register', featured: false },
-  { name: 'Pro', price: 29, period: 'month', description: 'For growing teams that need more.', features: ['Unlimited projects', '50 GB storage', 'Priority support', 'Advanced analytics', 'API access', 'Custom integrations'], cta: 'Start free trial', ctaTo: '/register', featured: true },
-  { name: 'Enterprise', price: 59, period: 'month', description: 'For organizations with advanced needs.', features: ['Everything in Pro', 'Dedicated success manager', 'SSO & SAML', 'Audit logs', 'SLA guarantee'], cta: 'Start free trial', ctaTo: '/register', featured: false },
+  { name: 'Free', price: 0, period: 'month', description: 'Everything you need to land your next role. No credit card required.', features: ['50 AI rewrites per day', 'ATS score & keyword highlights', 'Side-by-side original vs current', 'PDF export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
+  { name: 'Pro', price: 29, period: 'month', description: 'When you\'re applying to dozens of roles, we\'ve got you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'No ads', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
+  { name: 'Team', price: 59, period: 'month', description: 'Unlimited ambition. No compromise on rewrites.', features: ['1,500 AI rewrites per day', 'Everything in Pro', 'Highest priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
 export default function Landing() {
@@ -72,34 +72,34 @@ export default function Landing() {
           <BlobBottom />
         </div>
         <div className="heroContent">
-          <span className="heroBadge">Now in public beta</span>
-          <h1 className="heroTitle">Build and ship faster, without the chaos</h1>
+          <span className="heroBadge">Join job seekers who get more callbacks</span>
+          <h1 className="heroTitle">Your resume gets one shot. Make it count.</h1>
           <p className="heroSubtitle">
-            One platform for your team, your tools, and your workflow. Get clarity from day one.
+            Most resumes never reach a human—they're filtered out by software. Resume AI helps you speak the right language: sharper bullets, instant ATS scoring, and a PDF that actually gets read.
           </p>
-          <Link to="/register" className="heroCta">Start free trial</Link>
+          <Link to="/register" className="heroCta">Make my resume stand out</Link>
         </div>
       </main>
 
       <section className="section" id="about">
         <div className="sectionHeader">
-          <p className="sectionLabel">About</p>
-          <h2 className="sectionTitle">Built for teams who care about clarity</h2>
+          <p className="sectionLabel">Why Resume AI</p>
+          <h2 className="sectionTitle">You're not bad at job hunting. Your resume just isn't speaking the right language.</h2>
         </div>
         <div className="aboutContent">
           <p className="aboutText">
-            Frosted started with a simple idea: great tools should feel calm, not chaotic. We combine a clean interface with the power teams need—analytics, integrations, and security—so you can focus on what matters.
+            Paste your resume. Paste the job description. Our AI sharpens your bullets, scores you against the role, and shows you exactly which keywords to hit. You get a side-by-side view so you see the difference, then one click for a clean, ATS-friendly PDF. No design skills. No guesswork.
           </p>
           <p className="aboutText">
-            Whether you’re a small team or a growing company, we’re here to help you move faster without the overhead.
+            We built fair limits so everyone gets a smooth experience—50 rewrites a day on the house, more when you need them. No lock-in. Cancel anytime.
           </p>
         </div>
       </section>
 
       <section className="section" id="features">
         <div className="sectionHeader">
-          <p className="sectionLabel">Features</p>
-          <h2 className="sectionTitle">Everything you need to move fast</h2>
+          <p className="sectionLabel">How it works</p>
+          <h2 className="sectionTitle">Built to get you past the screeners</h2>
         </div>
         <div className="featureGrid">
           {FEATURES.map((f) => (
@@ -115,7 +115,7 @@ export default function Landing() {
       <section className="section" id="pricing">
         <div className="sectionHeader">
           <p className="sectionLabel">Pricing</p>
-          <h2 className="sectionTitle">Simple, transparent pricing</h2>
+          <h2 className="sectionTitle">Start free. Upgrade when you're ready.</h2>
         </div>
         <div className="pricingGrid">
           {PLANS.map((plan) => (
@@ -136,15 +136,15 @@ export default function Landing() {
 
       <section className="section ctaSection">
         <div className="ctaBox">
-          <h2>Ready to get started?</h2>
-          <p>Start your free trial. No credit card required.</p>
-          <Link to="/register">Start free trial</Link>
+          <h2>Your next job is out there. Your resume should be ready.</h2>
+          <p>Join for free—50 AI rewrites today. No credit card required.</p>
+          <Link to="/register" className="heroCta">Get started free</Link>
         </div>
       </section>
 
       <footer className="footer">
         <div className="footerInner">
-          <Link to="/" className="footerBrand">Frosted</Link>
+          <Link to="/" className="footerBrand">Resume AI</Link>
           <div className="footerLinks">
             <a href="/#about">About</a>
             <a href="/#features">Features</a>
@@ -153,7 +153,7 @@ export default function Landing() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>
-          <span className="footerCopy">© {new Date().getFullYear()} Frosted. All rights reserved.</span>
+          <span className="footerCopy">© {new Date().getFullYear()} Resume AI. All rights reserved.</span>
         </div>
       </footer>
     </>

@@ -1,16 +1,30 @@
 import express from 'express'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import cors from 'cors'
 import { config } from './config'
 import authRoutes from './routes/auth'
 import billingRoutes from './routes/billing'
+import aiRoutes from './routes/ai'
+import resumeRoutes from './routes/resume'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const isProduction = config.nodeEnv === 'production'
 
 const app = express()
 
 app.use(cors({
-  origin: [config.app.baseUrl, 'http://localhost:5173'],
+  origin: isProduction
+    ? [config.app.baseUrl]
+    : (origin, cb) => {
+        // In dev, allow any localhost port (Vite may use 5174 if 5173 is taken)
+        if (!origin || /^https?:\/\/localhost(:\d+)?$/.test(origin)) return cb(null, true)
+        return cb(null, false)
+      },
   credentials: true,
 }))
 app.use(express.json({
+  limit: '2mb',
   verify: (req: express.Request, _res, buf) => {
     (req as express.Request & { rawBody?: Buffer }).rawBody = buf
   },
@@ -18,11 +32,26 @@ app.use(express.json({
 
 app.use('/api/auth', authRoutes)
 app.use('/api/auth', billingRoutes)
+app.use('/api/ai', aiRoutes)
+app.use('/api/resume', resumeRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true })
 })
 
+if (isProduction) {
+  const distPath = path.join(path.dirname(__dirname), 'dist')
+  app.use(express.static(distPath))
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
+}
+
 app.listen(config.port, () => {
-  console.log(`Auth API running at http://localhost:${config.port}`)
+  console.log(isProduction
+    ? `Server running at http://localhost:${config.port}`
+    : `Auth API running at http://localhost:${config.port}`)
+  if (!isProduction && config.dev.allowLoginWithoutVerification) {
+    console.log('Dev: sign-in allowed without email verification.')
+  }
 })
