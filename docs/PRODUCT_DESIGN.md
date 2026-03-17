@@ -1,4 +1,4 @@
-# Resume AI — Product Design
+# bioqz — Product Design
 
 Full product design for the AI resume builder MVP, built on the existing SaaS boilerplate tech stack.
 

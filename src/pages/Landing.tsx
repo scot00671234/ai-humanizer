@@ -1,6 +1,13 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { setPendingRewrite } from '../utils/landingPendingRewrite'
+
+const PATH_STEPS = [
+  { id: 1, title: 'One document opens the door', body: 'Your resume is the key recruiters use to decide: in or out. Not luck. Not timing. The words on the page.' },
+  { id: 2, title: 'Get past the gate', body: 'Most applications never reach a human. They are filtered out before anyone sees them. The right wording gets you into the room.' },
+  { id: 3, title: 'Speak their language', body: 'Sharp bullets. Strong verbs. The language hiring managers actually notice. Sound like the candidate they want to hire.' },
+  { id: 4, title: 'The job. The life.', body: 'The right resume is not just nice to have. It opens doors. It can change your entire life. The job you want starts here.' },
+] as const
 
 function BlobTop() {
   return (
@@ -49,21 +56,46 @@ function BlobBottom() {
 }
 
 const FEATURES = [
-  { icon: '◇', title: 'Sound like a top candidate', description: 'Select any bullet. One click. Your wording gets sharper—strong verbs, real metrics, the kind recruiters actually notice. No fluff, no generic phrases.' },
-  { icon: '◆', title: 'Know exactly where you stand', description: 'Paste the job description. Get a 0–100 score and a clear breakdown: keyword match, verb strength, length, ATS safety. Fix the gaps before you hit submit.' },
-  { icon: '○', title: 'Submit with confidence', description: 'One-click PDF. Clean, professional layouts that pass every ATS. Three templates—pick the one that fits your industry and your story.' },
+  { icon: '◇', title: 'Sound like a top candidate', description: 'Select any bullet. One click. Your wording gets sharper: strong verbs, real metrics, the kind recruiters actually notice. No fluff, no generic phrases.' },
+  { icon: '◆', title: 'Know exactly where you stand', description: 'Paste the job description. Get a 0 to 100 score and a clear breakdown: keyword match, verb strength, length, ATS safety. Fix the gaps before you hit submit.' },
+  { icon: '○', title: 'Submit with confidence', description: 'One-click PDF. Clean, professional layouts that pass every ATS. Three templates. Pick the one that fits your industry and your story.' },
 ] as const
 
 const PLANS = [
   { name: 'Free', price: 0, period: 'month', description: 'Everything you need to land your next role. No credit card required.', features: ['50 AI rewrites per day', 'ATS score & keyword highlights', 'Side-by-side original vs current', 'PDF export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
-  { name: 'Pro', price: 29, period: 'month', description: 'When you\'re applying to dozens of roles, we\'ve got you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'No ads', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
+  { name: 'Pro', price: 29, period: 'month', description: 'When you are applying to dozens of roles, we have you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'No ads', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
   { name: 'Team', price: 59, period: 'month', description: 'Unlimited ambition. No compromise on rewrites.', features: ['1,500 AI rewrites per day', 'Everything in Pro', 'Highest priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
 const LANDING_TRY_MAX_LENGTH = 800
 
+function usePathStepVisible() {
+  const refs = useRef<(HTMLDivElement | null)[]>([])
+  const [visible, setVisible] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    const observers = refs.current.map((el, i) => {
+      if (!el) return null
+      const ob = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) setVisible((v) => new Set([...v, i]))
+          })
+        },
+        { rootMargin: '-10% 0px -10% 0px', threshold: 0.1 }
+      )
+      ob.observe(el)
+      return ob
+    })
+    return () => observers.forEach((ob) => ob?.disconnect())
+  }, [])
+
+  return { refs, visible }
+}
+
 export default function Landing() {
   const navigate = useNavigate()
+  const { refs, visible } = usePathStepVisible()
   const [tryText, setTryText] = useState('')
   const [tryError, setTryError] = useState<string | null>(null)
 
@@ -86,6 +118,7 @@ export default function Landing() {
   return (
     <>
       <main className="hero">
+        <div className="heroBackdrop" aria-hidden />
         <div className="heroBg" aria-hidden>
           <div className="heroOrb heroOrbTop" />
           <div className="heroOrb heroOrbBottom" />
@@ -96,20 +129,39 @@ export default function Landing() {
           <BlobBottom />
         </div>
         <div className="heroContent">
-          <span className="heroBadge">Join job seekers who get more callbacks</span>
-          <h1 className="heroTitle">Your resume gets one shot. Make it count.</h1>
+          <span className="heroBadge">One page. Your future.</span>
+          <h1 className="heroTitle">The right resume changes everything.</h1>
           <p className="heroSubtitle">
-            Most resumes never reach a human—they're filtered out by software. Resume AI helps you speak the right language: sharper bullets, instant ATS scoring, and a PDF that actually gets read.
+            It is the key to the job and the life you want. We help you write the one that opens the door.
           </p>
-          <Link to="/register" className="heroCta">Make my resume stand out</Link>
+          <Link to="/register" className="heroCta">Make my resume the one that opens doors</Link>
         </div>
       </main>
 
+      <section className="section pathSection" id="path" aria-label="Why your resume matters">
+        <h2 className="pathSectionTitle">The right resume changes everything</h2>
+        <div className="pathLine" aria-hidden />
+        <div className="pathSteps">
+          {PATH_STEPS.map((step, i) => (
+            <div
+              key={step.id}
+              className={`pathStep ${visible.has(i) ? 'pathStepVisible' : ''}`}
+              ref={(el) => { refs.current[i] = el }}
+            >
+              <div className="pathNode" aria-hidden />
+              <div className="pathCard">
+                <h3 className="pathCardTitle">{step.title}</h3>
+                <p className="pathCardBody">{step.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="section landingTrySection" id="try">
-        <div className="sectionHeader">
-          <p className="sectionLabel">Try it</p>
-          <h2 className="sectionTitle">Paste a bullet. See what AI can do.</h2>
-          <p className="landingTrySubtitle">We’ll rewrite it once you’re in—sign up free to get your result.</p>
+        <div className="landingTryHeader">
+          <h2 className="landingTryTitle">Paste a bullet. See what we can do.</h2>
+          <p className="landingTrySubtitle">We will rewrite it once you are in. Sign up free to get your result.</p>
         </div>
         <form onSubmit={handleTrySubmit} className="landingTryCard">
           <label className="landingTryLabel" htmlFor="landing-try-text">
@@ -123,30 +175,30 @@ export default function Landing() {
             onChange={(e) => setTryText(e.target.value)}
             maxLength={LANDING_TRY_MAX_LENGTH + 100}
             rows={3}
-            aria-describedby={tryError ? 'landing-try-error' : undefined}
+            aria-describedby={tryError ? 'landing-try-error' : 'landing-try-hint'}
           />
-          <p className="landingTryHint">{tryText.length} / {LANDING_TRY_MAX_LENGTH} characters</p>
+          <p id="landing-try-hint" className="landingTryHint">{tryText.length} / {LANDING_TRY_MAX_LENGTH} characters</p>
           {tryError && <p id="landing-try-error" className="landingTryError" role="alert">{tryError}</p>}
           <button type="submit" className="landingTryCta">
-            Get my AI rewrite — Sign up free
+            Get my AI rewrite. Sign up free
           </button>
           <p className="landingTryLogin">
-            Already have an account? <Link to="/login" state={{ fromLandingTry: true }}>Sign in</Link>
+            Already have an account? <Link to="/login" state={{ fromLandingTry: true }} className="landingTryLoginLink">Sign in</Link>
           </p>
         </form>
       </section>
 
       <section className="section" id="about">
         <div className="sectionHeader">
-          <p className="sectionLabel">Why Resume AI</p>
-          <h2 className="sectionTitle">You're not bad at job hunting. Your resume just isn't speaking the right language.</h2>
+          <p className="sectionLabel">Why bioqz</p>
+          <h2 className="sectionTitle">You are not bad at job hunting. Your resume just is not speaking the right language.</h2>
         </div>
         <div className="aboutContent">
           <p className="aboutText">
-            Paste your resume. Paste the job description. Our AI sharpens your bullets, scores you against the role, and shows you exactly which keywords to hit. You get a side-by-side view so you see the difference, then one click for a clean, ATS-friendly PDF. No design skills. No guesswork.
+            Paste your resume. Paste the job description. We sharpen your bullets, score you against the role, and show you exactly which keywords to hit. Side by side view so you see the difference. One click for a clean, ATS-friendly PDF. No design skills. No guesswork.
           </p>
           <p className="aboutText">
-            We built fair limits so everyone gets a smooth experience—50 rewrites a day on the house, more when you need them. No lock-in. Cancel anytime.
+            Fair limits so everyone gets a smooth experience. 50 rewrites a day on the house, more when you need them. No lock-in. Cancel anytime.
           </p>
         </div>
       </section>
@@ -192,15 +244,16 @@ export default function Landing() {
       <section className="section ctaSection">
         <div className="ctaBox">
           <h2>Your next job is out there. Your resume should be ready.</h2>
-          <p>Join for free—50 AI rewrites today. No credit card required.</p>
+          <p>Join for free. 50 AI rewrites today. No credit card required.</p>
           <Link to="/register" className="heroCta">Get started free</Link>
         </div>
       </section>
 
       <footer className="footer">
         <div className="footerInner">
-          <Link to="/" className="footerBrand">Resume AI</Link>
+          <Link to="/" className="footerBrand">bioqz</Link>
           <div className="footerLinks">
+            <a href="/#path">Path</a>
             <a href="/#about">About</a>
             <a href="/#features">Features</a>
             <a href="/#pricing">Pricing</a>
@@ -208,7 +261,7 @@ export default function Landing() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>
-          <span className="footerCopy">© {new Date().getFullYear()} Resume AI. All rights reserved.</span>
+          <span className="footerCopy">© {new Date().getFullYear()} bioqz. All rights reserved.</span>
         </div>
       </footer>
     </>

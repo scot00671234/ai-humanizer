@@ -12,6 +12,11 @@ export const config = {
     secret: process.env.JWT_SECRET || 'change-me-in-production',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
+  /** Reject weak JWT secret in production. */
+  get isJwtSecretSafe(): boolean {
+    const s = process.env.JWT_SECRET
+    return !!s && s.length >= 32 && s !== 'change-me-in-production'
+  },
 
   confirmation: {
     tokenExpiresMinutes: Number(process.env.CONFIRMATION_EXPIRES_MINUTES) || 60 * 24, // 24h
@@ -53,4 +58,7 @@ export const config = {
 
 if (!config.database.connectionString) {
   console.warn('DATABASE_URL is not set. Auth API will fail on DB operations.')
+}
+if (config.nodeEnv === 'production' && !config.isJwtSecretSafe) {
+  console.warn('WARNING: Set a strong JWT_SECRET in production (at least 32 characters). Default secret is insecure.')
 }

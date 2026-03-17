@@ -8,7 +8,7 @@ export default function Terms() {
         <p className="contentSubtitle">Last updated: {new Date().toLocaleDateString('en-US')}</p>
         <div className="contentBody">
           <p>
-            By using Resume AI, you agree to these terms. Please read them carefully.
+            By using bioqz, you agree to these terms. Please read them carefully.
           </p>
           <h2>Acceptance</h2>
           <p>

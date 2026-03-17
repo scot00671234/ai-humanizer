@@ -3,6 +3,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import cors from 'cors'
 import { config } from './config'
+import { securityHeaders } from './middleware/securityHeaders'
+import { authRateLimiter } from './middleware/rateLimit'
 import authRoutes from './routes/auth'
 import billingRoutes from './routes/billing'
 import aiRoutes from './routes/ai'
@@ -13,6 +15,7 @@ const isProduction = config.nodeEnv === 'production'
 
 const app = express()
 
+app.use(securityHeaders)
 app.use(cors({
   origin: isProduction
     ? [config.app.baseUrl]
@@ -30,7 +33,7 @@ app.use(express.json({
   },
 }))
 
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authRateLimiter, authRoutes)
 app.use('/api/auth', billingRoutes)
 app.use('/api/ai', aiRoutes)
 app.use('/api/resume', resumeRoutes)
@@ -58,6 +61,6 @@ app.listen(config.port, () => {
     console.warn('WARNING: APP_BASE_URL is set to localhost. Set APP_BASE_URL to your production URL (e.g. https://your-app.com) so verification links in emails work.')
   }
   if (config.resend.apiKey && /resend\.dev|onboarding@resend/.test(config.resend.from)) {
-    console.warn('WARNING: RESEND_FROM is default (resend.dev). Set RESEND_FROM to an address on your verified domain (e.g. "Resume AI <noreply@bioqz.com>") so confirmation emails can be sent to any user.')
+    console.warn('WARNING: RESEND_FROM is default (resend.dev). Set RESEND_FROM to an address on your verified domain (e.g. "bioqz <noreply@bioqz.com>") so confirmation emails can be sent to any user.')
   }
 })

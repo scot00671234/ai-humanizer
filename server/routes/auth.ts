@@ -10,6 +10,9 @@ import type { JwtPayload } from '../middleware/auth'
 
 const router = Router()
 
+const MAX_EMAIL_LENGTH = 254
+const MAX_PASSWORD_LENGTH = 256
+
 /** POST /api/auth/register */
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body as { email?: string; password?: string }
@@ -20,8 +23,12 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
   }
 
   const normalizedEmail = email.trim().toLowerCase()
-  if (!normalizedEmail || password.length < 8) {
-    res.status(400).json({ error: 'Invalid email or password (min 8 characters)' })
+  if (!normalizedEmail || normalizedEmail.length > MAX_EMAIL_LENGTH) {
+    res.status(400).json({ error: 'Invalid email.' })
+    return
+  }
+  if (password.length < 8 || password.length > MAX_PASSWORD_LENGTH) {
+    res.status(400).json({ error: 'Invalid email or password (min 8 characters).' })
     return
   }
 
@@ -94,6 +101,10 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
   }
 
   const normalizedEmail = email.trim().toLowerCase()
+  if (normalizedEmail.length > MAX_EMAIL_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
+    res.status(400).json({ error: 'Invalid email or password' })
+    return
+  }
   if (!pool) {
     res.status(503).json({ error: 'Database not configured' })
     return
@@ -172,7 +183,7 @@ router.post('/resend-verification', async (req: Request, res: Response): Promise
   const { email } = req.body as { email?: string }
   const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
 
-  if (!normalizedEmail) {
+  if (!normalizedEmail || normalizedEmail.length > MAX_EMAIL_LENGTH) {
     res.status(400).json({ error: 'Email is required' })
     return
   }
@@ -226,7 +237,7 @@ router.post('/forgot-password', async (req: Request, res: Response): Promise<voi
   const { email } = req.body as { email?: string }
   const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
 
-  if (!normalizedEmail) {
+  if (!normalizedEmail || normalizedEmail.length > MAX_EMAIL_LENGTH) {
     res.status(400).json({ error: 'Email is required' })
     return
   }
@@ -286,7 +297,7 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
     return
   }
 
-  if (newPassword.length < 8) {
+  if (newPassword.length < 8 || newPassword.length > MAX_PASSWORD_LENGTH) {
     res.status(400).json({ error: 'Password must be at least 8 characters' })
     return
   }

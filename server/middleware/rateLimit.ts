@@ -8,3 +8,12 @@ export const aiRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 })
+
+/** Auth routes: limit per IP to slow brute force and abuse (login, register, forgot-password, resend). */
+export const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: { error: 'Too many attempts. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})

@@ -45,6 +45,9 @@ export default function DashboardResume() {
   const [exportError, setExportError] = useState<string | null>(null)
   const [rewriteLanguage, setRewriteLanguage] = useState('same')
   const [rewriteContext, setRewriteContext] = useState('')
+  const [editorError, setEditorError] = useState<string | null>(null)
+  const [uploadLoading, setUploadLoading] = useState(false)
+  const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
   const editorRef = useRef<ResumeEditorHandle>(null)
 
   const handleEditorChange = useCallback((html: string, text: string) => {
@@ -161,10 +164,6 @@ export default function DashboardResume() {
     }
   }, [])
 
-  const [editorError, setEditorError] = useState<string | null>(null)
-  const [uploadLoading, setUploadLoading] = useState(false)
-  const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
-
   useEffect(() => {
     const pending = getPendingRewrite()
     if (!pending?.text?.trim()) return
@@ -199,7 +198,7 @@ export default function DashboardResume() {
   return (
     <div className="dashboardPage dashboardResume">
       <header className="resumePageHeader">
-        <h1 className="dashboardPageTitle">Resume AI</h1>
+        <h1 className="dashboardPageTitle">bioqz</h1>
         <p className="dashboardPageSubtitle">
           Paste the job description, add your resume, then use the tools below to rewrite, score, and export.
         </p>

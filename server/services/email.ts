@@ -45,9 +45,9 @@ export const emailService: EmailService = config.resend.apiKey
   ? createResendService()
   : stubEmailService
 
-const APP_NAME = 'Resume AI'
+const APP_NAME = 'bioqz'
 
-/** Build verification email — branded for Resume AI, uses confirmUrl from config (set APP_BASE_URL in production). */
+/** Build verification email — branded for bioqz, uses confirmUrl from config (set APP_BASE_URL in production). */
 export function buildVerificationEmail(options: {
   email: string
   confirmUrl: string

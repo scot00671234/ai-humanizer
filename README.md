@@ -1,4 +1,4 @@
-# Resume AI
+# bioqz
 
 A minimal SaaS app: landing page, auth (email/password + optional Google), Stripe billing, and an **AI resume** MVP (Tiptap editor, DeepSeek rewrites, Rezi-style score, PDF export, usage caps).
 
@@ -10,7 +10,7 @@ A minimal SaaS app: landing page, auth (email/password + optional Google), Strip
 - **Database:** PostgreSQL via **pg** driver (no Prisma)
 - **Auth:** JWT (email/password, email verification); optional Google (Passport.js)
 - **Billing:** Stripe (Checkout, Customer Portal, webhooks)
-- **Resume AI:** DeepSeek API, Tiptap editor, pdfmake (PDF export)
+- **bioqz:** DeepSeek API, Tiptap editor, pdfmake (PDF export)
 
 ## Commands
 
@@ -68,7 +68,7 @@ npm run server
 
 ---
 
-## Resume AI
+## bioqz (resume builder)
 
 Full product design (features, data model, API, abuse protection, file map): **[docs/PRODUCT_DESIGN.md](docs/PRODUCT_DESIGN.md)**.
 
