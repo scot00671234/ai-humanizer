@@ -1,16 +1,7 @@
-# Nixpacks config for VPS / Railway / Render / Dokploy etc.
-# Single process: serves API + built frontend (set NODE_ENV=production).
-# Do not override nixPkgs with nodejs-20_x — the Nixpkgs revision Nixpacks uses may not have that attribute; use NIXPACKS_NODE_VERSION instead.
+# Force Node 22 (avoids cached nodejs_20; pdfjs-dist requires >=20.19 or >=22)
+[phases.setup]
+nixPkgs = ["nodejs_22", "npm-9_x"]
 
+# Fewer optional deps to reduce disk use; if ENOSPC persists, free disk or clear Docker build cache on the server
 [phases.install]
-cmds = ["npm install"]
-
-[phases.build]
-cmds = ["npm run build"]
-
-[start]
-cmd = "npm start"
-
-[variables]
-NODE_ENV = "production"
-NIXPACKS_NODE_VERSION = "20"
+cmds = ["npm install --no-optional"]
