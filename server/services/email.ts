@@ -45,19 +45,27 @@ export const emailService: EmailService = config.resend.apiKey
   ? createResendService()
   : stubEmailService
 
-/** Build verification email HTML (can be replaced with a template engine). */
+const APP_NAME = 'Resume AI'
+
+/** Build verification email — branded for Resume AI, uses confirmUrl from config (set APP_BASE_URL in production). */
 export function buildVerificationEmail(options: {
   email: string
   confirmUrl: string
   expiresInHours: number
 }): { subject: string; html: string; text: string } {
   const { confirmUrl, expiresInHours } = options
-  const subject = 'Confirm your email'
-  const text = `Confirm your email by opening this link: ${confirmUrl}. It expires in ${expiresInHours} hours.`
+  const subject = `Confirm your ${APP_NAME} account`
+  const text = `Welcome to ${APP_NAME}. Confirm your email by opening this link: ${confirmUrl}. The link expires in ${expiresInHours} hours. If you didn't create an account, you can ignore this email.`
   const html = `
-    <p>Thanks for signing up. Please confirm your email by clicking the link below.</p>
-    <p><a href="${confirmUrl}">Confirm email</a></p>
-    <p>This link expires in ${expiresInHours} hours. If you didn't create an account, you can ignore this email.</p>
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+      <h2 style="color: #1a1a1a; margin-bottom: 16px;">Confirm your email</h2>
+      <p>Thanks for signing up for <strong>${APP_NAME}</strong>. Click the button below to verify your email and start using your account.</p>
+      <p style="margin: 24px 0;">
+        <a href="${confirmUrl}" style="display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">Confirm email</a>
+      </p>
+      <p style="color: #64748b; font-size: 14px;">This link expires in ${expiresInHours} hours. If you didn't create an account, you can ignore this email.</p>
+      <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">— ${APP_NAME}</p>
+    </div>
   `.trim()
   return { subject, html, text }
 }

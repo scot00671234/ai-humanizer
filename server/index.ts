@@ -54,4 +54,7 @@ app.listen(config.port, () => {
   if (!isProduction && config.dev.allowLoginWithoutVerification) {
     console.log('Dev: sign-in allowed without email verification.')
   }
+  if (isProduction && /localhost|127\.0\.0\.1/.test(config.app.baseUrl)) {
+    console.warn('WARNING: APP_BASE_URL is set to localhost. Set APP_BASE_URL to your production URL (e.g. https://your-app.com) so verification links in emails work.')
+  }
 })
