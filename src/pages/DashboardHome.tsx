@@ -94,7 +94,7 @@ export default function DashboardHome() {
               })}
             </ul>
             <p className="dashboardCardText dashboardProjectLimit dashboardProjectLimitCentered">
-              Project limit: {projects.length} / {limit} (Free: 1, Pro: 10, Elite: 100)
+              Project limit: {projects.length} / {limit}
             </p>
           </>
         )}

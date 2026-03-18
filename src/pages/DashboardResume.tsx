@@ -614,19 +614,11 @@ export default function DashboardResume() {
             </p>
 
             <div className="resumeAtsPanel" ref={atsPanelRef}>
-              <h3 className="resumeAtsPanelTitle">ATS match score</h3>
+              <h3 className="resumeAtsPanelTitle">How well do you match this job?</h3>
               <p className="resumeAtsPanelExplainer">
-                <strong>ATS</strong> stands for <strong>Applicant Tracking System</strong>—software many employers use to store, scan, and rank applications.
-                This score estimates how well your {editorMode === 'resume' ? 'resume' : 'application'} fits <strong>the specific job description you pasted above</strong>:
-                keyword overlap, strong verbs, readable length, and whether the text is likely to parse cleanly in ATS tools.
-                Each company may use different systems; treat this as focused feedback, not a guarantee.
+                <strong>ATS</strong> = Applicant Tracking System (the software employers use to read résumés).
+                Your score compares this document to <strong>your pasted job description</strong>—keywords, strong verbs, line length, and plain text readability. It’s a guide, not a guarantee.
               </p>
-              <ul className="resumeAtsPanelBullets">
-                <li><strong>Keyword match</strong> — important terms from the job posting found in your document</li>
-                <li><strong>Strong verbs</strong> — clear, action-led bullet language</li>
-                <li><strong>Length &amp; clarity</strong> — concise, scannable lines</li>
-                <li><strong>ATS-friendly structure</strong> — layout and characters that are easier for software to read</li>
-              </ul>
               <div className="resumeAtsPanelActions">
                 <button
                   type="button"
@@ -634,7 +626,7 @@ export default function DashboardResume() {
                   onClick={handleScore}
                   disabled={scoreLoading || !editorText.trim() || !jobDescription.trim()}
                 >
-                  {scoreLoading ? 'Scoring…' : score !== null ? 'Update ATS score' : 'Get ATS score'}
+                  {scoreLoading ? 'Scoring…' : score !== null ? 'Update score' : 'Get score'}
                 </button>
                 {!jobDescription.trim() && (
                   <p className="resumeAtsPanelNeed">
@@ -642,13 +634,13 @@ export default function DashboardResume() {
                   </p>
                 )}
                 {jobDescription.trim() && !editorText.trim() && (
-                  <p className="resumeAtsPanelNeed">Add your {editorMode === 'resume' ? 'resume' : 'application'} in the editor, then tap Get ATS score.</p>
+                  <p className="resumeAtsPanelNeed">Add your {editorMode === 'resume' ? 'resume' : 'application'} in the editor, then get your score.</p>
                 )}
               </div>
               {score !== null && (
                 <div className="resumeAtsPanelResults">
                   <p className="resumeAtsPanelRefreshHint">
-                    Changed your text or the job description? Click <strong>Update ATS score</strong> for a fresh result.
+                    Edited something? Tap <strong>Update score</strong>.
                   </p>
                   <ResumeAnalysisFeedback
                     score={score}

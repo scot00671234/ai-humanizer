@@ -55,7 +55,7 @@ export default function ResumeAnalysisFeedback({
   return (
     <div className={`resumeAnalysisFeedback ${className}`}>
       <div className="resumeAnalysisScoreRow">
-        <span className="resumeAnalysisScoreLabel">ATS match score</span>
+        <span className="resumeAnalysisScoreLabel">Match score</span>
         <span className="resumeAnalysisScoreValue">
           {score}<span className="resumeAnalysisScoreMax">/100</span>
         </span>

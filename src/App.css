@@ -1772,7 +1772,45 @@
   max-width: 640px;
 }
 
+/* Dashboard home: centered in main area */
+.dashboardPageOverview {
+  width: 100%;
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboardPageOverview > .dashboardPageTitle {
+  text-align: center;
+}
+
+.dashboardPageOverview .dashboardProjects .dashboardCard {
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboardPageOverview .dashboardProjectsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.dashboardPageOverview .dashboardProjectsGrid > li {
+  flex: 0 1 17.5rem;
+  width: 100%;
+  max-width: 22rem;
+  min-width: min(100%, 15rem);
+}
+
 .dashboardPageOverview .dashboardOverviewCard {
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
   padding: 2.5rem 2rem;
   min-height: 200px;
   display: flex;

@@ -94,7 +94,8 @@ router.post('/score', checkScoreCooldown, async (req: Request, res: Response): P
     return
   }
 
-  const cacheKey = `score:${user.userId}:${hashJobDesc(jobDescription)}`
+  /** Include resume in cache key — same JD + different resume must recompute. */
+  const cacheKey = `score:${user.userId}:${hashJobDesc(jobDescription)}:${hashJobDesc(resumeText)}`
   const cached = getCachedScore(cacheKey)
   if (cached) {
     res.json({ score: cached.score, breakdown: cached.breakdown, keywords: cached.keywords })
