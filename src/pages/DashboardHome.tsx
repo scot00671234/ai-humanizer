@@ -55,7 +55,7 @@ export default function DashboardHome() {
           </ul>
         )}
         <p className="dashboardCardText dashboardProjectLimit">
-          Project limit: {projects.length} / {limit} (Free: 1, Pro: 10, Team: 100)
+          Project limit: {projects.length} / {limit} (Free: 1, Pro: 10, Elite: 100)
         </p>
       </section>
     </div>

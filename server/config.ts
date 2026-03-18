@@ -39,7 +39,8 @@ export const config = {
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY,
     pricePro: process.env.STRIPE_PRICE_PRO || '',
-    priceEnterprise: process.env.STRIPE_PRICE_ENTERPRISE || '',
+    /** Elite tier Stripe Price ID. STRIPE_PRICE_ENTERPRISE still read for backward compatibility. */
+    priceElite: process.env.STRIPE_PRICE_ELITE || process.env.STRIPE_PRICE_ENTERPRISE || '',
   },
 
   deepseek: {

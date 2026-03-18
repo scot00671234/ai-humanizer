@@ -119,13 +119,16 @@ export default function DashboardResume() {
     setSaveLoading(true)
     const content = typeof editorContent === 'string' ? editorContent : ''
     try {
+      const name = currentProjectTitle.trim() || 'Untitled'
       if (currentProjectId) {
-        await api.projects.update(currentProjectId, { content, title: currentProjectTitle || undefined })
+        await api.projects.update(currentProjectId, { content, title: name })
+        setCurrentProjectTitle(name)
+        setProjects((prev) => prev.map((p) => (p.id === currentProjectId ? { ...p, title: name } : p)))
       } else {
-        const created = await api.projects.create(currentProjectTitle.trim() || 'Untitled')
+        const created = await api.projects.create(name)
         setCurrentProjectId(created.id)
-        setCurrentProjectTitle(created.title || 'Untitled')
-        setProjects((prev) => [...prev, { id: created.id, title: created.title || 'Untitled' }])
+        setCurrentProjectTitle(created.title || name)
+        setProjects((prev) => [...prev, { id: created.id, title: created.title || name }])
         navigate(`/dashboard/resume?projectId=${created.id}`, { replace: true })
         await api.projects.update(created.id, { content })
       }
@@ -137,7 +140,7 @@ export default function DashboardResume() {
   }, [currentProjectId, currentProjectTitle, editorContent, navigate])
 
   const handleSaveAs = useCallback(async () => {
-    const title = window.prompt('Project title', currentProjectTitle || 'Untitled')?.trim() || 'Untitled'
+    const title = currentProjectTitle.trim() || 'Untitled'
     setSaveError(null)
     setSaveLoading(true)
     const content = typeof editorContent === 'string' ? editorContent : ''
@@ -429,9 +432,23 @@ export default function DashboardResume() {
           {user?.isPro && ' (Pro)'}
         </div>
         <div className="resumeProjectBar">
-          <span className="resumeProjectTitle" aria-label="Current project">
-            {projectLoading ? 'Loading…' : (currentProjectTitle || 'Untitled')}
-          </span>
+          <div className="resumeProjectNameWrap">
+            <label htmlFor="resume-project-name" className="resumeProjectNameLabel">
+              Project name
+            </label>
+            <input
+              id="resume-project-name"
+              type="text"
+              className="resumeProjectTitleInput"
+              value={projectLoading ? '' : currentProjectTitle}
+              onChange={(e) => setCurrentProjectTitle(e.target.value)}
+              placeholder={projectLoading ? 'Loading…' : 'e.g. Acme PM role — resume'}
+              disabled={projectLoading}
+              maxLength={255}
+              autoComplete="off"
+              aria-label="Project name"
+            />
+          </div>
           <div className="resumeProjectActions">
             <select
               className="resumeProjectSelect"
@@ -607,35 +624,39 @@ export default function DashboardResume() {
             </div>
           )}
           <div onPaste={handlePaste} className="resumeEditorWrap resumeEditorWrapWithPopover">
-            <ResumeEditor
-              ref={editorRef}
-              content={editorContent}
-              onChange={handleEditorChange}
-              onSelectionChange={(hasSelection) => setSelectionPopupOpen(hasSelection)}
-            />
-            {selectionPopupOpen && (
-              <div className="resumeRewritePopover" role="dialog" aria-label="Rewrite selection with custom instruction">
-                <label className="resumeRewritePopoverLabel">
-                  <span className="resumeRewritePopoverLabelText">Instruction (e.g. make this more academic)</span>
-                  <input
-                    type="text"
-                    className="resumeRewritePopoverInput"
-                    placeholder="e.g. make this more academic, more concise, focus on leadership"
-                    value={selectionPrompt}
-                    onChange={(e) => setSelectionPrompt(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleRewriteWithPrompt()}
-                  />
-                </label>
-                <div className="resumeRewritePopoverActions">
-                  <button type="button" className="dashboardBtn dashboardBtnPrimary" onClick={handleRewriteWithPrompt} disabled={rewriteLoading}>
-                    {rewriteLoading ? 'Rewriting…' : 'Rewrite selection'}
-                  </button>
-                  <button type="button" className="dashboardBtn dashboardBtnSecondary" onClick={() => { setSelectionPopupOpen(false); setSelectionPrompt(''); }}>
-                    Cancel
-                  </button>
-                </div>
+            <div className="resumeEditorRow">
+              <div className="resumeEditorColumn">
+                <ResumeEditor
+                  ref={editorRef}
+                  content={editorContent}
+                  onChange={handleEditorChange}
+                  onSelectionChange={(hasSelection) => setSelectionPopupOpen(hasSelection)}
+                />
               </div>
-            )}
+              {selectionPopupOpen && (
+                <div className="resumeRewritePopover" role="dialog" aria-label="Rewrite selection with custom instruction">
+                  <label className="resumeRewritePopoverLabel">
+                    <span className="resumeRewritePopoverLabelText">Instruction</span>
+                    <input
+                      type="text"
+                      className="resumeRewritePopoverInput"
+                      placeholder="e.g. more academic, concise, leadership"
+                      value={selectionPrompt}
+                      onChange={(e) => setSelectionPrompt(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleRewriteWithPrompt()}
+                    />
+                  </label>
+                  <div className="resumeRewritePopoverActions">
+                    <button type="button" className="dashboardBtn dashboardBtnPrimary resumeRewritePopoverBtn" onClick={handleRewriteWithPrompt} disabled={rewriteLoading}>
+                      {rewriteLoading ? 'Rewriting…' : 'Rewrite'}
+                    </button>
+                    <button type="button" className="dashboardBtn dashboardBtnSecondary resumeRewritePopoverBtn" onClick={() => { setSelectionPopupOpen(false); setSelectionPrompt(''); }}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
             <p className="resumeEditorWordCount" aria-live="polite">
               {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
             </p>

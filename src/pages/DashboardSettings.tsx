@@ -10,10 +10,11 @@ export default function DashboardSettings() {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [billingLoading, setBillingLoading] = useState<'pro' | 'enterprise' | 'portal' | null>(null)
+  const [billingLoading, setBillingLoading] = useState<'pro' | 'elite' | 'portal' | null>(null)
   const [billingError, setBillingError] = useState<string | null>(null)
 
-  const isPro = user?.isPro === true
+  const isElite = user?.isTeam === true
+  const isPro = user?.isPro === true && !isElite
 
   useEffect(() => {
     if (searchParams.get('session_id')) {
@@ -22,7 +23,7 @@ export default function DashboardSettings() {
     }
   }, [searchParams, refreshUser])
 
-  async function handleUpgrade(plan: 'pro' | 'enterprise') {
+  async function handleUpgrade(plan: 'pro' | 'elite') {
     setBillingError(null)
     setBillingLoading(plan)
     try {
@@ -72,13 +73,13 @@ export default function DashboardSettings() {
         <h2 className="dashboardSettingsHeading">Subscription</h2>
         <div className="dashboardCard">
           <p className="dashboardSettingsPlan">
-            Current plan: <strong>{isPro ? 'Pro' : 'Free'}</strong>
-            {isPro && user?.rewriteLimit != null && (
+            Current plan: <strong>{isElite ? 'Elite' : isPro ? 'Pro' : 'Free'}</strong>
+            {(isElite || isPro) && user?.rewriteLimit != null && (
               <span className="dashboardSettingsPlanHint"> — {user.rewriteLimit} rewrites/day</span>
             )}
           </p>
           <p className="dashboardSettingsHint">
-            {isPro
+            {isElite || isPro
               ? 'Billing is managed with Stripe. Use the portal to update payment or cancel your subscription.'
               : 'Choose a plan for more daily rewrites. Billing is managed with Stripe.'}
           </p>
@@ -97,14 +98,14 @@ export default function DashboardSettings() {
                 <button
                   type="button"
                   className="dashboardBtn dashboardBtnSecondary"
-                  onClick={() => handleUpgrade('enterprise')}
+                  onClick={() => handleUpgrade('elite')}
                   disabled={!user || billingLoading !== null}
                 >
-                  {billingLoading === 'enterprise' ? 'Opening…' : 'Upgrade to Enterprise'}
+                  {billingLoading === 'elite' ? 'Opening…' : 'Upgrade to Elite'}
                 </button>
               </>
             )}
-            {isPro && (
+            {(isElite || isPro) && (
               <button
                 type="button"
                 className="dashboardBtn dashboardBtnSecondary"

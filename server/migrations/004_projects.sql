@@ -1,4 +1,4 @@
--- Resume/application projects: one per user (free), 10 (pro), 100 (team).
+-- Resume/application projects: one per user (free), 10 (pro), 100 (elite).
 -- Run after 003. Requires users.id and is_pro.
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_team BOOLEAN NOT NULL DEFAULT false;
