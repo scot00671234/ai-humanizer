@@ -3084,9 +3084,14 @@ body[data-page="dashboard"] .resumeExportItem:hover {
 [data-theme="dark"] body[data-page="dashboard"] .resumeRewriteContext,
 [data-theme="dark"] body[data-page="dashboard"] .resumeProjectTitleInput,
 [data-theme="dark"] body[data-page="dashboard"] .resumeProjectSelect {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.085);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeRewriteContext::placeholder,
+[data-theme="dark"] body[data-page="dashboard"] .resumeProjectTitleInput::placeholder {
+  color: rgba(255, 255, 255, 0.58);
 }
 
 [data-theme="dark"] body[data-page="dashboard"] .resumeExportItem {
@@ -3717,6 +3722,13 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   max-width: 28rem;
 }
 
+[data-theme="dark"] body[data-page="dashboard"] .resumeUploadHint,
+[data-theme="dark"] body[data-page="dashboard"] .resumeExportHint,
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorWordCount,
+[data-theme="dark"] body[data-page="dashboard"] .resumeScoreBreakdown {
+  color: rgba(255, 255, 255, 0.68);
+}
+
 .resumeExportWrap {
   position: relative;
 }
@@ -3884,12 +3896,22 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   overflow: hidden;
 }
 
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditor {
+  background: rgba(18, 24, 34, 0.72);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 .resumeEditorToolbar {
   display: flex;
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--glass-border);
   background: var(--glass-bg-strong);
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorToolbar {
+  background: rgba(255, 255, 255, 0.07);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .resumeEditorToolbar button {
@@ -3905,9 +3927,20 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   transition: color 0.15s ease, background 0.15s ease;
 }
 
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorToolbar button {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.82);
+}
+
 .resumeEditorToolbar button:hover {
   color: var(--text-primary);
   background: var(--accent-soft);
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorToolbar button:hover {
+  color: rgba(255, 255, 255, 0.94);
+  background: rgba(215, 255, 89, 0.12);
 }
 
 .resumeEditorToolbar .resumeEditorBtnActive {
@@ -3916,11 +3949,21 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   border-color: var(--accent);
 }
 
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorToolbar .resumeEditorBtnActive {
+  color: #0a0f14;
+  background: #d7ff59;
+  border-color: rgba(215, 255, 89, 0.35);
+}
+
 .resumeEditorToolbarDivider {
   width: 1px;
   height: 1.25rem;
   background: var(--glass-border);
   margin: 0 0.15rem;
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditorToolbarDivider {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .resumeEditor .ProseMirror {
@@ -3931,6 +3974,10 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   color: var(--text-primary);
   font-family: 'Outfit', system-ui, sans-serif;
   max-width: 100%;
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeEditor .ProseMirror {
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .resumeEditor .ProseMirror:focus {
