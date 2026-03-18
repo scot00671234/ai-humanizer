@@ -123,9 +123,19 @@ router.post('/create-portal-session', requireAuth, async (req: Request, res: Res
 
     const session = await stripe!.billingPortal.sessions.create({ customer: customerId, return_url: returnUrl })
     res.json({ url: session.url })
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('Create portal session error:', err)
-    res.status(500).json({ error: 'Failed to open billing portal' })
+    const e = err as { message?: string; raw?: { message?: string } }
+    const stripeMsg = e?.raw?.message || e?.message || (err instanceof Error ? err.message : '')
+    const hint =
+      plan === 'elite' || plan === 'pro'
+        ? ' For Pro→Elite upgrades: Stripe Dashboard → Settings → Billing → Customer portal → enable “Subscription update”, and add both Pro and Elite products (prices) under products customers can switch to.'
+        : ''
+    const error =
+      stripeMsg && stripeMsg.length < 500
+        ? `${stripeMsg}${hint ? ` ${hint}` : ''}`
+        : `Failed to open billing portal.${hint}`
+    res.status(500).json({ error })
   }
 })
 

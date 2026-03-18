@@ -24,10 +24,12 @@
   --text-secondary: #445066;
   --text-muted: #6b778d;
 
-  /* Brand accent (lime) */
+  /* Brand accent (lime) — fills, borders, dark UI */
   --accent: #d7ff59;
   --accent-strong: #b8e83f;
   --accent-soft: rgba(215, 255, 89, 0.18);
+  /* Inline links & lime-tinted text on light backgrounds (WCAG on white) */
+  --accent-text: #0f5132;
   --btn-primary-text: #0a0f14;
 
   /* Inputs & states */
@@ -64,6 +66,7 @@
   --accent: #d7ff59;
   --accent-strong: #b8e83f;
   --accent-soft: rgba(215, 255, 89, 0.16);
+  --accent-text: #d7ff59;
   --btn-primary-text: #0a0f14;
 
   --input-bg: rgba(26, 35, 50, 0.8);

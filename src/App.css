@@ -605,7 +605,7 @@ body[data-page="landing"] .navCta:hover {
   border-radius: var(--radius-full);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--accent-strong);
+  color: var(--accent-text);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 1.125rem;
@@ -613,7 +613,6 @@ body[data-page="landing"] .navCta:hover {
 
 [data-theme="dark"] .heroBadge {
   border-color: rgba(122, 154, 170, 0.28);
-  color: var(--accent);
 }
 
 .heroTitle {
@@ -626,11 +625,7 @@ body[data-page="landing"] .navCta:hover {
 }
 
 .heroTitleAccent {
-  color: var(--accent-strong);
-}
-
-[data-theme="dark"] .heroTitleAccent {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .heroSubtitle {
@@ -733,7 +728,7 @@ body[data-page="landing"] .navCta:hover {
 .heroCtaGhost {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--accent-strong);
+  color: var(--accent-text);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   padding: 0.25rem 0;
@@ -743,10 +738,6 @@ body[data-page="landing"] .navCta:hover {
 .heroCtaGhost:hover {
   color: var(--text-primary);
   border-bottom-color: var(--accent);
-}
-
-[data-theme="dark"] .heroCtaGhost {
-  color: var(--accent);
 }
 
 [data-theme="dark"] .heroCtaGhost:hover {
@@ -817,7 +808,7 @@ body[data-page="landing"] .navCta:hover {
   border-radius: var(--radius-full);
   background: var(--accent-soft);
   border: 1px solid rgba(90, 122, 138, 0.18);
-  color: var(--accent-strong);
+  color: var(--accent-text);
   font-weight: 700;
 }
 
@@ -1550,7 +1541,7 @@ body[data-page="landing"] .navCta:hover {
 }
 
 .landingTryLoginLink {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   font-weight: 500;
   border-radius: 2px;
@@ -1695,7 +1686,7 @@ body[data-page="landing"] .navCta:hover {
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .featureCard h3 {
@@ -2056,7 +2047,7 @@ body[data-page="landing"] .navCta:hover {
 }
 
 .blogCardTitle a:hover {
-  color: var(--accent, #5a7a8a);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -2352,7 +2343,7 @@ body[data-page="auth"] .authPage {
 }
 
 .authForgotWrap a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -2471,7 +2462,7 @@ body[data-page="auth"] .authPage {
 }
 
 .authFooter a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -2544,7 +2535,7 @@ body[data-page="auth"] .authPage {
 }
 
 .contentLink {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -2560,7 +2551,7 @@ body[data-page="auth"] .authPage {
   border-top: 1px solid var(--glass-border);
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -2972,7 +2963,7 @@ body[data-page="dashboard"] .dashboardSettingsHint {
 }
 
 body[data-page="dashboard"] .dashboardSettingsContactLink {
-  color: var(--accent-strong);
+  color: var(--accent-text);
 }
 
 body[data-page="dashboard"] .dashboardSettingsContactLink:hover {
@@ -3269,7 +3260,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 .dashboardProjectOpen {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--accent, #5a7a8a);
+  color: var(--accent-text);
 }
 
 .dashboardProjectLimitCentered {
@@ -3332,7 +3323,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 }
 
 .dashboardCardLink {
-  color: var(--accent, #5a7a8a);
+  color: var(--accent-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -3380,7 +3371,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   display: inline-block;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
 }
 
@@ -4130,7 +4121,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 }
 
 .resumeAtsPanelLink {
-  color: var(--accent, #5a7a8a);
+  color: var(--accent-text);
   font-weight: 500;
   text-decoration: none;
 }
