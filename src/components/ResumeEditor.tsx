@@ -1,8 +1,9 @@
 import { useEditor, EditorContent, type Content } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
+import { BookmarkHighlightExtension, BOOKMARK_RANGE_META } from '../extensions/BookmarkHighlight'
 
-const extensions = [StarterKit]
+const extensions = [StarterKit, BookmarkHighlightExtension]
 
 /** Escape HTML, then **bold** and *italic* → TipTap-friendly HTML. */
 export function inlineMarkdownToHtml(line: string): string {
@@ -119,6 +120,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         storedRangeRef.current = { from, to }
         onRewriteBookmarkHint?.(true)
         notify()
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, { from, to }))
+        } catch {
+          // ignore if view not ready
+        }
       }
     }
 
@@ -129,6 +135,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       } else if (editor.isFocused && lastMousedownInProseRef.current) {
         storedRangeRef.current = null
         onRewriteBookmarkHint?.(false)
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+        } catch {
+          // ignore
+        }
       }
       notify()
     }
@@ -138,6 +149,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (from !== to) {
         storedRangeRef.current = { from, to }
         onRewriteBookmarkHint?.(true)
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, { from, to }))
+        } catch {
+          // ignore
+        }
       }
       notify()
     }
@@ -191,6 +207,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         if (a >= b) return
         storedRangeRef.current = null
         onRewriteBookmarkHint?.(false)
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+        } catch {
+          // ignore
+        }
         editor.chain().focus().setTextSelection({ from: a, to: b }).insertContent(html).run()
       },
       getText: () => editor?.getText() ?? '',
@@ -245,6 +266,11 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
     if (trimmed !== current.trim()) {
       storedRangeRef.current = null
       onRewriteBookmarkHint?.(false)
+      try {
+        editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+      } catch {
+        // ignore
+      }
       editor.commands.setContent(toSet, false)
     }
   }, [content, editor, onRewriteBookmarkHint])

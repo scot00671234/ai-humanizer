@@ -2778,12 +2778,12 @@ body[data-page="dashboard"] .dashboard {
   background: var(--accent-soft);
 }
 
+/* Slight indent under Editor only; same type scale as other nav links */
 .dashboardNavLinkSub {
-  margin: 0.15rem 0 0 0.5rem;
-  padding-left: 0.65rem;
+  margin: 0 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  padding-left: 0.7rem;
   border-left: 2px solid var(--glass-border);
-  font-size: 0.8125rem;
-  font-weight: 500;
 }
 
 [data-theme="dark"] body[data-page="dashboard"] .dashboardNavLinkSub {
@@ -2792,17 +2792,32 @@ body[data-page="dashboard"] .dashboard {
 
 /* —— Dashboard Guide —— */
 .dashboardGuidePage {
+  width: 100%;
   max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboardGuidePage > .dashboardPageTitle {
+  text-align: center;
 }
 
 .dashboardGuideLead {
   max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
   line-height: 1.55;
   margin-bottom: 1.75rem;
+  text-align: center;
 }
 
 .dashboardGuideCard {
   margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.dashboardGuidePage .dashboardGuideSectionTitle {
+  text-align: left;
 }
 
 .dashboardGuideSectionTitle {
@@ -2880,6 +2895,7 @@ body[data-page="dashboard"] .dashboard {
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 0.5rem;
+  justify-content: center;
 }
 
 .dashboardSearchWrap {
@@ -4084,6 +4100,16 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 
 .resumeEditor .ProseMirror:focus {
   outline: none;
+}
+
+/* Saved selection for rewrite (shown when focus is outside editor) */
+.resumeEditorBookmarkHighlight {
+  background: rgba(215, 255, 89, 0.28);
+  border-radius: 2px;
+}
+
+[data-theme="dark"] .resumeEditorBookmarkHighlight {
+  background: rgba(215, 255, 89, 0.2);
 }
 
 .resumeEditor .ProseMirror p {
