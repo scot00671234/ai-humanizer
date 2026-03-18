@@ -1,6 +1,17 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { setSeoMeta } from '../utils/seoMeta'
 
 export default function Privacy() {
+  useEffect(() => {
+    setSeoMeta({
+      title: 'Privacy Policy — bioqz',
+      description:
+        'How bioqz collects and uses data when you use our AI resume builder and resume software. Read our privacy policy.',
+      path: '/privacy',
+    })
+  }, [])
+
   return (
     <div className="contentPage">
       <div className="contentCard">

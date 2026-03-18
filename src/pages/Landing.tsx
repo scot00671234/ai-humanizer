@@ -1,6 +1,9 @@
-import { useState, FormEvent, useRef, useEffect } from 'react'
+import { useState, FormEvent, useRef, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { HOME_SEO_FAQ, HOME_SEO_KEYWORDS } from '../content/homeSeoFaq'
 import { setPendingRewrite } from '../utils/landingPendingRewrite'
+import { getSiteUrl } from '../utils/siteUrl'
+import { setSeoMeta } from '../utils/seoMeta'
 
 const PATH_STEPS = [
   { id: 1, title: 'One document opens the door', body: 'Recruiters decide in or out from one thing: your resume. Not luck, not timing. The words on the page.' },
@@ -93,11 +96,69 @@ function usePathStepVisible() {
   return { refs, visible }
 }
 
+const HOME_META_DESC =
+  'bioqz: AI resume builder & AI resume writer. Paste any job description—get AI bullet rewrites, a 0–100 job fit score, and ATS-friendly PDF export. Free AI resume maker tier; upgrade anytime.'
+
 export default function Landing() {
   const navigate = useNavigate()
   const { refs, visible } = usePathStepVisible()
   const [tryText, setTryText] = useState('')
   const [tryError, setTryError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setSeoMeta({
+      title: 'bioqz — AI Resume Builder & Writer | Free Job Fit Score & ATS PDF',
+      description: HOME_META_DESC,
+      path: '/',
+      keywords: HOME_SEO_KEYWORDS,
+    })
+  }, [])
+
+  const homeJsonLd = useMemo(() => {
+    const base = getSiteUrl().replace(/\/$/, '')
+    const orgId = `${base}/#organization`
+    const org = { '@id': orgId, '@type': 'Organization', name: 'bioqz', url: base }
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        org,
+        {
+          '@type': 'WebSite',
+          '@id': `${base}/#website`,
+          name: 'bioqz',
+          url: `${base}/`,
+          description: HOME_META_DESC,
+          publisher: { '@id': orgId },
+          inLanguage: 'en-US',
+        },
+        {
+          '@type': 'SoftwareApplication',
+          name: 'bioqz',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web browser',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          description:
+            'AI resume software: builder, maker, and writer in one. Job-specific AI rewrites, resume fit scoring vs. job descriptions, and ATS-friendly PDF templates.',
+          featureList: [
+            'AI resume bullet rewrites',
+            'Job description fit score',
+            'ATS-friendly PDF export',
+            'Side-by-side resume compare',
+          ],
+          provider: { '@id': orgId },
+          url: `${base}/`,
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: HOME_SEO_FAQ.map(({ q, a }) => ({
+            '@type': 'Question',
+            name: q,
+            acceptedAnswer: { '@type': 'Answer', text: a },
+          })),
+        },
+      ],
+    }
+  }, [])
 
   function handleTrySubmit(e: FormEvent) {
     e.preventDefault()
@@ -117,6 +178,10 @@ export default function Landing() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+      />
       <main className="hero" data-hero-bg="true">
         <div className="heroBackdrop" aria-hidden />
         <div className="heroBg" aria-hidden>
@@ -129,53 +194,61 @@ export default function Landing() {
           <BlobBottom />
         </div>
         <div className="heroContent">
-          <span className="heroBadge">One page. Your future.</span>
-          <h1 className="heroTitle">The right resume changes everything.</h1>
+          <span className="heroBadge">Free to start · No credit card</span>
+          <h1 className="heroTitle">
+            Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
+          </h1>
           <p className="heroSubtitle">
-            The key to the job and the life you want. We help you write the resume that opens the door.
+            Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
           </p>
-          <Link to="/register" className="heroCta">Make my resume open doors</Link>
+          <ul className="heroValueChips" aria-label="What bioqz does">
+            <li>AI bullet rewrites</li>
+            <li>Job fit score</li>
+            <li>ATS-friendly PDF</li>
+          </ul>
+          <div className="heroCtaRow">
+            <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
+            <a href="#try" className="heroCtaGhost">Try one bullet first</a>
+          </div>
         </div>
       </main>
 
       <section className="section pathSection" id="path" aria-label="Why your resume matters">
         <h2 className="pathSectionTitle">The right resume changes everything</h2>
+        <div className="pathImagesRow" aria-label="Professional workspace">
+          <div className="landingPhotoCard pathImageTile">
+            <img
+              src="/landing/desk.png"
+              alt="A clean desk with laptop and notebook"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div className="landingPhotoCard pathImageTile">
+            <img
+              src="/landing/conversation.png"
+              alt="Two people collaborating over a laptop"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
         <div className="pathSectionInner">
-          <div className="pathGrid">
-            <div className="pathSteps">
-              <div className="pathLine" aria-hidden />
-              {PATH_STEPS.map((step, i) => (
-                <div
-                  key={step.id}
-                  className={`pathStep pathStep${i % 2 === 0 ? 'Left' : 'Right'} ${visible.has(i) ? 'pathStepVisible' : ''}`}
-                  ref={(el) => { refs.current[i] = el }}
-                >
-                  <div className="pathNode" aria-hidden />
-                  <div className="pathCard">
-                    <h3 className="pathCardTitle">{step.title}</h3>
-                    <p className="pathCardBody">{step.body}</p>
-                  </div>
+          <div className="pathSteps">
+            <div className="pathLine" aria-hidden />
+            {PATH_STEPS.map((step, i) => (
+              <div
+                key={step.id}
+                className={`pathStep pathStep${i % 2 === 0 ? 'Left' : 'Right'} ${visible.has(i) ? 'pathStepVisible' : ''}`}
+                ref={(el) => { refs.current[i] = el }}
+              >
+                <div className="pathNode" aria-hidden />
+                <div className="pathCard">
+                  <h3 className="pathCardTitle">{step.title}</h3>
+                  <p className="pathCardBody">{step.body}</p>
                 </div>
-              ))}
-            </div>
-            <aside className="landingMediaCol" aria-label="A calm workspace">
-              <div className="landingPhotoCard landingPhotoCardTall">
-                <img
-                  src="/landing/desk.png"
-                  alt="A clean desk setup with a laptop and notebook"
-                  loading="lazy"
-                  decoding="async"
-                />
               </div>
-              <div className="landingPhotoCard landingPhotoCardSmall">
-                <img
-                  src="/landing/conversation.png"
-                  alt="Two people reviewing a document together"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </aside>
+            ))}
           </div>
         </div>
       </section>
@@ -210,30 +283,34 @@ export default function Landing() {
         </form>
       </section>
 
-      <section className="section" id="about">
-        <div className="sectionHeader">
+      <section className="section aboutSection" id="about">
+        <div className="sectionHeader aboutSectionHeader">
           <p className="sectionLabel">Why bioqz</p>
-          <h2 className="sectionTitle">You’re not bad at job hunting. Your resume just isn’t speaking the right language.</h2>
+          <h2 className="sectionTitle">Make every application stronger—in a few simple steps.</h2>
+          <p className="aboutLead">
+            You bring the experience. We help you show it in a way recruiters and hiring systems understand.
+          </p>
         </div>
-        <div className="aboutLayout">
-          <div className="aboutContent">
-            <p className="aboutText">
-              Paste your resume and the job description. We sharpen your bullets, score you against the role, and show you exactly which keywords to hit. See the difference side by side. One click for a clean, ATS-friendly PDF. No design skills. No guesswork.
-            </p>
-            <p className="aboutText">
-              2 rewrites a day free. More when you need them. No lock-in. Cancel anytime.
-            </p>
+        <div className="aboutImageCenter">
+          <div className="landingPhotoCard aboutImageCard">
+            <img
+              src="/landing/typing.png"
+              alt="Working at a desk with keyboard and computer"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
-          <div className="aboutMedia" aria-hidden>
-            <div className="landingPhotoCard">
-              <img
-                src="/landing/typing.png"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
+        </div>
+        <div className="aboutContent aboutContentSimple">
+          <ul className="aboutPoints" aria-label="What bioqz does for you">
+            <li><strong>Add your resume</strong> and paste the job you want. That’s all you need to start.</li>
+            <li><strong>Improve your wording</strong> with AI suggestions. See old vs new side by side.</li>
+            <li><strong>Check your fit</strong> with a score against the job description so you know what to fix.</li>
+            <li><strong>Download a clean PDF</strong> that works with applicant systems—no design skills required.</li>
+          </ul>
+          <p className="aboutFootnote">
+            <strong>Free:</strong> 2 AI rewrites per day. Upgrade when you want more. Cancel anytime.
+          </p>
         </div>
       </section>
 
@@ -242,44 +319,14 @@ export default function Landing() {
           <p className="sectionLabel">How it works</p>
           <h2 className="sectionTitle">Built to get you past the screeners</h2>
         </div>
-        <div className="featuresLayout">
-          <div className="featureGrid">
-            {FEATURES.map((f) => (
-              <article key={f.title} className="featureCard">
-                <div className="featureIcon">{f.icon}</div>
-                <h3>{f.title}</h3>
-                <p>{f.description}</p>
-              </article>
-            ))}
-          </div>
-          <aside className="featuresAside" aria-label="More inviting visuals">
-            <div className="landingPhotoCard landingPhotoCardTall">
-              <img
-                src="/landing/conversation.png"
-                alt="Two people collaborating over a laptop"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="landingPhotoRow">
-              <div className="landingPhotoCard">
-                <img
-                  src="/landing/typing.png"
-                  alt="Hands typing on a keyboard"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="landingPhotoCard">
-                <img
-                  src="/landing/desk.png"
-                  alt="A modern desk workspace"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-          </aside>
+        <div className="featureGrid">
+          {FEATURES.map((f) => (
+            <article key={f.title} className="featureCard">
+              <div className="featureIcon">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.description}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -305,6 +352,26 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="section landingFaqSection" id="faq" aria-labelledby="landing-faq-heading">
+        <div className="sectionHeader">
+          <p className="sectionLabel">FAQ</p>
+          <h2 id="landing-faq-heading" className="sectionTitle">
+            AI resume builder &amp; writer — common questions
+          </h2>
+          <p className="landingFaqIntro">
+            Quick answers for people searching for AI resume software, an AI resume maker, or ATS-friendly tools.
+          </p>
+        </div>
+        <dl className="landingFaqList">
+          {HOME_SEO_FAQ.map((item) => (
+            <div key={item.q} className="landingFaqItem">
+              <dt className="landingFaqQ">{item.q}</dt>
+              <dd className="landingFaqA">{item.a}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <section className="section ctaSection">
         <div className="ctaBox">
           <h2>Your next job is out there. Your resume should be ready.</h2>
@@ -322,6 +389,7 @@ export default function Landing() {
             <a href="/#pricing">Pricing</a>
             <Link to="/contact">Contact</Link>
             <Link to="/blog">Blog</Link>
+            <a href="/#faq">FAQ</a>
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>

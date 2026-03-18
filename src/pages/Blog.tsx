@@ -1,19 +1,20 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getBlogArticlesSorted } from '../content/blogArticles'
+import { setSeoMeta } from '../utils/seoMeta'
 
 export default function Blog() {
   const articles = getBlogArticlesSorted()
 
   useEffect(() => {
-    document.title = 'Blog — bioqz | Resume, ATS & job search tips'
-    const meta = document.querySelector('meta[name="description"]')
-    if (meta) {
-      meta.setAttribute(
-        'content',
-        'Practical guides on tailoring your resume to job descriptions, ATS scores, AI resume rewrites, PDF formatting, and application answers—built around how bioqz works.'
-      )
-    }
+    setSeoMeta({
+      title: 'Blog — bioqz | AI Resume Builder Tips, ATS & Job Search',
+      description:
+        'Guides on AI resume writing, tailoring your resume to job descriptions, ATS scores, AI resume rewrites, PDF formatting, and application answers—aligned with bioqz AI resume software.',
+      path: '/blog',
+      keywords:
+        'ai resume builder tips, ats resume, tailor resume to job, ai resume rewrite, resume optimization',
+    })
   }, [])
 
   return (

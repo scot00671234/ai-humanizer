@@ -1,0 +1,7 @@
+# Update Sitemap URL if your domain is not bioqz.com (see VITE_SITE_URL in LOCAL_SETUP).
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+
+Sitemap: https://bioqz.com/sitemap.xml

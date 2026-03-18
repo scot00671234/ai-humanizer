@@ -1,6 +1,17 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { setSeoMeta } from '../utils/seoMeta'
 
 export default function Contact() {
+  useEffect(() => {
+    setSeoMeta({
+      title: 'Contact — bioqz | AI Resume Builder Support',
+      description:
+        'Contact bioqz support for questions about our AI resume builder, billing, or your account. We reply within about one business day.',
+      path: '/contact',
+    })
+  }, [])
+
   return (
     <div className="contentPage">
       <div className="contentCard">

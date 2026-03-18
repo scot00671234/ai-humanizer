@@ -1,6 +1,16 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { setSeoMeta } from '../utils/seoMeta'
 
 export default function Terms() {
+  useEffect(() => {
+    setSeoMeta({
+      title: 'Terms of Service — bioqz',
+      description: 'Terms of service for using bioqz AI resume software and related services.',
+      path: '/terms',
+    })
+  }, [])
+
   return (
     <div className="contentPage">
       <div className="contentCard">

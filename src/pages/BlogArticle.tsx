@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { getBlogArticle, type BlogBlock } from '../content/blogArticles'
+import { setSeoMeta } from '../utils/seoMeta'
 
 function renderBlocks(blocks: BlogBlock[]) {
   return blocks.map((b, i) => {
@@ -65,14 +66,13 @@ export default function BlogArticlePage() {
 
   useEffect(() => {
     if (!article) return
-    document.title = `${article.title} — bioqz Blog`
-    let meta = document.querySelector('meta[name="description"]')
-    if (!meta) {
-      meta = document.createElement('meta')
-      meta.setAttribute('name', 'description')
-      document.head.appendChild(meta)
-    }
-    meta.setAttribute('content', article.metaDescription)
+    setSeoMeta({
+      title: `${article.title} | bioqz AI Resume Blog`,
+      description: article.metaDescription,
+      path: `/blog/${article.slug}`,
+      type: 'article',
+      keywords: article.keywords.join(', '),
+    })
   }, [article])
 
   if (!slug || !article) {

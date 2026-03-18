@@ -61,6 +61,7 @@ If Docker isn’t installed or won’t start, use the manual steps below (you’
 | `DEEPSEEK_API_KEY` | Needed for “Rewrite with AI” on the resume page. Get it from DeepSeek. | Paste the key; leave empty to run without AI rewrite. |
 | `APP_BASE_URL` | Base URL of the app; used in emails (e.g. verify link). For local dev this is the Vite URL. | `http://localhost:5173` (already set) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. For “Continue with Google” on login/register. Create OAuth 2.0 credentials in Google Cloud Console and set the redirect URI to `http://localhost:3001/api/auth/google/callback` (or your API base + `/api/auth/google/callback`). | Leave empty to hide Google sign-in. |
+| `VITE_SITE_URL` | **Production SEO:** canonical URLs, Open Graph, and JSON-LD use this as your public site origin (no trailing slash). | e.g. `https://bioqz.com`. If unset, the browser’s `window.location.origin` is used (fine locally). Also update `public/sitemap.xml` and `public/robots.txt` Sitemap line to match your domain. |
 
 **Why one file:** The Express server loads `.env` via `dotenv`; Vite loads the same file and exposes `VITE_*` vars to the browser. So one `.env` at the project root is enough for local dev.
 
