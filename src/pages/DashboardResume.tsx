@@ -65,6 +65,7 @@ export default function DashboardResume() {
   const [projectLoading, setProjectLoading] = useState(false)
   const [saveLoading, setSaveLoading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [rewriteBookmarkHint, setRewriteBookmarkHint] = useState(false)
   const editorRef = useRef<ResumeEditorHandle>(null)
   const exportMenuRef = useRef<HTMLDivElement>(null)
   const atsPanelRef = useRef<HTMLDivElement>(null)
@@ -90,6 +91,7 @@ export default function DashboardResume() {
     if (!projectIdFromUrl) {
       setCurrentProjectId(null)
       setCurrentProjectTitle('')
+      setJobDescription('')
       setSaveError(null)
       return
     }
@@ -107,6 +109,7 @@ export default function DashboardResume() {
           div.innerHTML = proj.content
           return div.textContent || ''
         })() : '')
+        setJobDescription(typeof proj.job_description === 'string' ? proj.job_description : '')
         setProjects((prev) => prev.some((p) => p.id === proj.id) ? prev : [...prev, { id: proj.id, title: proj.title || 'Untitled' }])
       })
       .catch(() => { if (!cancelled) setSaveError('Failed to load project') })
@@ -121,7 +124,11 @@ export default function DashboardResume() {
     try {
       const name = currentProjectTitle.trim() || 'Untitled'
       if (currentProjectId) {
-        await api.projects.update(currentProjectId, { content, title: name })
+        await api.projects.update(currentProjectId, {
+          content,
+          title: name,
+          jobDescription: jobDescription,
+        })
         setCurrentProjectTitle(name)
         setProjects((prev) => prev.map((p) => (p.id === currentProjectId ? { ...p, title: name } : p)))
       } else {
@@ -130,14 +137,14 @@ export default function DashboardResume() {
         setCurrentProjectTitle(created.title || name)
         setProjects((prev) => [...prev, { id: created.id, title: created.title || name }])
         navigate(`/dashboard/resume?projectId=${created.id}`, { replace: true })
-        await api.projects.update(created.id, { content })
+        await api.projects.update(created.id, { content, jobDescription: jobDescription })
       }
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save')
     } finally {
       setSaveLoading(false)
     }
-  }, [currentProjectId, currentProjectTitle, editorContent, navigate])
+  }, [currentProjectId, currentProjectTitle, editorContent, jobDescription, navigate])
 
   const handleSaveAs = useCallback(async () => {
     const title = currentProjectTitle.trim() || 'Untitled'
@@ -146,7 +153,7 @@ export default function DashboardResume() {
     const content = typeof editorContent === 'string' ? editorContent : ''
     try {
       const created = await api.projects.create(title)
-      await api.projects.update(created.id, { content })
+      await api.projects.update(created.id, { content, jobDescription: jobDescription })
       setCurrentProjectId(created.id)
       setCurrentProjectTitle(created.title || 'Untitled')
       setProjects((prev) => [...prev, { id: created.id, title: created.title || 'Untitled' }])
@@ -156,7 +163,7 @@ export default function DashboardResume() {
     } finally {
       setSaveLoading(false)
     }
-  }, [currentProjectTitle, editorContent, navigate])
+  }, [currentProjectTitle, editorContent, jobDescription, navigate])
 
   const handleRewrite = useCallback(async () => {
     const text = editorRef.current?.getSelectedText()?.trim()
@@ -552,6 +559,11 @@ export default function DashboardResume() {
           <div className="resumeRewriteOptionsPanel">
             <p className="resumeRewriteOptionsHeading">Rewrite options</p>
             <p className="resumeRewriteOptionsHint">Style, language & extra instructions apply to AI rewrites.</p>
+            {rewriteBookmarkHint && (
+              <p className="resumeRewriteBookmarkHint" role="status">
+                Selection saved for rewrite — click in the document when you want to clear it.
+              </p>
+            )}
             <div className="resumeRewriteOptions">
               <label className="resumeRewriteOption">
                 <span className="resumeRewriteOptionLabel">Style / tone</span>
@@ -607,6 +619,7 @@ export default function DashboardResume() {
                 ref={editorRef}
                 content={editorContent}
                 onChange={handleEditorChange}
+                onRewriteBookmarkHint={setRewriteBookmarkHint}
               />
             </div>
             <p className="resumeEditorWordCount" aria-live="polite">

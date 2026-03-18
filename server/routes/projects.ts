@@ -32,7 +32,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
   }
   try {
     const result = await pool.query(
-      'SELECT id, title, content, created_at, updated_at FROM projects WHERE user_id = $1 ORDER BY updated_at DESC',
+      'SELECT id, title, content, job_description, created_at, updated_at FROM projects WHERE user_id = $1 ORDER BY updated_at DESC',
       [user.userId]
     )
     res.json({ projects: result.rows })
@@ -52,7 +52,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   }
   try {
     const result = await pool.query(
-      'SELECT id, title, content, created_at, updated_at FROM projects WHERE id = $1 AND user_id = $2',
+      'SELECT id, title, content, job_description, created_at, updated_at FROM projects WHERE id = $1 AND user_id = $2',
       [id, user.userId]
     )
     const row = result.rows[0]
@@ -90,7 +90,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
   const name = typeof title === 'string' && title.trim() ? title.trim().slice(0, 255) : 'Untitled'
   try {
     const result = await pool.query(
-      `INSERT INTO projects (user_id, title, content) VALUES ($1, $2, '') RETURNING id, title, content, created_at, updated_at`,
+      `INSERT INTO projects (user_id, title, content, job_description) VALUES ($1, $2, '', '') RETURNING id, title, content, job_description, created_at, updated_at`,
       [user.userId, name]
     )
     res.status(201).json(result.rows[0])
@@ -104,7 +104,11 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 router.patch('/:id', async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
   const { id } = req.params
-  const { title, content } = req.body as { title?: string; content?: string }
+  const { title, content, jobDescription } = req.body as {
+    title?: string
+    content?: string
+    jobDescription?: string
+  }
   if (!pool) {
     res.status(503).json({ error: 'Database not configured' })
     return
@@ -120,15 +124,19 @@ router.patch('/:id', async (req: Request, res: Response): Promise<void> => {
     updates.push(`content = $${pos++}`)
     values.push(content)
   }
+  if (typeof jobDescription === 'string') {
+    updates.push(`job_description = $${pos++}`)
+    values.push(jobDescription.slice(0, 100_000))
+  }
   updates.push(`updated_at = now()`)
   if (updates.length <= 1) {
-    res.status(400).json({ error: 'Provide title and/or content to update' })
+    res.status(400).json({ error: 'Provide title, content, and/or jobDescription to update' })
     return
   }
   values.push(id, user.userId)
   try {
     const result = await pool.query(
-      `UPDATE projects SET ${updates.join(', ')} WHERE id = $${pos} AND user_id = $${pos + 1} RETURNING id, title, content, created_at, updated_at`,
+      `UPDATE projects SET ${updates.join(', ')} WHERE id = $${pos} AND user_id = $${pos + 1} RETURNING id, title, content, job_description, created_at, updated_at`,
       values
     )
     const row = result.rows[0]

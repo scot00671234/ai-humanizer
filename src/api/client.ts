@@ -176,16 +176,46 @@ export const api = {
 
   projects: {
     list: () =>
-      request<{ projects: { id: string; title: string; content: string; created_at: string; updated_at: string }[] }>('/api/projects'),
+      request<{
+        projects: {
+          id: string
+          title: string
+          content: string
+          job_description?: string
+          created_at: string
+          updated_at: string
+        }[]
+      }>('/api/projects'),
     get: (id: string) =>
-      request<{ id: string; title: string; content: string; created_at: string; updated_at: string }>(`/api/projects/${id}`),
+      request<{
+        id: string
+        title: string
+        content: string
+        job_description?: string
+        created_at: string
+        updated_at: string
+      }>(`/api/projects/${id}`),
     create: (title: string) =>
-      request<{ id: string; title: string; content: string; created_at: string; updated_at: string }>('/api/projects', {
+      request<{
+        id: string
+        title: string
+        content: string
+        job_description?: string
+        created_at: string
+        updated_at: string
+      }>('/api/projects', {
         method: 'POST',
         body: JSON.stringify({ title }),
       }),
-    update: (id: string, data: { title?: string; content?: string }) =>
-      request<{ id: string; title: string; content: string; created_at: string; updated_at: string }>(`/api/projects/${id}`, {
+    update: (id: string, data: { title?: string; content?: string; jobDescription?: string }) =>
+      request<{
+        id: string
+        title: string
+        content: string
+        job_description?: string
+        created_at: string
+        updated_at: string
+      }>(`/api/projects/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),

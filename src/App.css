@@ -3677,6 +3677,13 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   min-width: 200px;
 }
 
+.resumeRewriteBookmarkHint {
+  margin: -0.25rem 0 0.65rem;
+  font-size: 0.8125rem;
+  color: var(--accent-text);
+  line-height: 1.4;
+}
+
 .resumeRewriteContext {
   width: 100%;
   padding: 0.4rem 0.6rem;

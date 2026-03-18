@@ -1,8 +1,28 @@
 import { useEditor, EditorContent, type Content } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useEffect, useImperativeHandle, forwardRef } from 'react'
+import { useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
 
 const extensions = [StarterKit]
+
+/** Escape HTML, then **bold** and *italic* → TipTap-friendly HTML. */
+export function inlineMarkdownToHtml(line: string): string {
+  let s = line
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>')
+  return s
+}
+
+/** Plain text with markdown line breaks → <p>…</p> blocks (full document / paste). */
+export function plainMarkdownToDocumentHtml(text: string): string {
+  const normalized = text.replace(/\r\n/g, '\n')
+  return normalized.split('\n').map((line) => {
+    const inner = inlineMarkdownToHtml(line)
+    return `<p>${inner || '<br>'}</p>`
+  }).join('')
+}
 
 export type ResumeEditorHandle = {
   getSelectedText: () => string
@@ -21,12 +41,18 @@ type ResumeEditorProps = {
   className?: string
   /** Called when selection changes (e.g. to show a rewrite prompt popup). */
   onSelectionChange?: (hasSelection: boolean) => void
+  /** True after you select text then click outside the editor (instructions etc.); false when you click back in the doc or rewrite runs. */
+  onRewriteBookmarkHint?: (show: boolean) => void
 }
 
 const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function ResumeEditor(
-  { content, onChange, className, onSelectionChange },
+  { content, onChange, className, onSelectionChange, onRewriteBookmarkHint },
   ref
 ) {
+  const editorRef = useRef<ReturnType<typeof useEditor>>(null)
+  const storedRangeRef = useRef<{ from: number; to: number } | null>(null)
+  /** Last mousedown was inside the document (not toolbar) — used to clear bookmark only when clicking in the doc. */
+  const lastMousedownInProseRef = useRef(false)
   const editor = useEditor({
     extensions,
     content: content || '',
@@ -35,20 +61,25 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         class: 'resumeEditorInner',
       },
       handleDOMEvents: {
-        paste: (view, event) => {
+        paste: (_view, event) => {
           const text = event.clipboardData?.getData('text/plain')
-          if (text) {
-            event.preventDefault()
-            const { state } = view
-            const tr = state.tr.insertText(text)
-            view.dispatch(tr)
-            return true
-          }
-          return false
+          const html = event.clipboardData?.getData('text/html')
+          if (!text || html?.trim()) return false
+          const looksLikeMd = /\*\*[^*]+\*\*|\*[^*]+\*/.test(text) || text.includes('\n')
+          if (!looksLikeMd) return false
+          const ed = editorRef.current
+          if (!ed) return false
+          event.preventDefault()
+          const docHtml = text.includes('\n') ? plainMarkdownToDocumentHtml(text) : `<p>${inlineMarkdownToHtml(text)}</p>`
+          ed.chain().focus().insertContent(docHtml).run()
+          return true
         },
       },
     },
   })
+  useEffect(() => {
+    editorRef.current = editor ?? null
+  }, [editor])
 
   useEffect(() => {
     if (!editor) return
@@ -64,34 +95,111 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
   }, [editor, onChange])
 
   useEffect(() => {
-    if (!editor || !onSelectionChange) return
-    const onSelect = () => {
+    if (!editor) return
+    const root = editor.view.dom.closest('.resumeEditor')
+    if (!root) return
+
+    const notify = () => {
       const { from, to } = editor.state.selection
-      onSelectionChange(from !== to)
+      const expanded = from !== to
+      const stored = storedRangeRef.current
+      const hasStored = !!(stored && stored.from < stored.to)
+      const canRewrite = expanded || (hasStored && !editor.isFocused)
+      onSelectionChange?.(canRewrite)
     }
-    editor.on('selectionUpdate', onSelect)
-    editor.on('transaction', onSelect)
+
+    const proseEl = editor.view.dom
+
+    const onDocMouseDown = (e: MouseEvent) => {
+      const t = e.target as Node
+      lastMousedownInProseRef.current = proseEl.contains(t)
+      if (root.contains(t)) return
+      const { from, to } = editor.state.selection
+      if (from !== to) {
+        storedRangeRef.current = { from, to }
+        onRewriteBookmarkHint?.(true)
+        notify()
+      }
+    }
+
+    const onSelectionUpdate = () => {
+      const { from, to } = editor.state.selection
+      if (from !== to) {
+        storedRangeRef.current = { from, to }
+      } else if (editor.isFocused && lastMousedownInProseRef.current) {
+        storedRangeRef.current = null
+        onRewriteBookmarkHint?.(false)
+      }
+      notify()
+    }
+
+    const onBlur = () => {
+      const { from, to } = editor.state.selection
+      if (from !== to) {
+        storedRangeRef.current = { from, to }
+        onRewriteBookmarkHint?.(true)
+      }
+      notify()
+    }
+
+    document.addEventListener('mousedown', onDocMouseDown, true)
+    editor.on('selectionUpdate', onSelectionUpdate)
+    editor.on('blur', onBlur)
     return () => {
-      editor.off('selectionUpdate', onSelect)
-      editor.off('transaction', onSelect)
+      document.removeEventListener('mousedown', onDocMouseDown, true)
+      editor.off('selectionUpdate', onSelectionUpdate)
+      editor.off('blur', onBlur)
     }
-  }, [editor, onSelectionChange])
+  }, [editor, onSelectionChange, onRewriteBookmarkHint])
 
   useImperativeHandle(
     ref,
     () => ({
       getSelectedText: () => {
-        const { from, to } = editor?.state.selection ?? {}
-        if (from == null || to == null || from === to) return ''
-        return editor?.state.doc.textBetween(from, to) ?? ''
+        if (!editor) return ''
+        const { from, to } = editor.state.selection
+        let a = from
+        let b = to
+        if (a === b) {
+          const s = storedRangeRef.current
+          if (!s || s.from >= s.to) return ''
+          const end = editor.state.doc.content.size
+          if (s.from < 0 || s.to > end) return ''
+          a = s.from
+          b = s.to
+        }
+        return editor.state.doc.textBetween(a, b, '\n')
       },
       replaceSelection: (text: string) => {
-        editor?.chain().focus().insertContent(text).run()
+        if (!editor || !text) return
+        const raw = text.replace(/\r\n/g, '\n').trim()
+        if (!raw) return
+        const html = raw.includes('\n')
+          ? plainMarkdownToDocumentHtml(raw)
+          : inlineMarkdownToHtml(raw)
+        const { from, to } = editor.state.selection
+        let a = from
+        let b = to
+        if (a === b && storedRangeRef.current && storedRangeRef.current.from < storedRangeRef.current.to) {
+          const end = editor.state.doc.content.size
+          const s = storedRangeRef.current
+          if (s.from >= 0 && s.to <= end) {
+            a = s.from
+            b = s.to
+          }
+        }
+        if (a >= b) return
+        storedRangeRef.current = null
+        onRewriteBookmarkHint?.(false)
+        editor.chain().focus().setTextSelection({ from: a, to: b }).insertContent(html).run()
       },
       getText: () => editor?.getText() ?? '',
       insertContentAtStart: (htmlOrText: string) => {
         if (!editor) return
-        const content = htmlOrText.trim().startsWith('<') ? htmlOrText : `<p>${htmlOrText.replace(/\n/g, '</p><p>')}</p>`
+        const t = htmlOrText.trim()
+        const content = t.startsWith('<')
+          ? htmlOrText
+          : plainMarkdownToDocumentHtml(htmlOrText.replace(/\r\n/g, '\n'))
         editor.chain().focus().insertContentAt(0, content).run()
       },
       getExportText: () => {
@@ -119,7 +227,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         return parts.join('\n\n')
       },
     }),
-    [editor]
+    [editor, onRewriteBookmarkHint]
   )
 
   useEffect(() => {
@@ -131,18 +239,15 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
     if (isHtml) {
       toSet = trimmed
     } else {
-      // Plain text: escape HTML and convert **text** to <strong>text</strong> so bold renders visually
-      toSet = trimmed.split(/\n/).map((line) => {
-        const escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        const withBold = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        return `<p>${withBold}</p>`
-      }).join('')
+      toSet = plainMarkdownToDocumentHtml(trimmed)
     }
     const current = isHtml ? editor.getHTML() : editor.getText()
     if (trimmed !== current.trim()) {
+      storedRangeRef.current = null
+      onRewriteBookmarkHint?.(false)
       editor.commands.setContent(toSet, false)
     }
-  }, [content, editor])
+  }, [content, editor, onRewriteBookmarkHint])
 
   if (!editor) return null
 

@@ -38,6 +38,8 @@ export async function runMigrations() {
     await runFile('server/migrations/004_projects.sql')
     console.log('Running server/migrations/005_google_auth.sql...')
     await runFile('server/migrations/005_google_auth.sql')
+    console.log('Running server/migrations/006_project_job_description.sql...')
+    await runFile('server/migrations/006_project_job_description.sql')
     console.log('Migrations done.')
   } finally {
     await client.end()
