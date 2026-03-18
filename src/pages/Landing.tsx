@@ -182,7 +182,7 @@ export default function Landing() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
-      <main className="hero" data-hero-bg="true">
+      <main className="hero" data-hero-bg="false">
         <div className="heroBackdrop" aria-hidden />
         <div className="heroBg" aria-hidden>
           <div className="heroOrb heroOrbTop" />
@@ -213,7 +213,15 @@ export default function Landing() {
             </div>
           </div>
 
-          <aside className="heroPreview" aria-label="Example output preview">
+          <aside className="heroPreview" aria-label="Product preview">
+            <div className="heroMediaCard" aria-hidden>
+              <img
+                src="/hero-desk.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
             <div className="heroPreviewCard">
               <div className="heroPreviewTop">
                 <div className="heroPreviewTitle">Example: Job fit score</div>

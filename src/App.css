@@ -15,12 +15,18 @@
   left: 0;
   right: 0;
   z-index: 10;
-  padding: 0.875rem 1.5rem;
-  background: var(--glass-bg);
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-glass);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 36px -18px rgba(15, 23, 42, 0.22);
+}
+
+[data-theme="dark"] .nav {
+  background: rgba(16, 22, 32, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 44px -22px rgba(0, 0, 0, 0.55);
 }
 
 .navInner {
@@ -36,7 +42,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   text-decoration: none;
   letter-spacing: -0.02em;
@@ -44,26 +50,48 @@
 
 .navLogo {
   display: block;
-  border-radius: 50%;
+  border-radius: 10px;
   flex-shrink: 0;
+  box-shadow: 0 10px 24px -18px rgba(15, 23, 42, 0.4);
 }
 
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .navLinks a {
+  position: relative;
   font-size: 0.875rem;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, opacity 0.15s ease;
 }
 
 .navLinks a:hover {
   color: var(--text-primary);
+}
+
+.navLinks a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.45rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(47, 127, 134, 0.0) 0%, rgba(47, 127, 134, 0.65) 45%, rgba(47, 127, 134, 0.0) 100%);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+.navLinks a:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .navLinks button {
@@ -84,23 +112,26 @@
 .navCta {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1.25rem;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--border-cta-silver);
+  padding: 0.55rem 1.05rem;
+  background: linear-gradient(165deg, var(--accent) 0%, var(--accent-strong) 100%);
+  border: none;
   border-radius: var(--radius-full);
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--btn-primary-text);
   text-decoration: none;
-  box-shadow: var(--shadow-glass);
-  transition: all 0.2s ease;
+  box-shadow:
+    0 6px 18px -6px rgba(47, 127, 134, 0.5),
+    0 18px 44px -18px rgba(37, 101, 108, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .navCta:hover {
-  background: var(--glass-bg-strong);
-  box-shadow: var(--shadow-glass-hover);
+  color: var(--btn-primary-text);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 22px -8px rgba(47, 127, 134, 0.6),
+    0 22px 52px -22px rgba(37, 101, 108, 0.42);
 }
 
 .themeToggle {
@@ -179,6 +210,15 @@
     linear-gradient(90deg, rgba(20, 18, 16, 0.2) 0%, transparent 28%, transparent 72%, rgba(20, 18, 16, 0.2) 100%),
     linear-gradient(165deg, rgba(255, 252, 248, 0.62) 0%, rgba(245, 240, 235, 0.32) 45%, rgba(255, 252, 248, 0.28) 100%);
   pointer-events: none;
+}
+
+/* When hero photo is NOT full-bleed, keep the backdrop clean */
+.hero[data-hero-bg="false"] .heroBackdrop {
+  background-image: linear-gradient(165deg, var(--bg-gradient-from) 0%, var(--bg-gradient-to) 55%, rgba(255, 255, 255, 0.92) 100%);
+}
+
+.hero[data-hero-bg="false"] .heroBackdrop::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.22) 45%, rgba(245, 248, 252, 0.7) 100%);
 }
 
 [data-theme="dark"] .hero[data-hero-bg="true"] .heroBackdrop::after {
@@ -518,6 +558,29 @@
 }
 
 /* Hero preview (right column) */
+.heroMediaCard {
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 18px 48px -28px rgba(15, 23, 42, 0.28);
+  margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .heroMediaCard {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 48px -28px rgba(0, 0, 0, 0.55);
+}
+
+.heroMediaCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  filter: saturate(0.98) contrast(0.98) brightness(1.02);
+}
+
 .heroPreviewCard {
   padding: 1.25rem 1.25rem 1.1rem;
   background: rgba(255, 255, 255, 0.82);
@@ -661,6 +724,10 @@
   .heroPreviewCard {
     max-width: 40rem;
     margin: 0 auto;
+  }
+  .heroMediaCard {
+    max-width: 40rem;
+    margin: 0 auto 1rem;
   }
   .heroContentSplit {
     text-align: center;
