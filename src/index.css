@@ -1,8 +1,8 @@
 :root {
   /* Background */
-  --bg-base: #f0f3f6;
-  --bg-gradient-from: #e6eaef;
-  --bg-gradient-to: #f4f6f9;
+  --bg-base: #f5f7fb;
+  --bg-gradient-from: #eef3f8;
+  --bg-gradient-to: #fbfcfe;
 
   /* Glass — single system */
   --glass-bg: rgba(255, 255, 255, 0.32);
@@ -20,14 +20,14 @@
   --shadow-blob: 0 24px 56px -16px rgba(90, 122, 138, 0.18);
 
   /* Type */
-  --text-primary: #1a2332;
-  --text-secondary: #4a5568;
-  --text-muted: #718096;
+  --text-primary: #121a27;
+  --text-secondary: #445066;
+  --text-muted: #6b778d;
 
-  /* Accent (teal, minimal use) */
-  --accent: #5a7a8a;
-  --accent-strong: #4a6572;
-  --accent-soft: rgba(90, 122, 138, 0.12);
+  /* Brand accent (teal/blue) */
+  --accent: #2f7f86;
+  --accent-strong: #25656c;
+  --accent-soft: rgba(47, 127, 134, 0.14);
   --btn-primary-text: #fff;
 
   /* Inputs & states */
@@ -45,9 +45,9 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  --bg-base: #14181f;
-  --bg-gradient-from: #0f1319;
-  --bg-gradient-to: #1a2332;
+  --bg-base: #0f141d;
+  --bg-gradient-from: #0b1118;
+  --bg-gradient-to: #162233;
 
   --glass-bg: rgba(26, 35, 50, 0.6);
   --glass-bg-strong: rgba(36, 48, 66, 0.75);
@@ -57,13 +57,13 @@
   --shadow-glass-hover: 0 16px 48px -12px rgba(0, 0, 0, 0.5);
   --shadow-blob: 0 24px 56px -16px rgba(0, 0, 0, 0.35);
 
-  --text-primary: #e8ecf0;
-  --text-secondary: #b0bcc8;
-  --text-muted: #7a8a9a;
+  --text-primary: #edf2f7;
+  --text-secondary: #bcc8d6;
+  --text-muted: #7f91a8;
 
-  --accent: #7a9aaa;
-  --accent-strong: #6b8a9a;
-  --accent-soft: rgba(122, 154, 170, 0.2);
+  --accent: #46b3bd;
+  --accent-strong: #2f7f86;
+  --accent-soft: rgba(70, 179, 189, 0.22);
   --btn-primary-text: #e8ecf0;
 
   --input-bg: rgba(26, 35, 50, 0.8);

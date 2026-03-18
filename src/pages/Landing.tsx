@@ -193,23 +193,61 @@ export default function Landing() {
           <BlobTop />
           <BlobBottom />
         </div>
-        <div className="heroContent">
-          <span className="heroBadge">Free to start · No credit card</span>
-          <h1 className="heroTitle">
-            Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
-          </h1>
-          <p className="heroSubtitle">
-            Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
-          </p>
-          <ul className="heroValueChips" aria-label="What bioqz does">
-            <li>AI bullet rewrites</li>
-            <li>Job fit score</li>
-            <li>ATS-friendly PDF</li>
-          </ul>
-          <div className="heroCtaRow">
-            <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
-            <a href="#try" className="heroCtaGhost">Try one bullet first</a>
+        <div className="heroInner">
+          <div className="heroContent heroContentSplit">
+            <span className="heroBadge">Free to start · No credit card</span>
+            <h1 className="heroTitle">
+              Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
+            </h1>
+            <p className="heroSubtitle">
+              Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
+            </p>
+            <ul className="heroValueChips" aria-label="What bioqz does">
+              <li>AI bullet rewrites</li>
+              <li>Job fit score</li>
+              <li>ATS-friendly PDF</li>
+            </ul>
+            <div className="heroCtaRow">
+              <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
+              <a href="#try" className="heroCtaGhost">Try one bullet first</a>
+            </div>
           </div>
+
+          <aside className="heroPreview" aria-label="Example output preview">
+            <div className="heroPreviewCard">
+              <div className="heroPreviewTop">
+                <div className="heroPreviewTitle">Example: Job fit score</div>
+                <div className="heroPreviewScore" aria-label="Score 82 out of 100">
+                  <span>82</span>
+                  <small>/100</small>
+                </div>
+              </div>
+              <div className="heroPreviewBar" aria-hidden>
+                <span style={{ width: '82%' }} />
+              </div>
+
+              <div className="heroPreviewGrid" aria-label="Before and after rewrite">
+                <div className="heroPreviewCol">
+                  <div className="heroPreviewLabel">Before</div>
+                  <p className="heroPreviewText">
+                    Worked with the team to improve the checkout experience and fix bugs.
+                  </p>
+                </div>
+                <div className="heroPreviewCol heroPreviewColAfter">
+                  <div className="heroPreviewLabel">After</div>
+                  <p className="heroPreviewText">
+                    Improved checkout conversion by 12% by shipping UX fixes and resolving 30+ payment bugs.
+                  </p>
+                </div>
+              </div>
+
+              <div className="heroPreviewTags" aria-label="What improved">
+                <span>Stronger verbs</span>
+                <span>Metrics</span>
+                <span>ATS keywords</span>
+              </div>
+            </div>
+          </aside>
         </div>
       </main>
 
