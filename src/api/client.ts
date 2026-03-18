@@ -15,6 +15,13 @@ export function clearToken(): void {
   localStorage.removeItem(tokenKey)
 }
 
+/** Full URL to start Google OAuth. returnTo is the path to land on after sign-in (e.g. /dashboard). */
+export function getGoogleAuthUrl(returnTo?: string): string {
+  const path = '/api/auth/google'
+  const pathTo = returnTo && returnTo.startsWith('/') ? returnTo : '/dashboard'
+  return buildUrl(path, { returnTo: pathTo })
+}
+
 export type ApiError = { error: string; code?: string }
 
 function buildUrl(path: string, params?: Record<string, string>): string {
@@ -144,10 +151,10 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ resumeText, jobDescription: options?.jobDescription, mode: options?.mode }),
       }),
-    score: (resumeText: string, jobDescription: string) =>
-      request<{ score: number; breakdown?: Record<string, number>; keywords?: string[] }>('/api/ai/score', {
+    score: (resumeText: string, jobDescription: string, mode?: 'resume' | 'job_application') =>
+      request<{ score: number; breakdown?: Record<string, number>; keywords?: string[]; notes?: string }>('/api/ai/score', {
         method: 'POST',
-        body: JSON.stringify({ resumeText, jobDescription }),
+        body: JSON.stringify({ resumeText, jobDescription, mode }),
       }),
   },
 

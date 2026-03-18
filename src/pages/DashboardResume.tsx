@@ -192,7 +192,7 @@ export default function DashboardResume() {
     setScoreError(null)
     setScoreLoading(true)
     try {
-      const res = await api.ai.score(editorText, jobDescription)
+      const res = await api.ai.score(editorText, jobDescription, editorMode)
       setScore(res.score)
       setScoreBreakdown(res.breakdown ?? null)
       setKeywords(res.keywords ?? [])

@@ -141,21 +141,41 @@ export default function Landing() {
       <section className="section pathSection" id="path" aria-label="Why your resume matters">
         <h2 className="pathSectionTitle">The right resume changes everything</h2>
         <div className="pathSectionInner">
-          <div className="pathLine" aria-hidden />
-          <div className="pathSteps">
-          {PATH_STEPS.map((step, i) => (
-            <div
-              key={step.id}
-              className={`pathStep pathStep${i % 2 === 0 ? 'Left' : 'Right'} ${visible.has(i) ? 'pathStepVisible' : ''}`}
-              ref={(el) => { refs.current[i] = el }}
-            >
-              <div className="pathNode" aria-hidden />
-              <div className="pathCard">
-                <h3 className="pathCardTitle">{step.title}</h3>
-                <p className="pathCardBody">{step.body}</p>
-              </div>
+          <div className="pathGrid">
+            <div className="pathSteps">
+              <div className="pathLine" aria-hidden />
+              {PATH_STEPS.map((step, i) => (
+                <div
+                  key={step.id}
+                  className={`pathStep pathStep${i % 2 === 0 ? 'Left' : 'Right'} ${visible.has(i) ? 'pathStepVisible' : ''}`}
+                  ref={(el) => { refs.current[i] = el }}
+                >
+                  <div className="pathNode" aria-hidden />
+                  <div className="pathCard">
+                    <h3 className="pathCardTitle">{step.title}</h3>
+                    <p className="pathCardBody">{step.body}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+            <aside className="landingMediaCol" aria-label="A calm workspace">
+              <div className="landingPhotoCard landingPhotoCardTall">
+                <img
+                  src="/landing/desk.png"
+                  alt="A clean desk setup with a laptop and notebook"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="landingPhotoCard landingPhotoCardSmall">
+                <img
+                  src="/landing/conversation.png"
+                  alt="Two people reviewing a document together"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </aside>
           </div>
         </div>
       </section>
@@ -195,13 +215,25 @@ export default function Landing() {
           <p className="sectionLabel">Why bioqz</p>
           <h2 className="sectionTitle">You’re not bad at job hunting. Your resume just isn’t speaking the right language.</h2>
         </div>
-        <div className="aboutContent">
-          <p className="aboutText">
-            Paste your resume and the job description. We sharpen your bullets, score you against the role, and show you exactly which keywords to hit. See the difference side by side. One click for a clean, ATS-friendly PDF. No design skills. No guesswork.
-          </p>
-          <p className="aboutText">
-            2 rewrites a day free. More when you need them. No lock-in. Cancel anytime.
-          </p>
+        <div className="aboutLayout">
+          <div className="aboutContent">
+            <p className="aboutText">
+              Paste your resume and the job description. We sharpen your bullets, score you against the role, and show you exactly which keywords to hit. See the difference side by side. One click for a clean, ATS-friendly PDF. No design skills. No guesswork.
+            </p>
+            <p className="aboutText">
+              2 rewrites a day free. More when you need them. No lock-in. Cancel anytime.
+            </p>
+          </div>
+          <div className="aboutMedia" aria-hidden>
+            <div className="landingPhotoCard">
+              <img
+                src="/landing/typing.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -210,14 +242,44 @@ export default function Landing() {
           <p className="sectionLabel">How it works</p>
           <h2 className="sectionTitle">Built to get you past the screeners</h2>
         </div>
-        <div className="featureGrid">
-          {FEATURES.map((f) => (
-            <article key={f.title} className="featureCard">
-              <div className="featureIcon">{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.description}</p>
-            </article>
-          ))}
+        <div className="featuresLayout">
+          <div className="featureGrid">
+            {FEATURES.map((f) => (
+              <article key={f.title} className="featureCard">
+                <div className="featureIcon">{f.icon}</div>
+                <h3>{f.title}</h3>
+                <p>{f.description}</p>
+              </article>
+            ))}
+          </div>
+          <aside className="featuresAside" aria-label="More inviting visuals">
+            <div className="landingPhotoCard landingPhotoCardTall">
+              <img
+                src="/landing/conversation.png"
+                alt="Two people collaborating over a laptop"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="landingPhotoRow">
+              <div className="landingPhotoCard">
+                <img
+                  src="/landing/typing.png"
+                  alt="Hands typing on a keyboard"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="landingPhotoCard">
+                <img
+                  src="/landing/desk.png"
+                  alt="A modern desk workspace"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 

@@ -19,6 +19,10 @@ const DAILY_REWRITE_SUSPEND = 1000
 
 export type ActionType = 'rewrite' | 'summary' | 'score' | 'export'
 
+const DAILY_SCORE_CAP_FREE = 0
+const DAILY_SCORE_CAP_PRO = 50
+const DAILY_SCORE_CAP_ELITE = 100
+
 /** Check rewrite limits: daily cap, burst, suspend. Call after requireAuth. */
 export async function checkRewriteLimits(req: Request, res: Response, next: NextFunction): Promise<void> {
   const { user } = req as Request & { user: JwtPayload }
@@ -82,6 +86,46 @@ export async function checkRewriteLimits(req: Request, res: Response, next: Next
     next()
   } catch (err) {
     console.error('checkRewriteLimits:', err)
+    res.status(500).json({ error: 'Something went wrong. Please try again.' })
+  }
+}
+
+/** Check AI score limits: daily cap by plan. Call after requireAuth. */
+export async function checkScoreLimits(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const { user } = req as Request & { user: JwtPayload }
+  const userId = user.userId
+  if (!pool) {
+    res.status(503).json({ error: 'Service unavailable' })
+    return
+  }
+  try {
+    const [userRow, dailyCount] = await Promise.all([
+      pool.query('SELECT is_pro, COALESCE(is_team, false) AS is_team, suspended_at FROM users WHERE id = $1', [userId]),
+      pool.query(
+        `SELECT COUNT(*)::int AS c FROM usage_logs WHERE user_id = $1 AND action_type = 'score' AND timestamp > now() - interval '24 hours'`,
+        [userId]
+      ),
+    ])
+    const row = userRow.rows[0]
+    if (row?.suspended_at) {
+      res.status(403).json({ error: 'Account paused—contact support.' })
+      return
+    }
+    const isElite = row?.is_team === true
+    const isPro = row?.is_pro === true
+    const cap = isElite ? DAILY_SCORE_CAP_ELITE : isPro ? DAILY_SCORE_CAP_PRO : DAILY_SCORE_CAP_FREE
+    const used = dailyCount.rows[0]?.c ?? 0
+    if (cap <= 0) {
+      res.status(403).json({ error: 'AI scoring is available on Pro and Elite plans.' })
+      return
+    }
+    if (used >= cap) {
+      res.status(429).json({ error: 'Daily score limit reached. Try again tomorrow or upgrade your plan.' })
+      return
+    }
+    next()
+  } catch (err) {
+    console.error('checkScoreLimits:', err)
     res.status(500).json({ error: 'Something went wrong. Please try again.' })
   }
 }

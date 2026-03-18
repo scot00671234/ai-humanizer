@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { aiRateLimiter } from '../middleware/rateLimit'
-import { checkRewriteLimits, checkScoreCooldown, insertUsageLog } from '../middleware/usage'
+import { checkRewriteLimits, checkScoreCooldown, checkScoreLimits, insertUsageLog } from '../middleware/usage'
 import type { JwtPayload } from '../middleware/auth'
 import { config } from '../config'
-import { rewriteWithDeepSeek, generateSummaryWithDeepSeek } from '../services/deepseek'
-import { computeScore } from '../services/score'
+import { rewriteWithDeepSeek, generateSummaryWithDeepSeek, scoreWithDeepSeek } from '../services/deepseek'
 import { getCachedScore, setCachedScore, hashJobDesc } from '../services/jobDescCache'
 
 const router = Router()
@@ -82,9 +81,9 @@ router.post('/summary', checkRewriteLimits, async (req: Request, res: Response):
 })
 
 /** POST /api/ai/score */
-router.post('/score', checkScoreCooldown, async (req: Request, res: Response): Promise<void> => {
+router.post('/score', checkScoreLimits, checkScoreCooldown, async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
-  const { resumeText, jobDescription } = req.body as { resumeText?: string; jobDescription?: string }
+  const { resumeText, jobDescription, mode } = req.body as { resumeText?: string; jobDescription?: string; mode?: string }
   if (typeof resumeText !== 'string' || typeof jobDescription !== 'string') {
     res.status(400).json({ error: 'Missing resumeText or jobDescription' })
     return
@@ -94,6 +93,13 @@ router.post('/score', checkScoreCooldown, async (req: Request, res: Response): P
     return
   }
 
+  if (!config.deepseek?.apiKey) {
+    res.status(503).json({ error: 'AI scoring is not configured. Please set DEEPSEEK_API_KEY.' })
+    return
+  }
+
+  const modeVal = mode === 'job_application' ? 'job_application' : 'resume'
+
   /** Include resume in cache key — same JD + different resume must recompute. */
   const cacheKey = `score:${user.userId}:${hashJobDesc(jobDescription)}:${hashJobDesc(resumeText)}`
   const cached = getCachedScore(cacheKey)
@@ -102,10 +108,16 @@ router.post('/score', checkScoreCooldown, async (req: Request, res: Response): P
     return
   }
 
-  const result = computeScore(resumeText, jobDescription)
-  setCachedScore(cacheKey, { score: result.score, breakdown: result.breakdown, keywords: result.keywords })
-  await insertUsageLog(user.userId, 'score', null)
-  res.json({ score: result.score, breakdown: result.breakdown, keywords: result.keywords })
+  try {
+    const result = await scoreWithDeepSeek(resumeText, jobDescription, modeVal)
+    const tokensUsed = result.usage.prompt_tokens + result.usage.completion_tokens
+    setCachedScore(cacheKey, { score: result.score, breakdown: result.breakdown, keywords: result.keywords })
+    await insertUsageLog(user.userId, 'score', tokensUsed)
+    res.json({ score: result.score, breakdown: result.breakdown, keywords: result.keywords, notes: result.notes })
+  } catch (err) {
+    console.error('Score error:', err)
+    res.status(502).json({ error: 'Scoring failed. Please try again.' })
+  }
 })
 
 export default router

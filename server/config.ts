@@ -29,6 +29,13 @@ export const config = {
 
   app: {
     baseUrl: process.env.APP_BASE_URL || 'http://localhost:5173',
+    /** Base URL of this API server (for OAuth redirect_uri). In dev default 3001; in prod usually same as baseUrl. */
+    apiBaseUrl: process.env.BACKEND_URL || (process.env.NODE_ENV === 'production' ? (process.env.APP_BASE_URL || 'http://localhost:5173') : 'http://localhost:3001'),
+  },
+
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   },
 
   /** In development, allow sign-in without email verification (no verification link needed). */

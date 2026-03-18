@@ -107,6 +107,128 @@ export async function rewriteWithDeepSeek(text: string, options: RewriteOptions 
   }
 }
 
+export type ScoreAiResult = {
+  score: number
+  breakdown: { keyword: number; verbStrength: number; length: number; atsSafety: number }
+  keywords: string[]
+  notes?: string
+  usage: { prompt_tokens: number; completion_tokens: number }
+}
+
+function clamp01to100(n: unknown): number {
+  const x = typeof n === 'number' ? n : Number(n)
+  if (!Number.isFinite(x)) return 0
+  return Math.max(0, Math.min(100, Math.round(x)))
+}
+
+function extractFirstJsonObject(text: string): string {
+  const start = text.indexOf('{')
+  const end = text.lastIndexOf('}')
+  if (start === -1 || end === -1 || end <= start) return ''
+  return text.slice(start, end + 1)
+}
+
+function buildScorePrompt(resumeText: string, jobDescription: string, mode: EditorMode): string {
+  const doc = mode === 'job_application' ? 'job application text' : 'resume'
+  return [
+    `You are an expert recruiter and ATS specialist.`,
+    `Task: score how well this ${doc} matches the job description.`,
+    ``,
+    `Return ONLY valid JSON (no markdown, no commentary) with this shape:`,
+    `{"score":0-100,"breakdown":{"keyword":0-100,"verbStrength":0-100,"length":0-100,"atsSafety":0-100},"keywords":["..."],"notes":"optional short note"}`,
+    ``,
+    `Rules:`,
+    `- Be strict: if the ${doc} is mostly nonsense/typos, the score should be very low.`,
+    `- "keywords" should be important role terms (max 30) pulled from the job description (skills, tools, responsibilities).`,
+    `- breakdown meanings:`,
+    `  - keyword: overlap of important terms (not stopwords)`,
+    `  - verbStrength: action-led, specific bullet language`,
+    `  - length: concise, scannable lines (not too short, not rambling)`,
+    `  - atsSafety: plain text readability (no weird characters, easy to parse)`,
+    `- Avoid hallucinating facts; judge only what is written.`,
+    ``,
+    `JOB DESCRIPTION:`,
+    jobDescription.trim().slice(0, 6000),
+    ``,
+    `DOCUMENT:`,
+    resumeText.trim().slice(0, 9000),
+  ].join('\n')
+}
+
+export async function scoreWithDeepSeek(
+  resumeText: string,
+  jobDescription: string,
+  mode: EditorMode = 'resume'
+): Promise<ScoreAiResult> {
+  const apiKey = config.deepseek?.apiKey
+  if (!apiKey) throw new Error('DEEPSEEK_API_KEY is not set')
+
+  const userContent = buildScorePrompt(resumeText, jobDescription, mode)
+
+  const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [{ role: 'user', content: userContent }],
+      max_tokens: 420,
+      temperature: 0.2,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(err || `DeepSeek API error: ${res.status}`)
+  }
+
+  const data = await res.json() as {
+    choices?: Array<{ message?: { content?: string } }>
+    usage?: { prompt_tokens?: number; completion_tokens?: number }
+  }
+
+  const raw = data.choices?.[0]?.message?.content?.trim() ?? ''
+  const jsonText = extractFirstJsonObject(raw)
+  if (!jsonText) throw new Error('AI scoring returned no JSON')
+
+  let parsed: any
+  try {
+    parsed = JSON.parse(jsonText)
+  } catch {
+    throw new Error('AI scoring returned invalid JSON')
+  }
+
+  const breakdownRaw = parsed?.breakdown ?? {}
+  const result: ScoreAiResult = {
+    score: clamp01to100(parsed?.score),
+    breakdown: {
+      keyword: clamp01to100(breakdownRaw?.keyword),
+      verbStrength: clamp01to100(breakdownRaw?.verbStrength),
+      length: clamp01to100(breakdownRaw?.length),
+      atsSafety: clamp01to100(breakdownRaw?.atsSafety),
+    },
+    keywords: Array.isArray(parsed?.keywords) ? parsed.keywords.filter((x: any) => typeof x === 'string').map((s: string) => s.trim()).filter(Boolean).slice(0, 30) : [],
+    notes: typeof parsed?.notes === 'string' ? parsed.notes.slice(0, 220) : undefined,
+    usage: {
+      prompt_tokens: data.usage?.prompt_tokens ?? 0,
+      completion_tokens: data.usage?.completion_tokens ?? 0,
+    },
+  }
+
+  // Consistency: overall score should roughly follow the weighted breakdown.
+  // If the model gives something wildly inconsistent, recompute a conservative aggregate.
+  const approx = Math.round(
+    result.breakdown.keyword * 0.42 +
+      result.breakdown.verbStrength * 0.22 +
+      result.breakdown.length * 0.16 +
+      result.breakdown.atsSafety * 0.2
+  )
+  if (Math.abs(result.score - approx) > 18) {
+    result.score = approx
+  }
+
+  return result
+}
+
 /** Generate a 2–4 sentence professional summary (resume) or opening paragraph (job application). Optional job description for tailoring. */
 export async function generateSummaryWithDeepSeek(
   resumeText: string,

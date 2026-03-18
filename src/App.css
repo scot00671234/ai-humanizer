@@ -166,9 +166,9 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(28, 24, 20, 0.42) 0%, rgba(35, 30, 26, 0.28) 38%, rgba(22, 19, 16, 0.52) 100%),
-    linear-gradient(90deg, rgba(20, 18, 16, 0.35) 0%, transparent 28%, transparent 72%, rgba(20, 18, 16, 0.35) 100%),
-    linear-gradient(165deg, rgba(255, 252, 248, 0.55) 0%, rgba(245, 240, 235, 0.25) 45%, rgba(255, 252, 248, 0.2) 100%);
+    linear-gradient(180deg, rgba(28, 24, 20, 0.28) 0%, rgba(35, 30, 26, 0.18) 38%, rgba(22, 19, 16, 0.34) 100%),
+    linear-gradient(90deg, rgba(20, 18, 16, 0.2) 0%, transparent 28%, transparent 72%, rgba(20, 18, 16, 0.2) 100%),
+    linear-gradient(165deg, rgba(255, 252, 248, 0.62) 0%, rgba(245, 240, 235, 0.32) 45%, rgba(255, 252, 248, 0.28) 100%);
   pointer-events: none;
 }
 
@@ -430,8 +430,15 @@
 
 .pathSectionInner {
   position: relative;
-  max-width: 56rem;
+  max-width: 70rem;
   margin: 0 auto;
+}
+
+.pathGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2.25rem;
+  align-items: start;
 }
 
 .pathSteps {
@@ -440,6 +447,69 @@
   flex-direction: column;
   gap: 4rem;
   padding: 0 1rem;
+}
+
+.landingMediaCol {
+  position: sticky;
+  top: 6.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.landingPhotoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.landingPhotoCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 18px 48px -28px rgba(15, 23, 42, 0.22);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.landingPhotoCard img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);
+  filter: saturate(1.02) contrast(1.02);
+}
+
+.landingPhotoCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%, rgba(0, 0, 0, 0.12) 100%);
+  pointer-events: none;
+}
+
+.landingPhotoCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+}
+
+.landingPhotoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 64px -34px rgba(15, 23, 42, 0.3);
+  border-color: rgba(160, 170, 185, 0.65);
+}
+
+.landingPhotoCardTall {
+  height: 360px;
+}
+
+.landingPhotoCardSmall {
+  height: 190px;
 }
 
 .pathLine {
@@ -540,6 +610,22 @@
 @media (max-width: 768px) {
   .pathSectionInner {
     max-width: 28rem;
+  }
+  .pathGrid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  .landingMediaCol {
+    position: static;
+  }
+  .landingPhotoCardTall {
+    height: 260px;
+  }
+  .landingPhotoCardSmall {
+    height: 200px;
+  }
+  .landingPhotoRow {
+    grid-template-columns: 1fr;
   }
   .pathSteps {
     padding-left: 2.5rem;
@@ -728,6 +814,38 @@
   margin: 0 auto;
 }
 
+.aboutLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+.aboutMedia {
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+}
+
+.aboutMedia .landingPhotoCard {
+  height: 320px;
+}
+
+@media (max-width: 900px) {
+  .aboutLayout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .aboutMedia {
+    max-width: 560px;
+    margin: 0 auto;
+    justify-self: center;
+  }
+  .aboutMedia .landingPhotoCard {
+    height: 260px;
+  }
+}
+
 .aboutText {
   font-size: 1rem;
   color: var(--text-secondary);
@@ -740,6 +858,32 @@
 }
 
 /* —— Feature cards (glass) —— */
+.featuresLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 2.25rem;
+  align-items: start;
+}
+
+.featuresAside {
+  display: grid;
+  gap: 1rem;
+}
+
+.featuresAside .landingPhotoCardTall {
+  height: 300px;
+}
+
+@media (max-width: 900px) {
+  .featuresLayout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .featuresAside .landingPhotoCardTall {
+    height: 240px;
+  }
+}
+
 .featureGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1389,6 +1533,34 @@
 }
 
 .authSubmit:hover {
+  background: var(--glass-bg-strong);
+}
+
+.authDivider {
+  margin: 1rem 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.authGoogleBtn {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1.25rem;
+  margin-top: 0.25rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.authGoogleBtn:hover {
   background: var(--glass-bg-strong);
 }
 

@@ -121,6 +121,14 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return
     }
 
+    if (user.password_hash == null) {
+      res.status(400).json({
+        error: 'This account uses Google sign-in. Use the "Continue with Google" button.',
+        code: 'USE_GOOGLE',
+      })
+      return
+    }
+
     const valid = await bcrypt.compare(password, user.password_hash)
     if (!valid) {
       res.status(401).json({ error: 'Invalid email or password' })
@@ -142,6 +150,148 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     console.error('Login error:', err)
     res.status(500).json({ error: 'Login failed' })
+  }
+})
+
+/** GET /api/auth/google — redirect to Google OAuth. Query: returnTo (optional path, e.g. /dashboard). */
+router.get('/google', (req: Request, res: Response): void => {
+  if (!config.google.clientId || !config.google.clientSecret) {
+    res.status(501).json({ error: 'Google sign-in is not configured' })
+    return
+  }
+  const returnTo = typeof req.query.returnTo === 'string' && req.query.returnTo.startsWith('/')
+    ? req.query.returnTo
+    : '/dashboard'
+  const redirectUri = `${config.app.apiBaseUrl}/api/auth/google/callback`
+  const state = Buffer.from(JSON.stringify({ returnTo }), 'utf8').toString('base64url')
+  const scope = 'openid email profile'
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth')
+  url.searchParams.set('client_id', config.google.clientId)
+  url.searchParams.set('redirect_uri', redirectUri)
+  url.searchParams.set('response_type', 'code')
+  url.searchParams.set('scope', scope)
+  url.searchParams.set('state', state)
+  res.redirect(302, url.toString())
+})
+
+/** GET /api/auth/google/callback — exchange code for user, issue JWT, redirect to app. */
+router.get('/google/callback', async (req: Request, res: Response): Promise<void> => {
+  if (!config.google.clientId || !config.google.clientSecret || !pool) {
+    res.redirect(302, `${config.app.baseUrl}/login?error=config`)
+    return
+  }
+  const code = typeof req.query.code === 'string' ? req.query.code : null
+  const stateRaw = typeof req.query.state === 'string' ? req.query.state : null
+  let returnTo = '/dashboard'
+  if (stateRaw) {
+    try {
+      const state = JSON.parse(Buffer.from(stateRaw, 'base64url').toString('utf8'))
+      if (state.returnTo && typeof state.returnTo === 'string' && state.returnTo.startsWith('/')) {
+        returnTo = state.returnTo
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (!code) {
+    res.redirect(302, `${config.app.baseUrl}/login?error=no_code`)
+    return
+  }
+
+  const redirectUri = `${config.app.apiBaseUrl}/api/auth/google/callback`
+  let accessToken: string
+  try {
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: config.google.clientId,
+        client_secret: config.google.clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code',
+      }),
+    })
+    if (!tokenRes.ok) {
+      const errText = await tokenRes.text()
+      console.error('Google token exchange failed:', tokenRes.status, errText)
+      res.redirect(302, `${config.app.baseUrl}/login?error=token`)
+      return
+    }
+    const tokenData = (await tokenRes.json()) as { access_token?: string }
+    accessToken = tokenData.access_token
+    if (!accessToken) {
+      res.redirect(302, `${config.app.baseUrl}/login?error=token`)
+      return
+    }
+  } catch (err) {
+    console.error('Google token exchange error:', err)
+    res.redirect(302, `${config.app.baseUrl}/login?error=token`)
+    return
+  }
+
+  let email: string
+  let googleId: string
+  try {
+    const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    if (!userRes.ok) {
+      console.error('Google userinfo failed:', userRes.status)
+      res.redirect(302, `${config.app.baseUrl}/login?error=userinfo`)
+      return
+    }
+    const profile = (await userRes.json()) as { id?: string; email?: string }
+    googleId = profile.id
+    email = (profile.email || '').trim().toLowerCase()
+    if (!googleId || !email) {
+      res.redirect(302, `${config.app.baseUrl}/login?error=profile`)
+      return
+    }
+  } catch (err) {
+    console.error('Google userinfo error:', err)
+    res.redirect(302, `${config.app.baseUrl}/login?error=userinfo`)
+    return
+  }
+
+  try {
+    let user: { id: string; email: string }
+    const byGoogle = await pool.query(
+      'SELECT id, email FROM users WHERE google_id = $1',
+      [googleId]
+    )
+    if (byGoogle.rows.length > 0) {
+      user = byGoogle.rows[0]
+    } else {
+      const byEmail = await pool.query(
+        'SELECT id, email FROM users WHERE email = $1',
+        [email]
+      )
+      if (byEmail.rows.length > 0) {
+        await pool.query(
+          'UPDATE users SET google_id = $1, updated_at = now() WHERE id = $2',
+          [googleId, byEmail.rows[0].id]
+        )
+        user = byEmail.rows[0]
+      } else {
+        const insert = await pool.query(
+          `INSERT INTO users (email, google_id, email_verified_at, updated_at)
+           VALUES ($1, $2, now(), now())
+           RETURNING id, email`,
+          [email, googleId]
+        )
+        user = insert.rows[0]
+      }
+    }
+
+    const payload: JwtPayload = { userId: user.id, email: user.email }
+    const token = jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn })
+    const target = `${config.app.baseUrl}${returnTo.startsWith('/') ? returnTo : `/${returnTo}`}?token=${encodeURIComponent(token)}`
+    res.redirect(302, target)
+  } catch (err) {
+    console.error('Google callback DB error:', err)
+    res.redirect(302, `${config.app.baseUrl}/login?error=server`)
   }
 })
 
@@ -341,13 +491,17 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
     return
   }
   try {
-    const [userResult, usageResult] = await Promise.all([
+    const [userResult, usageResult, scoreUsageResult] = await Promise.all([
       pool.query(
         'SELECT id, email, email_verified_at, created_at, is_pro, COALESCE(is_team, false) AS is_team FROM users WHERE id = $1',
         [user.userId]
       ),
       pool.query(
         `SELECT COUNT(*)::int AS c FROM usage_logs WHERE user_id = $1 AND action_type IN ('rewrite', 'summary') AND timestamp > now() - interval '24 hours'`,
+        [user.userId]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS c FROM usage_logs WHERE user_id = $1 AND action_type = 'score' AND timestamp > now() - interval '24 hours'`,
         [user.userId]
       ),
     ])
@@ -360,6 +514,8 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
     const rewriteLimit = row.is_pro === true ? 500 : 2
     const isTeam = row.is_team === true
     const projectLimit = isTeam ? 100 : (row.is_pro === true ? 10 : 1)
+    const scoreCountToday = scoreUsageResult.rows[0]?.c ?? 0
+    const scoreLimit = isTeam ? 100 : (row.is_pro === true ? 50 : 0)
     res.json({
       user: {
         id: row.id,
@@ -371,6 +527,8 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
         rewriteCountToday,
         rewriteLimit,
         projectLimit,
+        scoreCountToday,
+        scoreLimit,
       },
     })
   } catch (err) {

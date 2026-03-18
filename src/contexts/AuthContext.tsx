@@ -9,7 +9,19 @@ import {
 } from 'react'
 import { api, getToken, setToken, clearToken } from '../api/client'
 
-export type User = { id: string; email: string; emailVerified?: boolean; createdAt?: string; isPro?: boolean; isTeam?: boolean; rewriteCountToday?: number; rewriteLimit?: number; projectLimit?: number }
+export type User = {
+  id: string
+  email: string
+  emailVerified?: boolean
+  createdAt?: string
+  isPro?: boolean
+  isTeam?: boolean
+  rewriteCountToday?: number
+  rewriteLimit?: number
+  projectLimit?: number
+  scoreCountToday?: number
+  scoreLimit?: number
+}
 
 type AuthState = {
   user: User | null
@@ -50,6 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tokenFromUrl = params.get('token')
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl)
+      window.history.replaceState({}, '', window.location.pathname + (window.location.hash || ''))
+    }
     refreshUser()
   }, [refreshUser])
 

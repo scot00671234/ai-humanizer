@@ -1,7 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { api } from '../api/client'
+import { api, getGoogleAuthUrl } from '../api/client'
 
 export default function Register() {
   const location = useLocation()
@@ -96,6 +96,10 @@ export default function Register() {
           <p className="authHint">At least 8 characters.</p>
           <button type="submit" className="authSubmit">Create account</button>
         </form>
+        <div className="authDivider">or</div>
+        <a href={getGoogleAuthUrl('/dashboard')} className="authGoogleBtn" data-auth="google">
+          Continue with Google
+        </a>
         <p className="authFooter">
           Already have an account? <Link to="/login" state={{ fromLandingTry }}>Sign in</Link>
         </p>

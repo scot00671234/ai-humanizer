@@ -60,6 +60,7 @@ If Docker isn’t installed or won’t start, use the manual steps below (you’
 | `JWT_SECRET` | Secret used to sign login tokens. Can be any long random string. | e.g. `my-dev-secret-key-12345` (use something longer in production) |
 | `DEEPSEEK_API_KEY` | Needed for “Rewrite with AI” on the resume page. Get it from DeepSeek. | Paste the key; leave empty to run without AI rewrite. |
 | `APP_BASE_URL` | Base URL of the app; used in emails (e.g. verify link). For local dev this is the Vite URL. | `http://localhost:5173` (already set) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. For “Continue with Google” on login/register. Create OAuth 2.0 credentials in Google Cloud Console and set the redirect URI to `http://localhost:3001/api/auth/google/callback` (or your API base + `/api/auth/google/callback`). | Leave empty to hide Google sign-in. |
 
 **Why one file:** The Express server loads `.env` via `dotenv`; Vite loads the same file and exposes `VITE_*` vars to the browser. So one `.env` at the project root is enough for local dev.
 
@@ -71,13 +72,9 @@ If Docker isn’t installed or won’t start, use the manual steps below (you’
 
 - **`server/schema.sql`** — Creates the `users` table (email, password hash, verification, Stripe customer id, etc.).
 - **`server/migrations/002_resume_builder.sql`** — Adds `is_pro` and `suspended_at` on `users`, and creates the `usage_logs` table for the resume builder.
+- **`server/migrations/005_google_auth.sql`** — Adds `google_id` and allows password-less users for Google sign-in.
 
-**What you do:** From the project root, with Postgres running and a database created:
-
-```bash
-psql -U postgres -d your_db -f server/schema.sql
-psql -U postgres -d your_db -f server/migrations/002_resume_builder.sql
-```
+**What you do:** From the project root, with Postgres running and a database created, run `node scripts/run-migrations.js` (or run the SQL files above in order with psql).
 
 Use the same database name as in `DATABASE_URL` in `.env`. If you don’t have a DB yet, create it first, e.g. `createdb frosted`, then use `frosted` as `your_db`.
 
