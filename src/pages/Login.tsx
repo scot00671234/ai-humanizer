@@ -13,6 +13,11 @@ export default function Login() {
   const successMessage = (location.state as { message?: string } | null)?.message
   const [googleError, setGoogleError] = useState<string | null>(null)
 
+  useEffect(() => {
+    document.body.dataset.page = 'auth'
+    return () => { delete document.body.dataset.page }
+  }, [])
+
   useEffect(() => { clearError() }, [clearError])
 
   // Handle redirect from Google OAuth callback (?error=...). Token is handled in AuthContext.

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
   <!-- Minimal quilt: 2×2 patch grid with subtle gap -->
-  <rect x="2"  y="2"  width="12" height="12" rx="2" fill="#2f7f86"/>
-  <rect x="18" y="2"  width="12" height="12" rx="2" fill="#25656c"/>
-  <rect x="2"  y="18" width="12" height="12" rx="2" fill="#25656c"/>
-  <rect x="18" y="18" width="12" height="12" rx="2" fill="#2f7f86"/>
+  <rect x="2"  y="2"  width="12" height="12" rx="2" fill="#d7ff59"/>
+  <rect x="18" y="2"  width="12" height="12" rx="2" fill="#b8e83f"/>
+  <rect x="2"  y="18" width="12" height="12" rx="2" fill="#b8e83f"/>
+  <rect x="18" y="18" width="12" height="12" rx="2" fill="#d7ff59"/>
 </svg>

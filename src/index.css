@@ -24,11 +24,11 @@
   --text-secondary: #445066;
   --text-muted: #6b778d;
 
-  /* Brand accent (teal/blue) */
-  --accent: #2f7f86;
-  --accent-strong: #25656c;
-  --accent-soft: rgba(47, 127, 134, 0.14);
-  --btn-primary-text: #fff;
+  /* Brand accent (lime) */
+  --accent: #d7ff59;
+  --accent-strong: #b8e83f;
+  --accent-soft: rgba(215, 255, 89, 0.18);
+  --btn-primary-text: #0a0f14;
 
   /* Inputs & states */
   --input-bg: rgba(255, 255, 255, 0.5);
@@ -61,10 +61,10 @@
   --text-secondary: #bcc8d6;
   --text-muted: #7f91a8;
 
-  --accent: #46b3bd;
-  --accent-strong: #2f7f86;
-  --accent-soft: rgba(70, 179, 189, 0.22);
-  --btn-primary-text: #e8ecf0;
+  --accent: #d7ff59;
+  --accent-strong: #b8e83f;
+  --accent-soft: rgba(215, 255, 89, 0.16);
+  --btn-primary-text: #0a0f14;
 
   --input-bg: rgba(26, 35, 50, 0.8);
   --error-bg: rgba(220, 100, 100, 0.2);

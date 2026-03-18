@@ -13,6 +13,11 @@ export default function Register() {
   const [resendMessage, setResendMessage] = useState<string | null>(null)
   const { register, error, clearError } = useAuth()
 
+  useEffect(() => {
+    document.body.dataset.page = 'auth'
+    return () => { delete document.body.dataset.page }
+  }, [])
+
   useEffect(() => { clearError() }, [clearError])
 
   async function handleSubmit(e: FormEvent) {

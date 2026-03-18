@@ -3,23 +3,23 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
+const SIDEBAR_STORAGE_KEY = 'bioqz-dashboard-sidebar-open'
+
 const SEARCH_ITEMS = [
   { label: 'Dashboard', path: '' },
   { label: 'Editor', path: '/resume' },
   { label: 'Settings', path: '/settings' },
 ]
 
-function MenuIcon({ open }: { open: boolean }) {
-  if (open) {
-    return (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M18 6L6 18M6 6l12 12" />
-      </svg>
-    )
-  }
-  return (
+function CollapseIcon({ collapsed }: { collapsed: boolean }) {
+  // Chevron points toward the sidebar edge that will move.
+  return collapsed ? (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 12h18M3 6h18M3 18h18" />
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M15 18l-6-6 6-6" />
     </svg>
   )
 }
@@ -30,7 +30,16 @@ export default function DashboardLayout() {
   const navigate = useNavigate()
   const basePath = '/dashboard'
 
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try {
+      const raw = localStorage.getItem(SIDEBAR_STORAGE_KEY)
+      if (raw === 'true') return true
+      if (raw === 'false') return false
+    } catch {
+      // ignore
+    }
+    return true
+  })
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -47,6 +56,14 @@ export default function DashboardLayout() {
       if (document.body.dataset.page === 'dashboard') delete document.body.dataset.page
     }
   }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarOpen))
+    } catch {
+      // ignore
+    }
+  }, [sidebarOpen])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -79,16 +96,16 @@ export default function DashboardLayout() {
           type="button"
           className="dashboardSidebarToggle"
           onClick={() => setSidebarOpen((o) => !o)}
-          aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
-          title={sidebarOpen ? 'Close menu' : 'Open menu'}
+          aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          <MenuIcon open={sidebarOpen} />
+          <CollapseIcon collapsed={!sidebarOpen} />
         </button>
-        <div className={`dashboardSidebarContent ${sidebarOpen ? '' : 'dashboardSidebarContent--hidden'}`}>
         <Link to={basePath} className="dashboardBrand">
           <img src="/logo.svg" alt="" className="dashboardLogo" width="24" height="24" />
           <span className="dashboardBrandText">bioqz</span>
         </Link>
+        <div className={`dashboardSidebarContent ${sidebarOpen ? '' : 'dashboardSidebarContent--hidden'}`}>
 
         <nav className="dashboardNav">
           <Link
