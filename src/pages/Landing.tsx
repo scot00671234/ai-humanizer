@@ -66,7 +66,7 @@ const FEATURES = [
 
 const PLANS = [
   { name: 'Free', price: 0, period: 'month', description: 'Everything you need to land your next role. No credit card required.', features: ['2 AI rewrites per day', 'ATS score & keyword highlights', 'Side-by-side original vs current', 'PDF export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
-  { name: 'Pro', price: 29, period: 'month', description: 'When you are applying to dozens of roles, we have you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'No ads', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
+  { name: 'Pro', price: 29, period: 'month', description: 'When you are applying to dozens of roles, we have you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
   { name: 'Elite', price: 59, period: 'month', description: 'Unlimited ambition. No compromise on rewrites.', features: ['1,500 AI rewrites per day', 'Everything in Pro', 'Highest priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
