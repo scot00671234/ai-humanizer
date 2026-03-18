@@ -1113,14 +1113,30 @@ body[data-page="landing"] .navCta:hover {
 
 .landingPage .pricingCta {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 34px -26px rgba(0, 0, 0, 0.55);
 }
 
 .landingPage .pricingCta:hover {
-  background: rgba(215, 255, 89, 0.16);
-  border-color: rgba(215, 255, 89, 0.24);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
   color: #fff;
+}
+
+/* Featured plan: make CTA clearly primary */
+.landingPage .pricingCardFeatured .pricingCta {
+  background: #d7ff59;
+  border-color: rgba(215, 255, 89, 0.35);
+  color: #0a0f14;
+  box-shadow: 0 18px 44px -28px rgba(215, 255, 89, 0.45);
+}
+
+.landingPage .pricingCardFeatured .pricingCta:hover {
+  background: #d7ff59;
+  border-color: rgba(215, 255, 89, 0.45);
+  color: #0a0f14;
+  box-shadow: 0 22px 56px -34px rgba(215, 255, 89, 0.55);
 }
 
 .landingPage .landingFaqItem {
