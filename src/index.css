@@ -5,9 +5,9 @@
   --bg-gradient-to: #fbfcfe;
 
   /* Glass — single system */
-  --glass-bg: rgba(255, 255, 255, 0.32);
-  --glass-bg-strong: rgba(255, 255, 255, 0.48);
-  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-bg: rgba(255, 255, 255, 0.52);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.72);
   --glass-blur: 20px;
   --radius-sm: 10px;
   --radius-md: 16px;
@@ -31,7 +31,7 @@
   --btn-primary-text: #0a0f14;
 
   /* Inputs & states */
-  --input-bg: rgba(255, 255, 255, 0.5);
+  --input-bg: rgba(255, 255, 255, 0.72);
   --error-bg: rgba(200, 80, 80, 0.12);
   --error-border: rgba(200, 80, 80, 0.3);
   --error-text: #b53d3d;

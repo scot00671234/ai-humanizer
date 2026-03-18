@@ -630,7 +630,7 @@ body[data-page="landing"] .navCta:hover {
 }
 
 [data-theme="dark"] .heroTitleAccent {
-  color: #8eb0c0;
+  color: var(--accent);
 }
 
 .heroSubtitle {
