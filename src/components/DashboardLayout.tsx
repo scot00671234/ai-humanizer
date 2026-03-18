@@ -42,6 +42,13 @@ export default function DashboardLayout() {
     : []
 
   useEffect(() => {
+    document.body.dataset.page = 'dashboard'
+    return () => {
+      if (document.body.dataset.page === 'dashboard') delete document.body.dataset.page
+    }
+  }, [])
+
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setSearchOpen(false)

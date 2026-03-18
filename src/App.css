@@ -47,6 +47,23 @@ body[data-page="landing"] .navLinks button:hover {
   color: #fff;
 }
 
+body[data-page="landing"] .navBrand {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+body[data-page="landing"] .navBrand:hover {
+  color: #fff;
+}
+
+/* Ensure brand text stays readable on dark mode pages too */
+[data-theme="dark"] .navBrand {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme="dark"] .navBrand:hover {
+  color: #fff;
+}
+
 body[data-page="landing"] .themeToggle {
   border-color: rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
@@ -166,6 +183,15 @@ body[data-page="landing"] .navCta:hover {
   box-shadow:
     0 10px 22px -8px rgba(47, 127, 134, 0.6),
     0 22px 52px -22px rgba(37, 101, 108, 0.42);
+}
+
+/* Landing CTA: lime button needs dark text for contrast (override global navCta color) */
+body[data-page="landing"] .navCta {
+  color: #0a0f14;
+}
+
+body[data-page="landing"] .navCta:hover {
+  color: #0a0f14;
 }
 
 .themeToggle {
@@ -333,16 +359,53 @@ body[data-page="landing"] .navCta:hover {
 }
 
 .landingPage .heroPreviewCard {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 64px -44px rgba(0, 0, 0, 0.8);
 }
 
 .landingPage .heroPreviewCol {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .landingPage .heroPreviewColAfter {
-  background: rgba(47, 127, 134, 0.08);
+  background: rgba(47, 127, 134, 0.16);
+}
+
+.landingPage .heroPreviewTitle {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.landingPage .heroPreviewScore {
+  background: rgba(215, 255, 89, 0.14);
+  border-color: rgba(215, 255, 89, 0.22);
+  color: rgba(215, 255, 89, 0.92);
+}
+
+.landingPage .heroPreviewBar {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.landingPage .heroPreviewBar span {
+  background: #d7ff59;
+}
+
+.landingPage .heroPreviewLabel {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.landingPage .heroPreviewText {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .heroPreviewTags span {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.74);
 }
 
 [data-theme="dark"] .hero[data-hero-bg="true"] .heroBackdrop::after {
@@ -700,7 +763,7 @@ body[data-page="landing"] .navCta:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center 45%;
   display: block;
   filter: saturate(0.98) contrast(0.98) brightness(1.02);
 }
@@ -881,6 +944,161 @@ body[data-page="landing"] .navCta:hover {
   max-width: 1120px;
   margin: 0 auto;
   padding: 4.5rem 1.5rem;
+}
+
+.landingPage {
+  background:
+    radial-gradient(1000px 560px at 20% 18%, rgba(47, 127, 134, 0.14) 0%, rgba(47, 127, 134, 0.0) 60%),
+    radial-gradient(900px 520px at 82% 8%, rgba(215, 255, 89, 0.1) 0%, rgba(215, 255, 89, 0.0) 62%),
+    linear-gradient(180deg, #071019 0%, #08141f 40%, #0b1623 100%);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.landingPage .section {
+  max-width: 1120px;
+}
+
+.landingPage .sectionHeader {
+  max-width: 34rem;
+}
+
+.landingPage .sectionLabel {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.landingPage .sectionTitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landingPage .pathSectionTitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landingPage .pathLine {
+  background: linear-gradient(to bottom, transparent, rgba(215, 255, 89, 0.85) 5%, rgba(215, 255, 89, 0.85) 95%, transparent);
+  opacity: 0.35;
+}
+
+.landingPage .pathNode {
+  background: #d7ff59;
+  border-color: rgba(7, 16, 25, 0.95);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.landingPage .pathCard,
+.landingPage .featureCard,
+.landingPage .pricingCard,
+.landingPage .landingTryCard,
+.landingPage .ctaBox,
+.landingPage .resumeAtsPanel,
+.landingPage .dashboardCard {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 56px -40px rgba(0, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.landingPage .pathCardTitle,
+.landingPage .featureCard h3,
+.landingPage .pricingName,
+.landingPage .landingTryTitle,
+.landingPage .ctaBox h2 {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landingPage .pathCardBody,
+.landingPage .featureCard p,
+.landingPage .pricingDesc,
+.landingPage .landingTrySubtitle,
+.landingPage .landingTryHint,
+.landingPage .landingTryLogin,
+.landingPage .aboutLead,
+.landingPage .aboutPoints li,
+.landingPage .landingFaqA,
+.landingPage .ctaBox p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.landingPage .featureIcon {
+  background: rgba(47, 127, 134, 0.18);
+  color: #d7ff59;
+}
+
+.landingPage .featureCard:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+}
+
+.landingPage .landingTryInput,
+.landingPage .landingTryInput:focus,
+.landingPage .landingTryInput:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.landingPage .landingTryInput::placeholder {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.landingPage .landingTryCta {
+  background: #d7ff59;
+  color: #0a0f14;
+  border: 1px solid rgba(215, 255, 89, 0.35);
+  box-shadow: 0 14px 34px -22px rgba(215, 255, 89, 0.55);
+}
+
+.landingPage .landingTryCta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 44px -26px rgba(215, 255, 89, 0.62);
+}
+
+.landingPage .landingTryLoginLink,
+.landingPage .dashboardCardLink,
+.landingPage .landingFaqSection a,
+.landingPage .footerLinks a,
+.landingPage .footerBrand {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .landingTryLoginLink:hover,
+.landingPage .footerLinks a:hover {
+  color: #fff;
+}
+
+.landingPage .pricingCardFeatured {
+  border-color: rgba(215, 255, 89, 0.28);
+  box-shadow: 0 22px 68px -46px rgba(215, 255, 89, 0.35);
+}
+
+.landingPage .pricingCta {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.landingPage .pricingCta:hover {
+  background: rgba(215, 255, 89, 0.16);
+  border-color: rgba(215, 255, 89, 0.24);
+  color: #fff;
+}
+
+.landingPage .landingFaqItem {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.landingPage .landingFaqQ {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landingPage .footer {
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.landingPage .footerCopy {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .sectionHeader {
@@ -2235,6 +2453,17 @@ body[data-page="landing"] .navCta:hover {
   z-index: 2;
 }
 
+/* Premium dashboard vibe (scoped) */
+body[data-page="dashboard"] .dashboard {
+  background: radial-gradient(900px 520px at 22% 0%, rgba(47, 127, 134, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(245, 247, 251, 0.9) 100%);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboard {
+  background: radial-gradient(900px 520px at 20% 0%, rgba(70, 179, 189, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(10, 14, 20, 0.85) 0%, rgba(10, 14, 20, 1) 100%);
+}
+
 .dashboard .dashboardSidebarToggle {
   position: fixed;
   top: 1rem;
@@ -2268,6 +2497,17 @@ body[data-page="landing"] .navCta:hover {
   position: relative;
 }
 
+body[data-page="dashboard"] .dashboardSidebar {
+  background: rgba(7, 16, 25, 0.92);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboardSidebar {
+  background: rgba(6, 10, 16, 0.92);
+}
+
 .dashboardSidebar--collapsed {
   width: 52px;
   min-width: 52px;
@@ -2293,6 +2533,19 @@ body[data-page="landing"] .navCta:hover {
   transition: background 0.15s ease, color 0.15s ease;
   box-shadow: var(--shadow-glass);
   z-index: 10;
+}
+
+body[data-page="dashboard"] .dashboardSidebarToggle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 36px -22px rgba(0, 0, 0, 0.65);
+}
+
+body[data-page="dashboard"] .dashboardSidebarToggle:hover {
+  background: rgba(215, 255, 89, 0.14);
+  border-color: rgba(215, 255, 89, 0.22);
+  color: #fff;
 }
 
 .dashboardSidebarToggle:hover {
@@ -2346,6 +2599,19 @@ body[data-page="landing"] .navCta:hover {
   letter-spacing: -0.02em;
 }
 
+body[data-page="dashboard"] .dashboardBrand {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+body[data-page="dashboard"] .dashboardBrandText {
+  letter-spacing: -0.02em;
+}
+
+body[data-page="dashboard"] .dashboardLogo {
+  border-radius: 10px;
+  box-shadow: 0 14px 28px -18px rgba(0, 0, 0, 0.55);
+}
+
 .dashboardLogo {
   border-radius: 50%;
   flex-shrink: 0;
@@ -2365,6 +2631,22 @@ body[data-page="landing"] .navCta:hover {
   text-decoration: none;
   border-radius: var(--radius-sm);
   transition: color 0.15s ease, background 0.15s ease;
+}
+
+body[data-page="dashboard"] .dashboardNavLink {
+  color: rgba(255, 255, 255, 0.72);
+  border: 1px solid transparent;
+}
+
+body[data-page="dashboard"] .dashboardNavLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body[data-page="dashboard"] .dashboardNavLinkActive {
+  color: #0a0f14;
+  background: #d7ff59;
+  border-color: rgba(215, 255, 89, 0.35);
 }
 
 .dashboardNavLink:hover {
@@ -2394,6 +2676,20 @@ body[data-page="landing"] .navCta:hover {
   transition: border-color 0.2s ease;
 }
 
+body[data-page="dashboard"] .dashboardSearch {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body[data-page="dashboard"] .dashboardSearch::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+body[data-page="dashboard"] .dashboardSearch:focus {
+  border-color: rgba(215, 255, 89, 0.65);
+}
+
 .dashboardSearch::placeholder {
   color: var(--text-muted);
 }
@@ -2416,6 +2712,11 @@ body[data-page="landing"] .navCta:hover {
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-glass);
   z-index: 20;
+}
+
+body[data-page="dashboard"] .dashboardSearchDropdown {
+  background: rgba(7, 16, 25, 0.96);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dashboardSearchItem {
@@ -2446,6 +2747,19 @@ body[data-page="landing"] .navCta:hover {
 .dashboardSidebarFooter {
   padding-top: 1rem;
   border-top: 1px solid var(--glass-border);
+}
+
+body[data-page="dashboard"] .dashboardUserEmail {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+body[data-page="dashboard"] .dashboardLogout {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+body[data-page="dashboard"] .dashboardLogout:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .dashboardUserEmail {
@@ -2479,6 +2793,204 @@ body[data-page="landing"] .navCta:hover {
   flex: 1;
   padding: 2rem 1.5rem;
   overflow-y: auto;
+}
+
+body[data-page="dashboard"] .dashboardMain {
+  padding-top: 1.25rem;
+}
+
+body[data-page="dashboard"] .dashboardPageTitle {
+  letter-spacing: -0.03em;
+}
+
+body[data-page="dashboard"] .dashboardCard,
+body[data-page="dashboard"] .resumeCard {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 48px -30px rgba(15, 23, 42, 0.22);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboardCard,
+body[data-theme="dark"][data-page="dashboard"] .resumeCard {
+  background: rgba(18, 24, 34, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 48px -30px rgba(0, 0, 0, 0.65);
+}
+
+body[data-page="dashboard"] .dashboardBtnPrimary {
+  background: #d7ff59;
+  color: #0a0f14;
+  border-color: rgba(215, 255, 89, 0.35);
+  box-shadow: 0 14px 32px -20px rgba(215, 255, 89, 0.55);
+}
+
+body[data-page="dashboard"] .dashboardBtnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px -24px rgba(215, 255, 89, 0.62);
+}
+
+/* Settings polish */
+body[data-page="dashboard"] .dashboardSettingsSection {
+  margin-bottom: 2.25rem;
+}
+
+body[data-page="dashboard"] .dashboardSettingsHeading {
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+}
+
+body[data-page="dashboard"] .dashboardSettingsHint {
+  color: var(--text-secondary);
+}
+
+body[data-page="dashboard"] .dashboardSettingsContactLink {
+  color: var(--accent-strong);
+}
+
+body[data-page="dashboard"] .dashboardSettingsContactLink:hover {
+  color: var(--text-primary);
+}
+
+body[data-page="dashboard"] .dashboardCardDanger {
+  background: rgba(197, 48, 48, 0.06);
+  border-color: rgba(197, 48, 48, 0.2);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboardCardDanger {
+  background: rgba(220, 100, 100, 0.12);
+  border-color: rgba(220, 100, 100, 0.22);
+}
+
+body[data-page="dashboard"] .dashboardBtnSecondary {
+  background: rgba(255, 255, 255, 0.68);
+  border-color: rgba(15, 23, 42, 0.1);
+  color: var(--text-primary);
+}
+
+body[data-page="dashboard"] .dashboardBtnSecondary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(15, 23, 42, 0.14);
+  transform: translateY(-1px);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboardBtnSecondary {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .dashboardBtnSecondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Editor header controls */
+body[data-page="dashboard"] .editorModeSwitch {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow: 0 14px 40px -30px rgba(15, 23, 42, 0.22);
+}
+
+body[data-page="dashboard"] .editorModeBtnActive {
+  background: #d7ff59;
+  color: #0a0f14;
+  box-shadow: 0 10px 20px -18px rgba(215, 255, 89, 0.6);
+}
+
+body[data-page="dashboard"] .editorModeBtnActive:hover {
+  color: #0a0f14;
+}
+
+body[data-theme="dark"][data-page="dashboard"] .editorModeSwitch {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 48px -34px rgba(0, 0, 0, 0.7);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .editorModeBtnActive {
+  background: #d7ff59;
+  color: #0a0f14;
+}
+
+/* Rewrite options + export dropdown look more like product UI */
+body[data-page="dashboard"] .resumeRewriteOptionsPanel {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.22);
+}
+
+body[data-page="dashboard"] .resumeRewriteSelect,
+body[data-page="dashboard"] .resumeRewriteContext,
+body[data-page="dashboard"] .resumeProjectTitleInput,
+body[data-page="dashboard"] .resumeProjectSelect {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+body[data-page="dashboard"] .resumeRewriteContext:focus,
+body[data-page="dashboard"] .resumeRewriteSelect:focus,
+body[data-page="dashboard"] .resumeProjectTitleInput:focus,
+body[data-page="dashboard"] .resumeProjectSelect:focus {
+  border-color: rgba(47, 127, 134, 0.75);
+  box-shadow: 0 0 0 3px rgba(47, 127, 134, 0.14);
+  outline: none;
+}
+
+body[data-page="dashboard"] .resumeExportDropdown {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow: 0 20px 56px -34px rgba(15, 23, 42, 0.28);
+}
+
+body[data-page="dashboard"] .resumeExportItem:hover {
+  background: rgba(215, 255, 89, 0.18);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .resumeRewriteOptionsPanel,
+body[data-theme="dark"][data-page="dashboard"] .resumeExportDropdown {
+  background: rgba(18, 24, 34, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .resumeRewriteSelect,
+body[data-theme="dark"][data-page="dashboard"] .resumeRewriteContext,
+body[data-theme="dark"][data-page="dashboard"] .resumeProjectTitleInput,
+body[data-theme="dark"][data-page="dashboard"] .resumeProjectSelect {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .resumeExportItem {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .resumeExportItem:hover {
+  background: rgba(215, 255, 89, 0.14);
+}
+
+/* ATS score panel */
+body[data-page="dashboard"] .resumeAtsPanel {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 22px 56px -38px rgba(15, 23, 42, 0.28);
+  position: relative;
+}
+
+body[data-page="dashboard"] .resumeAtsPanel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(47, 127, 134, 0.0) 0%, rgba(47, 127, 134, 0.65) 40%, rgba(47, 127, 134, 0.0) 100%);
+}
+
+body[data-theme="dark"][data-page="dashboard"] .resumeAtsPanel {
+  background: rgba(18, 24, 34, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .dashboardPage {

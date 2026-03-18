@@ -224,7 +224,7 @@ export default function Landing() {
             <aside className="heroPreview" aria-label="Product preview">
               <div className="heroMediaCard" aria-hidden>
                 <img
-                  src="/hero-desk.png"
+                  src="/landing/desk.png"
                   alt=""
                   loading="lazy"
                   decoding="async"
