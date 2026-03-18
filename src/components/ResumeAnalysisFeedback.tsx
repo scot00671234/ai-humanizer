@@ -4,7 +4,7 @@ const BREAKDOWN_LABELS: Record<string, string> = {
   keyword: 'Keyword match',
   verbStrength: 'Strong verbs',
   length: 'Length & clarity',
-  atsSafety: 'ATS-friendly',
+  atsSafety: 'ATS-friendly structure',
 }
 
 type ResumeAnalysisFeedbackProps = {
@@ -13,6 +13,8 @@ type ResumeAnalysisFeedbackProps = {
   keywords: string[]
   resumeText: string
   className?: string
+  /** Affects wording in tips (resume vs application). */
+  mode?: 'resume' | 'job_application'
 }
 
 /** Renders score, breakdown, missing keywords, and actionable tips. */
@@ -22,7 +24,9 @@ export default function ResumeAnalysisFeedback({
   keywords,
   resumeText,
   className = '',
+  mode = 'resume',
 }: ResumeAnalysisFeedbackProps) {
+  const doc = mode === 'job_application' ? 'application' : 'resume'
   const lowerResume = resumeText.toLowerCase()
 
   const missingKeywords = useMemo(() => {
@@ -34,7 +38,7 @@ export default function ResumeAnalysisFeedback({
     const list: string[] = []
     if (!breakdown) return list
     if ((breakdown.keyword ?? 100) < 70) {
-      list.push('Add more terms from the job description so your resume matches what recruiters look for.')
+      list.push(`Add more terms from the job description so your ${doc} matches what recruiters look for.`)
     }
     if ((breakdown.verbStrength ?? 100) < 60) {
       list.push('Use stronger action verbs in your bullets (e.g. Led, Delivered, Achieved, Improved).')
@@ -43,7 +47,7 @@ export default function ResumeAnalysisFeedback({
       list.push('Keep bullets concise. Avoid very long lines or single-word lines.')
     }
     if ((breakdown.atsSafety ?? 100) < 80) {
-      list.push('Remove special characters and complex formatting so ATS systems can read your resume.')
+      list.push(`Remove special characters and complex formatting so ATS systems can read your ${doc}.`)
     }
     return list
   }, [breakdown])
@@ -51,7 +55,7 @@ export default function ResumeAnalysisFeedback({
   return (
     <div className={`resumeAnalysisFeedback ${className}`}>
       <div className="resumeAnalysisScoreRow">
-        <span className="resumeAnalysisScoreLabel">Resume score</span>
+        <span className="resumeAnalysisScoreLabel">ATS match score</span>
         <span className="resumeAnalysisScoreValue">
           {score}<span className="resumeAnalysisScoreMax">/100</span>
         </span>

@@ -12,6 +12,8 @@ import DashboardHome from './pages/DashboardHome'
 import DashboardResume from './pages/DashboardResume'
 import DashboardSettings from './pages/DashboardSettings'
 import Contact from './pages/Contact'
+import Blog from './pages/Blog'
+import BlogArticlePage from './pages/BlogArticle'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
@@ -73,6 +75,8 @@ function App() {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
         <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogArticlePage />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="*" element={<NotFound />} />

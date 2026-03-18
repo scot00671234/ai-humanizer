@@ -5,6 +5,15 @@ import { api } from '../api/client'
 
 type Project = { id: string; title: string; content: string; created_at: string; updated_at: string }
 
+function snippetFromHtml(html: string, maxLen = 140): string {
+  const text = html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!text) return ''
+  return text.length <= maxLen ? text : `${text.slice(0, maxLen).trim()}…`
+}
+
 export default function DashboardHome() {
   const { user } = useAuth()
   const [projects, setProjects] = useState<Project[]>([])
@@ -25,38 +34,70 @@ export default function DashboardHome() {
   return (
     <div className="dashboardPage dashboardPageOverview">
       <h1 className="dashboardPageTitle">Dashboard</h1>
-      <p className="dashboardPageSubtitle">Welcome back. Build and refine your resume, then score it and export to PDF.</p>
-      <div className="dashboardCard dashboardOverviewCard">
-        <p className="dashboardCardText">
-          Go to <Link to="/dashboard/resume" className="dashboardCardLink">Editor</Link> to paste your resume, add a job description, rewrite bullets with AI, get an ATS score, and export a clean PDF.
-        </p>
+      <p className="dashboardPageSubtitle dashboardPageSubtitleCentered">
+        Welcome back. Pick a project to jump right into the editor.
+      </p>
+
+      <div className="dashboardCard dashboardOverviewCard dashboardOverviewCardTight">
+        <div className="dashboardWelcome">
+          <p className="dashboardWelcomeTitle">Your saved projects</p>
+          <p className="dashboardCardText dashboardWelcomeBody">
+            Click any project to open it in the Editor with the exact content you saved.
+          </p>
+          <div className="dashboardWelcomeActions">
+            <Link to="/dashboard/resume" className="dashboardBtn dashboardBtnPrimary">
+              New project
+            </Link>
+          </div>
+        </div>
       </div>
-      <section className="dashboardCard" aria-label="Your projects">
-        <h2 className="dashboardPageSubtitle">Your projects</h2>
+
+      <section className="dashboardProjects" aria-label="Your projects">
         {error && <p className="dashboardSettingsError">{error}</p>}
         {loading ? (
-          <p className="dashboardCardText">Loading…</p>
+          <div className="dashboardCard">
+            <p className="dashboardCardText">Loading…</p>
+          </div>
         ) : projects.length === 0 ? (
-          <p className="dashboardCardText">
-            No projects yet. <Link to="/dashboard/resume" className="dashboardCardLink">Open the Editor</Link> and save your first resume or application.
-          </p>
+          <div className="dashboardCard">
+            <p className="dashboardCardText">
+              No projects yet. Open the Editor and save your first resume or application.
+            </p>
+            <div style={{ marginTop: '1rem' }}>
+              <Link to="/dashboard/resume" className="dashboardBtn dashboardBtnPrimary">
+                Open Editor
+              </Link>
+            </div>
+          </div>
         ) : (
-          <ul className="dashboardProjectList">
-            {projects.map((p) => (
-              <li key={p.id}>
-                <Link to={`/dashboard/resume?projectId=${p.id}`} className="dashboardCardLink">
-                  {p.title || 'Untitled'}
-                </Link>
-                <span className="dashboardProjectMeta">
-                  Updated {new Date(p.updated_at).toLocaleDateString()}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="dashboardProjectsGrid">
+              {projects.map((p) => {
+                const title = (p.title || 'Untitled').trim() || 'Untitled'
+                const snippet = snippetFromHtml(p.content || '')
+                return (
+                  <li key={p.id}>
+                    <Link to={`/dashboard/resume?projectId=${p.id}`} className="dashboardProjectCard" aria-label={`Open project ${title}`}>
+                      <div className="dashboardProjectCardTop">
+                        <span className="dashboardProjectName">{title}</span>
+                        <span className="dashboardProjectMeta">
+                          Updated {new Date(p.updated_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="dashboardProjectSnippet">
+                        {snippet || 'No preview yet. Open to start writing.'}
+                      </p>
+                      <span className="dashboardProjectOpen">Open →</span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+            <p className="dashboardCardText dashboardProjectLimit dashboardProjectLimitCentered">
+              Project limit: {projects.length} / {limit} (Free: 1, Pro: 10, Elite: 100)
+            </p>
+          </>
         )}
-        <p className="dashboardCardText dashboardProjectLimit">
-          Project limit: {projects.length} / {limit} (Free: 1, Pro: 10, Elite: 100)
-        </p>
       </section>
     </div>
   )

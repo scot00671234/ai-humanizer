@@ -65,10 +65,10 @@ export default function DashboardResume() {
   const [projectLoading, setProjectLoading] = useState(false)
   const [saveLoading, setSaveLoading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
-  const [selectionPopupOpen, setSelectionPopupOpen] = useState(false)
-  const [selectionPrompt, setSelectionPrompt] = useState('')
   const editorRef = useRef<ResumeEditorHandle>(null)
   const exportMenuRef = useRef<HTMLDivElement>(null)
+  const atsPanelRef = useRef<HTMLDivElement>(null)
+  const wasScoreLoading = useRef(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const projectIdFromUrl = searchParams.get('projectId')
@@ -184,36 +184,6 @@ export default function DashboardResume() {
     }
   }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, editorMode])
 
-  const handleRewriteWithPrompt = useCallback(async () => {
-    setRewriteError(null)
-    setRewriteLoading(true)
-    const text = editorRef.current?.getSelectedText()?.trim()
-    if (!text) {
-      setRewriteError('Select some text in the editor first.')
-      setRewriteLoading(false)
-      return
-    }
-    try {
-      const res = await api.ai.rewrite(text, {
-        language: rewriteLanguage,
-        tone: rewriteTone,
-        context: selectionPrompt.trim() || rewriteContext.trim() || undefined,
-        mode: editorMode,
-      })
-      if (res.rewritten) {
-        editorRef.current?.replaceSelection(res.rewritten)
-      }
-      setSelectionPopupOpen(false)
-      setSelectionPrompt('')
-      await refreshUser()
-    } catch (err) {
-      setRewriteError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
-    } finally {
-      setRewriteLoading(false)
-    }
-  }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, editorMode, selectionPrompt])
-
-
   const handleScore = useCallback(async () => {
     if (!editorText.trim() || !jobDescription.trim()) {
       setScoreError('Add content and a job description.')
@@ -232,6 +202,13 @@ export default function DashboardResume() {
       setScoreLoading(false)
     }
   }, [editorText, jobDescription])
+
+  useEffect(() => {
+    if (wasScoreLoading.current && !scoreLoading && score !== null) {
+      atsPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    wasScoreLoading.current = scoreLoading
+  }, [scoreLoading, score])
 
   const getContentToExport = useCallback(() => editorRef.current?.getExportText?.() ?? editorText, [editorText])
 
@@ -482,7 +459,7 @@ export default function DashboardResume() {
       </header>
 
       <div className="resumeFlow">
-        <section className="resumeSection resumeCard">
+        <section className="resumeSection resumeCard" id="resume-job-description">
           <h2 className="resumeStepTitle">Job description</h2>
           <p className="resumeStepHint">Paste the role description to get a tailored score and keyword suggestions.</p>
           <textarea
@@ -572,8 +549,9 @@ export default function DashboardResume() {
             </div>
             <p className="resumeExportHint">PDF, Word, or Text. Upload the Word file to Google Docs if you use it.</p>
           </div>
-          <details className="resumeRewriteOptionsDetails">
-            <summary className="resumeRewriteOptionsSummary">Rewrite options (style, language & instructions)</summary>
+          <div className="resumeRewriteOptionsPanel">
+            <p className="resumeRewriteOptionsHeading">Rewrite options</p>
+            <p className="resumeRewriteOptionsHint">Style, language & extra instructions apply to AI rewrites.</p>
             <div className="resumeRewriteOptions">
               <label className="resumeRewriteOption">
                 <span className="resumeRewriteOptionLabel">Style / tone</span>
@@ -613,7 +591,7 @@ export default function DashboardResume() {
                 />
               </label>
             </div>
-          </details>
+          </div>
           {(rewriteError || scoreError || exportError || editorError || summaryError) && (
             <div className="resumeErrors">
               {rewriteError && <p className="dashboardSettingsError">{rewriteError}</p>}
@@ -623,57 +601,68 @@ export default function DashboardResume() {
               {summaryError && <p className="dashboardSettingsError">{summaryError}</p>}
             </div>
           )}
-          <div onPaste={handlePaste} className="resumeEditorWrap resumeEditorWrapWithPopover">
-            <div className="resumeEditorRow">
-              <div className="resumeEditorColumn">
-                <ResumeEditor
-                  ref={editorRef}
-                  content={editorContent}
-                  onChange={handleEditorChange}
-                  onSelectionChange={(hasSelection) => setSelectionPopupOpen(hasSelection)}
-                />
-              </div>
-              {selectionPopupOpen && (
-                <div className="resumeRewritePopover" role="dialog" aria-label="Rewrite selection with custom instruction">
-                  <label className="resumeRewritePopoverLabel">
-                    <span className="resumeRewritePopoverLabelText">Instruction</span>
-                    <input
-                      type="text"
-                      className="resumeRewritePopoverInput"
-                      placeholder="e.g. more academic, concise, leadership"
-                      value={selectionPrompt}
-                      onChange={(e) => setSelectionPrompt(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleRewriteWithPrompt()}
-                    />
-                  </label>
-                  <div className="resumeRewritePopoverActions">
-                    <button type="button" className="dashboardBtn dashboardBtnPrimary resumeRewritePopoverBtn" onClick={handleRewriteWithPrompt} disabled={rewriteLoading}>
-                      {rewriteLoading ? 'Rewriting…' : 'Rewrite'}
-                    </button>
-                    <button type="button" className="dashboardBtn dashboardBtnSecondary resumeRewritePopoverBtn" onClick={() => { setSelectionPopupOpen(false); setSelectionPrompt(''); }}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
+          <div onPaste={handlePaste} className="resumeEditorWrap">
+            <div className="resumeEditorColumn">
+              <ResumeEditor
+                ref={editorRef}
+                content={editorContent}
+                onChange={handleEditorChange}
+              />
             </div>
             <p className="resumeEditorWordCount" aria-live="polite">
               {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
             </p>
+
+            <div className="resumeAtsPanel" ref={atsPanelRef}>
+              <h3 className="resumeAtsPanelTitle">ATS match score</h3>
+              <p className="resumeAtsPanelExplainer">
+                <strong>ATS</strong> stands for <strong>Applicant Tracking System</strong>—software many employers use to store, scan, and rank applications.
+                This score estimates how well your {editorMode === 'resume' ? 'resume' : 'application'} fits <strong>the specific job description you pasted above</strong>:
+                keyword overlap, strong verbs, readable length, and whether the text is likely to parse cleanly in ATS tools.
+                Each company may use different systems; treat this as focused feedback, not a guarantee.
+              </p>
+              <ul className="resumeAtsPanelBullets">
+                <li><strong>Keyword match</strong> — important terms from the job posting found in your document</li>
+                <li><strong>Strong verbs</strong> — clear, action-led bullet language</li>
+                <li><strong>Length &amp; clarity</strong> — concise, scannable lines</li>
+                <li><strong>ATS-friendly structure</strong> — layout and characters that are easier for software to read</li>
+              </ul>
+              <div className="resumeAtsPanelActions">
+                <button
+                  type="button"
+                  className="dashboardBtn dashboardBtnPrimary"
+                  onClick={handleScore}
+                  disabled={scoreLoading || !editorText.trim() || !jobDescription.trim()}
+                >
+                  {scoreLoading ? 'Scoring…' : score !== null ? 'Update ATS score' : 'Get ATS score'}
+                </button>
+                {!jobDescription.trim() && (
+                  <p className="resumeAtsPanelNeed">
+                    Paste the role in <a href="#resume-job-description" className="resumeAtsPanelLink">Job description</a> first, then score.
+                  </p>
+                )}
+                {jobDescription.trim() && !editorText.trim() && (
+                  <p className="resumeAtsPanelNeed">Add your {editorMode === 'resume' ? 'resume' : 'application'} in the editor, then tap Get ATS score.</p>
+                )}
+              </div>
+              {score !== null && (
+                <div className="resumeAtsPanelResults">
+                  <p className="resumeAtsPanelRefreshHint">
+                    Changed your text or the job description? Click <strong>Update ATS score</strong> for a fresh result.
+                  </p>
+                  <ResumeAnalysisFeedback
+                    score={score}
+                    breakdown={scoreBreakdown}
+                    keywords={keywords}
+                    resumeText={editorText}
+                    mode={editorMode}
+                    className="resumeAtsPanelFeedback"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </section>
-
-        {score !== null && (
-          <section className="resumeSection resumeCard resumeScoreCard">
-            <h2 className="resumeStepTitle">Score & feedback</h2>
-            <ResumeAnalysisFeedback
-              score={score}
-              breakdown={scoreBreakdown}
-              keywords={keywords}
-              resumeText={editorText}
-            />
-          </section>
-        )}
 
       </div>
     </div>

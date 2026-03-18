@@ -259,6 +259,7 @@ export default function Landing() {
             <a href="/#features">Features</a>
             <a href="/#pricing">Pricing</a>
             <Link to="/contact">Contact</Link>
+            <Link to="/blog">Blog</Link>
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>
