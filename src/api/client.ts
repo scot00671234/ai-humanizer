@@ -144,10 +144,26 @@ export const api = {
   },
 
   ai: {
-    rewrite: (text: string, options?: { language?: string; context?: string; tone?: string; mode?: 'resume' | 'job_application' }) =>
+    rewrite: (
+      text: string,
+      options?: {
+        language?: string
+        context?: string
+        tone?: string
+        mode?: 'resume' | 'job_application'
+        jobDescription?: string
+      }
+    ) =>
       request<{ rewritten: string; tokensUsed?: number }>('/api/ai/rewrite', {
         method: 'POST',
-        body: JSON.stringify({ text, language: options?.language, context: options?.context, tone: options?.tone, mode: options?.mode }),
+        body: JSON.stringify({
+          text,
+          language: options?.language,
+          context: options?.context,
+          tone: options?.tone,
+          mode: options?.mode,
+          jobDescription: options?.jobDescription,
+        }),
       }),
     summary: (resumeText: string, options?: { jobDescription?: string; mode?: 'resume' | 'job_application' }) =>
       request<{ summary: string }>('/api/ai/summary', {

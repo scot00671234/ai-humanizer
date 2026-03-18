@@ -8,6 +8,7 @@ const SIDEBAR_STORAGE_KEY = 'bioqz-dashboard-sidebar-open'
 const SEARCH_ITEMS = [
   { label: 'Dashboard', path: '' },
   { label: 'Editor', path: '/resume' },
+  { label: 'Guide', path: '/guide' },
   { label: 'Settings', path: '/settings' },
 ]
 
@@ -119,6 +120,12 @@ export default function DashboardLayout() {
             className={`dashboardNavLink ${location.pathname === `${basePath}/resume` ? 'dashboardNavLinkActive' : ''}`}
           >
             Editor
+          </Link>
+          <Link
+            to={`${basePath}/guide`}
+            className={`dashboardNavLink dashboardNavLinkSub ${location.pathname === `${basePath}/guide` ? 'dashboardNavLinkActive' : ''}`}
+          >
+            Guide
           </Link>
           <Link
             to={`${basePath}/settings`}

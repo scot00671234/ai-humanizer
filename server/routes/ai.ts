@@ -15,7 +15,14 @@ router.use(requireAuth)
 /** POST /api/ai/rewrite */
 router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
-  const { text, language, context, tone, mode } = req.body as { text?: string; language?: string; context?: string; tone?: string; mode?: string }
+  const { text, language, context, tone, mode, jobDescription } = req.body as {
+    text?: string
+    language?: string
+    context?: string
+    tone?: string
+    mode?: string
+    jobDescription?: string
+  }
   if (!text || typeof text !== 'string') {
     res.status(400).json({ error: 'Missing or invalid text' })
     return
@@ -26,6 +33,7 @@ router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response):
   }
   const contextStr = typeof context === 'string' ? context.slice(0, 500) : undefined
   const toneStr = typeof tone === 'string' ? tone.slice(0, 50) : undefined
+  const jobDescStr = typeof jobDescription === 'string' ? jobDescription.trim().slice(0, 12_000) : undefined
   const modeVal = mode === 'job_application' ? 'job_application' : 'resume'
 
   if (!config.deepseek?.apiKey) {
@@ -34,7 +42,13 @@ router.post('/rewrite', checkRewriteLimits, async (req: Request, res: Response):
   }
 
   try {
-    const result = await rewriteWithDeepSeek(text, { language, context: contextStr, tone: toneStr, mode: modeVal })
+    const result = await rewriteWithDeepSeek(text, {
+      language,
+      context: contextStr,
+      tone: toneStr,
+      mode: modeVal,
+      jobDescription: jobDescStr,
+    })
     const tokensUsed = result.usage.prompt_tokens + result.usage.completion_tokens
     await insertUsageLog(user.userId, 'rewrite', tokensUsed)
     res.json({ rewritten: result.text, tokensUsed })
@@ -61,7 +75,7 @@ router.post('/summary', checkRewriteLimits, async (req: Request, res: Response):
     res.status(400).json({ error: 'Content is too long.' })
     return
   }
-  const jobDesc = typeof jobDescription === 'string' ? jobDescription.slice(0, 5000) : undefined
+  const jobDesc = typeof jobDescription === 'string' ? jobDescription.trim().slice(0, 8000) : undefined
   const modeVal = mode === 'job_application' ? 'job_application' : 'resume'
 
   if (!config.deepseek?.apiKey) {

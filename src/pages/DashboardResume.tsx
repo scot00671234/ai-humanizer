@@ -179,6 +179,7 @@ export default function DashboardResume() {
         tone: rewriteTone,
         context: rewriteContext.trim() || undefined,
         mode: editorMode,
+        jobDescription: jobDescription.trim() || undefined,
       })
       if (res.rewritten) {
         editorRef.current?.replaceSelection(res.rewritten)
@@ -189,7 +190,7 @@ export default function DashboardResume() {
     } finally {
       setRewriteLoading(false)
     }
-  }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, editorMode])
+  }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, editorMode, jobDescription])
 
   const handleScore = useCallback(async () => {
     if (!editorText.trim() || !jobDescription.trim()) {
@@ -468,7 +469,9 @@ export default function DashboardResume() {
       <div className="resumeFlow">
         <section className="resumeSection resumeCard" id="resume-job-description">
           <h2 className="resumeStepTitle">Job description</h2>
-          <p className="resumeStepHint">Paste the role description to get a tailored score and keyword suggestions.</p>
+          <p className="resumeStepHint">
+            Paste the role description for fit scoring — and so AI rewrites, summaries, and opening paragraphs use this role as context (both resume and job application modes).
+          </p>
           <textarea
             className="resumeJobDesc"
             placeholder="Paste the job description here..."

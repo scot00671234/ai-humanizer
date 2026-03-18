@@ -21,6 +21,8 @@ export type RewriteOptions = {
   context?: string
   tone?: string
   mode?: EditorMode
+  /** Target job posting — rewrites should align wording/themes when present. */
+  jobDescription?: string
 }
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
@@ -40,8 +42,25 @@ function buildRewritePrompt(text: string, options: RewriteOptions): string {
   const resumeIntro = `You are an expert resume editor. Rewrite the following resume content so it is strong, ATS-friendly, and professional.`
   const jobAppIntro = `You are an expert at job applications and cover letters. The following text is from a job application (e.g. cover letter, application form answers, or personal statement). Rewrite it to be strong, tailored to the role, and professional. For cover letters: keep a letter tone and address the reader. For application answers: keep answers concise and impact-focused.`
 
-  const parts: string[] = [
-    mode === 'job_application' ? jobAppIntro : resumeIntro,
+  const jd = options.jobDescription?.trim()
+  const jdBlock = jd
+    ? [
+        '',
+        'TARGET JOB DESCRIPTION (critical context):',
+        'The user is applying for this role. Tailor vocabulary, emphasis, and themes to match this posting.',
+        '- Mirror relevant terminology (skills, tools, responsibilities) where it fits the candidate’s existing content.',
+        '- Do NOT invent employers, degrees, certifications, or experience not implied by the text you rewrite.',
+        jd.slice(0, 8000),
+      ].join('\n')
+    : ''
+
+  const parts: string[] = [mode === 'job_application' ? jobAppIntro : resumeIntro]
+  if (jd) {
+    parts.push(
+      'A target job description is included below — tailor vocabulary and emphasis to that role while staying truthful to the candidate’s content.'
+    )
+  }
+  parts.push(
     `Rules:`,
     `- Output in ${languageInstruction}.`,
     `- PRESERVE STRUCTURE: Keep the same number of bullets, paragraphs, and line breaks. Do NOT merge multiple bullets or paragraphs into one sentence. Improve each bullet/paragraph in place.`,
@@ -49,13 +68,14 @@ function buildRewritePrompt(text: string, options: RewriteOptions): string {
     `- Add or keep concrete metrics and outcomes where relevant (%, $, time saved, team size).`,
     `- Be concise; remove filler. No generic phrases.`,
     `- Return ONLY the rewritten text, no preamble or explanation.`,
-  ]
+  )
   const toneKey = (options.tone || 'professional').toLowerCase().replace(/\s+/g, '-')
   const toneInstruction = TONE_INSTRUCTIONS[toneKey] ?? TONE_INSTRUCTIONS.professional
   parts.push('', toneInstruction)
   if (options.context?.trim()) {
     parts.push('', 'Additional instructions from the user:', options.context.trim())
   }
+  if (jdBlock) parts.push(jdBlock)
   const contentLabel = mode === 'job_application' ? 'Job application content to rewrite:' : 'Resume content to rewrite:'
   parts.push('', '---', '', contentLabel, '', text)
   return parts.join('\n')
@@ -240,17 +260,19 @@ export async function generateSummaryWithDeepSeek(
     throw new Error('DEEPSEEK_API_KEY is not set')
   }
 
-  const jobContext = jobDescription?.trim()
-    ? `\n\nThe target job description (use to align the output):\n${jobDescription.trim().slice(0, 2000)}`
+  const jd = jobDescription?.trim()
+  const jdSlice = jd ? jd.slice(0, 6000) : ''
+  const jdTailoring = jdSlice
+    ? `\n\nTARGET JOB DESCRIPTION — you MUST align this opening with this role:\n${jdSlice}\n\nInstructions: Draw 2–4 concrete connections (skills, responsibilities, or domain) between the candidate’s background and this posting. Use terminology from the job where accurate. Do not claim experience the resume does not support.`
     : ''
 
-  const resumePrompt = `You are an expert resume writer. Write a short professional summary (2–4 sentences, 50–80 words) for the top of this resume. It should highlight the candidate's key experience, strengths, and value. Use third person or first person consistently; prefer third person for a formal resume. Be specific, not generic. Do not repeat the word "summary" or "professional summary". Return ONLY the summary text, no heading or labels.${jobContext}
+  const resumePrompt = `You are an expert resume writer. Write a short professional summary (2–4 sentences, 50–80 words) for the top of this resume. It should highlight the candidate's key experience, strengths, and value. Use third person or first person consistently; prefer third person for a formal resume. Be specific, not generic. Do not repeat the word "summary" or "professional summary". Return ONLY the summary text, no heading or labels.${jdTailoring}
 
 ---
 Resume content:
 ${resumeText.slice(0, 6000)}`
 
-  const jobAppPrompt = `You are an expert at cover letters and job applications. Write a strong opening paragraph (2–4 sentences, 50–80 words) for a cover letter or job application. It should hook the reader, show fit for the role, and lead into the rest of the application. Be specific to the candidate and the job. Do not use "I am writing to apply" or similar clichés. Return ONLY the paragraph text, no greeting or labels.${jobContext}
+  const jobAppPrompt = `You are an expert at cover letters and job applications. Write a strong opening paragraph (2–4 sentences, 50–80 words) for a cover letter or job application. It should hook the reader, show clear fit for THIS role, and lead into the rest of the application. Reference specific themes from the job where the candidate’s content supports it. Do not use "I am writing to apply" or similar clichés. Return ONLY the paragraph text, no greeting or labels.${jdTailoring}
 
 ---
 Application/cover letter content:

@@ -11,6 +11,7 @@ import DashboardLayout from './components/DashboardLayout'
 import DashboardHome from './pages/DashboardHome'
 import DashboardResume from './pages/DashboardResume'
 import DashboardSettings from './pages/DashboardSettings'
+import DashboardGuide from './pages/DashboardGuide'
 import Contact from './pages/Contact'
 import Blog from './pages/Blog'
 import BlogArticlePage from './pages/BlogArticle'
@@ -71,6 +72,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           <Route path="resume" element={<DashboardResume />} />
+          <Route path="guide" element={<DashboardGuide />} />
           <Route path="settings" element={<DashboardSettings />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
