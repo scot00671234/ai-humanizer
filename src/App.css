@@ -30,37 +30,37 @@
 }
 
 /* Landing: nav floats over dark hero */
-body[data-page="landing"] .nav {
+[data-theme="dark"] body[data-page="landing"] .nav {
   background: rgba(8, 12, 18, 0.22);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: none;
 }
 
-body[data-page="landing"] .navLinks a,
-body[data-page="landing"] .navLinks button,
-body[data-page="landing"] .themeToggle {
+[data-theme="dark"] body[data-page="landing"] .navLinks a,
+[data-theme="dark"] body[data-page="landing"] .navLinks button,
+[data-theme="dark"] body[data-page="landing"] .themeToggle {
   color: rgba(255, 255, 255, 0.78);
 }
 
 /* Landing: keep CTA text dark even though other links are light */
-body[data-page="landing"] .navLinks a.navCta {
+[data-theme="dark"] body[data-page="landing"] .navLinks a.navCta {
   color: #0a0f14;
 }
 
-body[data-page="landing"] .navLinks a.navCta:hover {
+[data-theme="dark"] body[data-page="landing"] .navLinks a.navCta:hover {
   color: #0a0f14;
 }
 
-body[data-page="landing"] .navLinks a:hover,
-body[data-page="landing"] .navLinks button:hover {
+[data-theme="dark"] body[data-page="landing"] .navLinks a:hover,
+[data-theme="dark"] body[data-page="landing"] .navLinks button:hover {
   color: #fff;
 }
 
-body[data-page="landing"] .navBrand {
+[data-theme="dark"] body[data-page="landing"] .navBrand {
   color: rgba(255, 255, 255, 0.92);
 }
 
-body[data-page="landing"] .navBrand:hover {
+[data-theme="dark"] body[data-page="landing"] .navBrand:hover {
   color: #fff;
 }
 
@@ -73,18 +73,18 @@ body[data-page="landing"] .navBrand:hover {
   color: #fff;
 }
 
-body[data-page="landing"] .themeToggle {
+[data-theme="dark"] body[data-page="landing"] .themeToggle {
   border-color: rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
 }
 
-body[data-page="landing"] .navCta {
+[data-theme="dark"] body[data-page="landing"] .navCta {
   background: #d7ff59;
   color: #0a0f14;
   box-shadow: 0 10px 24px -12px rgba(215, 255, 89, 0.5);
 }
 
-body[data-page="landing"] .navCta:hover {
+[data-theme="dark"] body[data-page="landing"] .navCta:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 28px -14px rgba(215, 255, 89, 0.55);
 }
@@ -296,78 +296,78 @@ body[data-page="landing"] .navCta:hover {
 }
 
 /* Landing: dark, premium hero backdrop inspired by modern SaaS */
-.landingPage .hero[data-hero-bg="false"] .heroBackdrop {
+[data-theme="dark"] .landingPage .hero[data-hero-bg="false"] .heroBackdrop {
   background-image:
     radial-gradient(1100px 520px at 18% 28%, rgba(215, 255, 89, 0.22) 0%, rgba(215, 255, 89, 0.0) 60%),
     radial-gradient(900px 520px at 78% 18%, rgba(215, 255, 89, 0.18) 0%, rgba(215, 255, 89, 0.0) 62%),
     linear-gradient(180deg, #071019 0%, #08141f 55%, #0b1623 100%);
 }
 
-.landingPage .hero[data-hero-bg="false"] .heroBackdrop::after {
+[data-theme="dark"] .landingPage .hero[data-hero-bg="false"] .heroBackdrop::after {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(7, 16, 25, 0.92) 100%),
     radial-gradient(800px 420px at 50% 92%, rgba(245, 248, 252, 0.12) 0%, rgba(245, 248, 252, 0.0) 70%);
 }
 
-.landingPage .heroOrb {
+[data-theme="dark"] .landingPage .heroOrb {
   opacity: 0.35;
 }
 
-.landingPage .blobs {
+[data-theme="dark"] .landingPage .blobs {
   opacity: 0.18;
 }
 
-.landingPage .heroTitle,
-.landingPage .heroSubtitle {
+[data-theme="dark"] .landingPage .heroTitle,
+[data-theme="dark"] .landingPage .heroSubtitle {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .heroSubtitle {
+[data-theme="dark"] .landingPage .heroSubtitle {
   opacity: 0.82;
 }
 
-.landingPage .heroBadge {
+[data-theme="dark"] .landingPage .heroBadge {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
   color: rgba(255, 255, 255, 0.78);
 }
 
-.landingPage .heroTitleAccent {
+[data-theme="dark"] .landingPage .heroTitleAccent {
   color: #d7ff59;
 }
 
-.landingPage .heroValueChips li {
+[data-theme="dark"] .landingPage .heroValueChips li {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.78);
 }
 
-.landingPage .heroCtaPrimary {
+[data-theme="dark"] .landingPage .heroCtaPrimary {
   background: #d7ff59;
   color: #0a0f14;
   box-shadow: 0 14px 34px -16px rgba(215, 255, 89, 0.55);
 }
 
-.landingPage .heroCtaPrimary:hover {
+[data-theme="dark"] .landingPage .heroCtaPrimary:hover {
   color: #0a0f14;
   box-shadow: 0 18px 44px -18px rgba(215, 255, 89, 0.62);
 }
 
-.landingPage .heroCtaGhost {
+[data-theme="dark"] .landingPage .heroCtaGhost {
   color: rgba(255, 255, 255, 0.78);
 }
 
-.landingPage .heroCtaGhost:hover {
+[data-theme="dark"] .landingPage .heroCtaGhost:hover {
   color: #fff;
   border-bottom-color: rgba(215, 255, 89, 0.7);
 }
 
-.landingPage .heroMediaCard {
+[data-theme="dark"] .landingPage .heroMediaCard {
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 22px 60px -34px rgba(0, 0, 0, 0.75);
 }
 
-.landingPage .heroPreviewCard {
+[data-theme="dark"] .landingPage .heroPreviewCard {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(18px);
@@ -375,43 +375,43 @@ body[data-page="landing"] .navCta:hover {
   box-shadow: 0 24px 64px -44px rgba(0, 0, 0, 0.8);
 }
 
-.landingPage .heroPreviewCol {
+[data-theme="dark"] .landingPage .heroPreviewCol {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
-.landingPage .heroPreviewColAfter {
+[data-theme="dark"] .landingPage .heroPreviewColAfter {
   background: rgba(215, 255, 89, 0.14);
 }
 
-.landingPage .heroPreviewTitle {
+[data-theme="dark"] .landingPage .heroPreviewTitle {
   color: rgba(255, 255, 255, 0.88);
 }
 
-.landingPage .heroPreviewScore {
+[data-theme="dark"] .landingPage .heroPreviewScore {
   background: rgba(215, 255, 89, 0.14);
   border-color: rgba(215, 255, 89, 0.22);
   color: rgba(215, 255, 89, 0.92);
 }
 
-.landingPage .heroPreviewBar {
+[data-theme="dark"] .landingPage .heroPreviewBar {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.landingPage .heroPreviewBar span {
+[data-theme="dark"] .landingPage .heroPreviewBar span {
   background: #d7ff59;
 }
 
-.landingPage .heroPreviewLabel {
+[data-theme="dark"] .landingPage .heroPreviewLabel {
   color: rgba(255, 255, 255, 0.58);
 }
 
-.landingPage .heroPreviewText {
+[data-theme="dark"] .landingPage .heroPreviewText {
   color: rgba(255, 255, 255, 0.78);
 }
 
-.landingPage .heroPreviewTags span {
+[data-theme="dark"] .landingPage .heroPreviewTags span {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.74);
@@ -957,6 +957,14 @@ body[data-page="landing"] .navCta:hover {
 
 .landingPage {
   background:
+    radial-gradient(900px 520px at 20% 10%, rgba(215, 255, 89, 0.12) 0%, rgba(215, 255, 89, 0.0) 55%),
+    radial-gradient(900px 520px at 85% 0%, rgba(215, 255, 89, 0.08) 0%, rgba(215, 255, 89, 0.0) 60%),
+    linear-gradient(165deg, var(--bg-gradient-from) 0%, var(--bg-base) 45%, var(--bg-gradient-to) 100%);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .landingPage {
+  background:
     radial-gradient(1000px 560px at 20% 18%, rgba(215, 255, 89, 0.08) 0%, rgba(215, 255, 89, 0.0) 60%),
     radial-gradient(900px 520px at 82% 8%, rgba(215, 255, 89, 0.1) 0%, rgba(215, 255, 89, 0.0) 62%),
     linear-gradient(180deg, #071019 0%, #08141f 40%, #0b1623 100%);
@@ -971,188 +979,188 @@ body[data-page="landing"] .navCta:hover {
   max-width: 34rem;
 }
 
-.landingPage .sectionLabel {
+[data-theme="dark"] .landingPage .sectionLabel {
   color: rgba(255, 255, 255, 0.58);
 }
 
-.landingPage .sectionTitle {
+[data-theme="dark"] .landingPage .sectionTitle {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .pathSectionTitle {
+[data-theme="dark"] .landingPage .pathSectionTitle {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .pathLine {
+[data-theme="dark"] .landingPage .pathLine {
   background: linear-gradient(to bottom, transparent, rgba(215, 255, 89, 0.85) 5%, rgba(215, 255, 89, 0.85) 95%, transparent);
   opacity: 0.35;
 }
 
-.landingPage .pathNode {
+[data-theme="dark"] .landingPage .pathNode {
   background: #d7ff59;
   border-color: rgba(7, 16, 25, 0.95);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.landingPage .pathCard,
-.landingPage .featureCard,
-.landingPage .pricingCard,
-.landingPage .landingTryCard,
-.landingPage .ctaBox,
-.landingPage .resumeAtsPanel,
-.landingPage .dashboardCard {
+[data-theme="dark"] .landingPage .pathCard,
+[data-theme="dark"] .landingPage .featureCard,
+[data-theme="dark"] .landingPage .pricingCard,
+[data-theme="dark"] .landingPage .landingTryCard,
+[data-theme="dark"] .landingPage .ctaBox,
+[data-theme="dark"] .landingPage .resumeAtsPanel,
+[data-theme="dark"] .landingPage .dashboardCard {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 18px 56px -40px rgba(0, 0, 0, 0.7);
   color: rgba(255, 255, 255, 0.88);
 }
 
-.landingPage .pathCardTitle,
-.landingPage .featureCard h3,
-.landingPage .pricingName,
-.landingPage .landingTryTitle,
-.landingPage .ctaBox h2 {
+[data-theme="dark"] .landingPage .pathCardTitle,
+[data-theme="dark"] .landingPage .featureCard h3,
+[data-theme="dark"] .landingPage .pricingName,
+[data-theme="dark"] .landingPage .landingTryTitle,
+[data-theme="dark"] .landingPage .ctaBox h2 {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .pathCardBody,
-.landingPage .featureCard p,
-.landingPage .pricingDesc,
-.landingPage .landingTrySubtitle,
-.landingPage .landingTryHint,
-.landingPage .landingTryLogin,
-.landingPage .aboutLead,
-.landingPage .aboutPoints li,
-.landingPage .landingFaqA,
-.landingPage .ctaBox p {
+[data-theme="dark"] .landingPage .pathCardBody,
+[data-theme="dark"] .landingPage .featureCard p,
+[data-theme="dark"] .landingPage .pricingDesc,
+[data-theme="dark"] .landingPage .landingTrySubtitle,
+[data-theme="dark"] .landingPage .landingTryHint,
+[data-theme="dark"] .landingPage .landingTryLogin,
+[data-theme="dark"] .landingPage .aboutLead,
+[data-theme="dark"] .landingPage .aboutPoints li,
+[data-theme="dark"] .landingPage .landingFaqA,
+[data-theme="dark"] .landingPage .ctaBox p {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.landingPage .aboutPoints li strong {
+[data-theme="dark"] .landingPage .aboutPoints li strong {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .aboutPoints li::before {
+[data-theme="dark"] .landingPage .aboutPoints li::before {
   background: #d7ff59;
   opacity: 0.85;
 }
 
-.landingPage .featureIcon {
+[data-theme="dark"] .landingPage .featureIcon {
   background: rgba(215, 255, 89, 0.14);
   color: #d7ff59;
 }
 
-.landingPage .featureCard:hover {
+[data-theme="dark"] .landingPage .featureCard:hover {
   background: rgba(255, 255, 255, 0.09);
   border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
 }
 
-.landingPage .landingTryInput,
-.landingPage .landingTryInput:focus,
-.landingPage .landingTryInput:hover {
+[data-theme="dark"] .landingPage .landingTryInput,
+[data-theme="dark"] .landingPage .landingTryInput:focus,
+[data-theme="dark"] .landingPage .landingTryInput:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.9);
 }
 
-.landingPage .landingTryInput::placeholder {
+[data-theme="dark"] .landingPage .landingTryInput::placeholder {
   color: rgba(255, 255, 255, 0.48);
 }
 
-.landingPage .landingTryCta {
+[data-theme="dark"] .landingPage .landingTryCta {
   background: #d7ff59;
   color: #0a0f14;
   border: 1px solid rgba(215, 255, 89, 0.35);
   box-shadow: 0 14px 34px -22px rgba(215, 255, 89, 0.55);
 }
 
-.landingPage .landingTryCta:hover {
+[data-theme="dark"] .landingPage .landingTryCta:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 44px -26px rgba(215, 255, 89, 0.62);
 }
 
-.landingPage .landingTryLoginLink,
-.landingPage .dashboardCardLink,
-.landingPage .landingFaqSection a,
-.landingPage .footerLinks a,
-.landingPage .footerBrand {
+[data-theme="dark"] .landingPage .landingTryLoginLink,
+[data-theme="dark"] .landingPage .dashboardCardLink,
+[data-theme="dark"] .landingPage .landingFaqSection a,
+[data-theme="dark"] .landingPage .footerLinks a,
+[data-theme="dark"] .landingPage .footerBrand {
   color: rgba(255, 255, 255, 0.78);
 }
 
-.landingPage .landingTryLoginLink:hover,
-.landingPage .footerLinks a:hover {
+[data-theme="dark"] .landingPage .landingTryLoginLink:hover,
+[data-theme="dark"] .landingPage .footerLinks a:hover {
   color: #fff;
 }
 
-.landingPage .pricingCardFeatured {
+[data-theme="dark"] .landingPage .pricingCardFeatured {
   border-color: rgba(215, 255, 89, 0.28);
   box-shadow: 0 22px 68px -46px rgba(215, 255, 89, 0.35);
 }
 
-.landingPage .pricingPrice {
+[data-theme="dark"] .landingPage .pricingPrice {
   color: rgba(255, 255, 255, 0.94);
 }
 
-.landingPage .pricingPrice span {
+[data-theme="dark"] .landingPage .pricingPrice span {
   color: rgba(255, 255, 255, 0.62);
 }
 
-.landingPage .pricingDesc {
+[data-theme="dark"] .landingPage .pricingDesc {
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
-.landingPage .pricingList li {
+[data-theme="dark"] .landingPage .pricingList li {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.landingPage .pricingList li::before {
+[data-theme="dark"] .landingPage .pricingList li::before {
   background: #d7ff59;
   opacity: 0.55;
 }
 
-.landingPage .pricingCta {
+[data-theme="dark"] .landingPage .pricingCta {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
   color: rgba(255, 255, 255, 0.92);
   box-shadow: 0 14px 34px -26px rgba(0, 0, 0, 0.55);
 }
 
-.landingPage .pricingCta:hover {
+[data-theme="dark"] .landingPage .pricingCta:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.22);
   color: #fff;
 }
 
 /* Featured plan: make CTA clearly primary */
-.landingPage .pricingCardFeatured .pricingCta {
+[data-theme="dark"] .landingPage .pricingCardFeatured .pricingCta {
   background: #d7ff59;
   border-color: rgba(215, 255, 89, 0.35);
   color: #0a0f14;
   box-shadow: 0 18px 44px -28px rgba(215, 255, 89, 0.45);
 }
 
-.landingPage .pricingCardFeatured .pricingCta:hover {
+[data-theme="dark"] .landingPage .pricingCardFeatured .pricingCta:hover {
   background: #d7ff59;
   border-color: rgba(215, 255, 89, 0.45);
   color: #0a0f14;
   box-shadow: 0 22px 56px -34px rgba(215, 255, 89, 0.55);
 }
 
-.landingPage .landingFaqItem {
+[data-theme="dark"] .landingPage .landingFaqItem {
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
-.landingPage .landingFaqQ {
+[data-theme="dark"] .landingPage .landingFaqQ {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.landingPage .footer {
+[data-theme="dark"] .landingPage .footer {
   background: rgba(255, 255, 255, 0.03);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.landingPage .footerCopy {
+[data-theme="dark"] .landingPage .footerCopy {
   color: rgba(255, 255, 255, 0.6);
 }
 
