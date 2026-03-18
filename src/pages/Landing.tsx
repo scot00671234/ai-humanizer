@@ -114,6 +114,13 @@ export default function Landing() {
     })
   }, [])
 
+  useEffect(() => {
+    document.body.dataset.page = 'landing'
+    return () => {
+      if (document.body.dataset.page === 'landing') delete document.body.dataset.page
+    }
+  }, [])
+
   const homeJsonLd = useMemo(() => {
     const base = getSiteUrl().replace(/\/$/, '')
     const orgId = `${base}/#organization`
@@ -182,84 +189,85 @@ export default function Landing() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
-      <main className="hero" data-hero-bg="false">
-        <div className="heroBackdrop" aria-hidden />
-        <div className="heroBg" aria-hidden>
-          <div className="heroOrb heroOrbTop" />
-          <div className="heroOrb heroOrbBottom" />
-          <div className="heroOrb heroOrbCenter" />
-        </div>
-        <div className="blobs">
-          <BlobTop />
-          <BlobBottom />
-        </div>
-        <div className="heroInner">
-          <div className="heroContent heroContentSplit">
-            <span className="heroBadge">Free to start · No credit card</span>
-            <h1 className="heroTitle">
-              Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
-            </h1>
-            <p className="heroSubtitle">
-              Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
-            </p>
-            <ul className="heroValueChips" aria-label="What bioqz does">
-              <li>AI bullet rewrites</li>
-              <li>Job fit score</li>
-              <li>ATS-friendly PDF</li>
-            </ul>
-            <div className="heroCtaRow">
-              <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
-              <a href="#try" className="heroCtaGhost">Try one bullet first</a>
-            </div>
+      <div className="landingPage">
+        <main className="hero" data-hero-bg="false">
+          <div className="heroBackdrop" aria-hidden />
+          <div className="heroBg" aria-hidden>
+            <div className="heroOrb heroOrbTop" />
+            <div className="heroOrb heroOrbBottom" />
+            <div className="heroOrb heroOrbCenter" />
           </div>
-
-          <aside className="heroPreview" aria-label="Product preview">
-            <div className="heroMediaCard" aria-hidden>
-              <img
-                src="/hero-desk.png"
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="heroPreviewCard">
-              <div className="heroPreviewTop">
-                <div className="heroPreviewTitle">Example: Job fit score</div>
-                <div className="heroPreviewScore" aria-label="Score 82 out of 100">
-                  <span>82</span>
-                  <small>/100</small>
-                </div>
-              </div>
-              <div className="heroPreviewBar" aria-hidden>
-                <span style={{ width: '82%' }} />
-              </div>
-
-              <div className="heroPreviewGrid" aria-label="Before and after rewrite">
-                <div className="heroPreviewCol">
-                  <div className="heroPreviewLabel">Before</div>
-                  <p className="heroPreviewText">
-                    Worked with the team to improve the checkout experience and fix bugs.
-                  </p>
-                </div>
-                <div className="heroPreviewCol heroPreviewColAfter">
-                  <div className="heroPreviewLabel">After</div>
-                  <p className="heroPreviewText">
-                    Improved checkout conversion by 12% by shipping UX fixes and resolving 30+ payment bugs.
-                  </p>
-                </div>
-              </div>
-
-              <div className="heroPreviewTags" aria-label="What improved">
-                <span>Stronger verbs</span>
-                <span>Metrics</span>
-                <span>ATS keywords</span>
+          <div className="blobs">
+            <BlobTop />
+            <BlobBottom />
+          </div>
+          <div className="heroInner">
+            <div className="heroContent heroContentSplit">
+              <span className="heroBadge">Free to start · No credit card</span>
+              <h1 className="heroTitle">
+                Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
+              </h1>
+              <p className="heroSubtitle">
+                Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
+              </p>
+              <ul className="heroValueChips" aria-label="What bioqz does">
+                <li>AI bullet rewrites</li>
+                <li>Job fit score</li>
+                <li>ATS-friendly PDF</li>
+              </ul>
+              <div className="heroCtaRow">
+                <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
+                <a href="#try" className="heroCtaGhost">Try one bullet first</a>
               </div>
             </div>
-          </aside>
-        </div>
-      </main>
 
-      <section className="section pathSection" id="path" aria-label="Why your resume matters">
+            <aside className="heroPreview" aria-label="Product preview">
+              <div className="heroMediaCard" aria-hidden>
+                <img
+                  src="/hero-desk.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="heroPreviewCard">
+                <div className="heroPreviewTop">
+                  <div className="heroPreviewTitle">Example: Job fit score</div>
+                  <div className="heroPreviewScore" aria-label="Score 82 out of 100">
+                    <span>82</span>
+                    <small>/100</small>
+                  </div>
+                </div>
+                <div className="heroPreviewBar" aria-hidden>
+                  <span style={{ width: '82%' }} />
+                </div>
+
+                <div className="heroPreviewGrid" aria-label="Before and after rewrite">
+                  <div className="heroPreviewCol">
+                    <div className="heroPreviewLabel">Before</div>
+                    <p className="heroPreviewText">
+                      Worked with the team to improve the checkout experience and fix bugs.
+                    </p>
+                  </div>
+                  <div className="heroPreviewCol heroPreviewColAfter">
+                    <div className="heroPreviewLabel">After</div>
+                    <p className="heroPreviewText">
+                      Improved checkout conversion by 12% by shipping UX fixes and resolving 30+ payment bugs.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="heroPreviewTags" aria-label="What improved">
+                  <span>Stronger verbs</span>
+                  <span>Metrics</span>
+                  <span>ATS keywords</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </main>
+
+        <section className="section pathSection" id="path" aria-label="Why your resume matters">
         <h2 className="pathSectionTitle">The right resume changes everything</h2>
         <div className="pathImagesRow" aria-label="Professional workspace">
           <div className="landingPhotoCard pathImageTile">
@@ -299,7 +307,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section landingTrySection" id="try">
+        <section className="section landingTrySection" id="try">
         <div className="landingTryHeader">
           <h2 className="landingTryTitle">Paste a bullet. See what we can do.</h2>
           <p className="landingTrySubtitle">We’ll rewrite it once you’re in. Sign up free and get your result in seconds.</p>
@@ -329,7 +337,7 @@ export default function Landing() {
         </form>
       </section>
 
-      <section className="section aboutSection" id="about">
+        <section className="section aboutSection" id="about">
         <div className="sectionHeader aboutSectionHeader">
           <p className="sectionLabel">Why bioqz</p>
           <h2 className="sectionTitle">Make every application stronger—in a few simple steps.</h2>
@@ -360,7 +368,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section" id="features">
+        <section className="section" id="features">
         <div className="sectionHeader">
           <p className="sectionLabel">How it works</p>
           <h2 className="sectionTitle">Built to get you past the screeners</h2>
@@ -376,7 +384,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section" id="pricing">
+        <section className="section" id="pricing">
         <div className="sectionHeader">
           <p className="sectionLabel">Pricing</p>
           <h2 className="sectionTitle">Start free. Upgrade when you're ready.</h2>
@@ -398,7 +406,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="section landingFaqSection" id="faq" aria-labelledby="landing-faq-heading">
+        <section className="section landingFaqSection" id="faq" aria-labelledby="landing-faq-heading">
         <div className="sectionHeader">
           <p className="sectionLabel">FAQ</p>
           <h2 id="landing-faq-heading" className="sectionTitle">
@@ -418,7 +426,7 @@ export default function Landing() {
         </dl>
       </section>
 
-      <section className="section ctaSection">
+        <section className="section ctaSection">
         <div className="ctaBox">
           <h2>Your next job is out there. Your resume should be ready.</h2>
           <p>Join free. 2 AI rewrites today. No credit card.</p>
@@ -426,7 +434,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="footer">
+        <footer className="footer">
         <div className="footerInner">
           <Link to="/" className="footerBrand">bioqz</Link>
           <div className="footerLinks">
@@ -441,7 +449,8 @@ export default function Landing() {
           </div>
           <span className="footerCopy">© {new Date().getFullYear()} bioqz. All rights reserved.</span>
         </div>
-      </footer>
+        </footer>
+      </div>
     </>
   )
 }

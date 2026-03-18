@@ -29,6 +29,40 @@
   box-shadow: 0 14px 44px -22px rgba(0, 0, 0, 0.55);
 }
 
+/* Landing: nav floats over dark hero */
+body[data-page="landing"] .nav {
+  background: rgba(8, 12, 18, 0.22);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+body[data-page="landing"] .navLinks a,
+body[data-page="landing"] .navLinks button,
+body[data-page="landing"] .themeToggle {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+body[data-page="landing"] .navLinks a:hover,
+body[data-page="landing"] .navLinks button:hover {
+  color: #fff;
+}
+
+body[data-page="landing"] .themeToggle {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body[data-page="landing"] .navCta {
+  background: #d7ff59;
+  color: #0a0f14;
+  box-shadow: 0 10px 24px -12px rgba(215, 255, 89, 0.5);
+}
+
+body[data-page="landing"] .navCta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -14px rgba(215, 255, 89, 0.55);
+}
+
 .navInner {
   max-width: 1120px;
   margin: 0 auto;
@@ -172,6 +206,11 @@
   overflow: hidden;
 }
 
+.landingPage .hero {
+  min-height: 92vh;
+  padding-top: 7.25rem; /* space for floating nav */
+}
+
 .heroInner {
   width: min(1120px, 100%);
   display: grid;
@@ -219,6 +258,91 @@
 
 .hero[data-hero-bg="false"] .heroBackdrop::after {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.22) 45%, rgba(245, 248, 252, 0.7) 100%);
+}
+
+/* Landing: dark, premium hero backdrop inspired by modern SaaS */
+.landingPage .hero[data-hero-bg="false"] .heroBackdrop {
+  background-image:
+    radial-gradient(1100px 520px at 18% 28%, rgba(47, 127, 134, 0.36) 0%, rgba(47, 127, 134, 0.0) 60%),
+    radial-gradient(900px 520px at 78% 18%, rgba(215, 255, 89, 0.18) 0%, rgba(215, 255, 89, 0.0) 62%),
+    linear-gradient(180deg, #071019 0%, #08141f 55%, #0b1623 100%);
+}
+
+.landingPage .hero[data-hero-bg="false"] .heroBackdrop::after {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(7, 16, 25, 0.92) 100%),
+    radial-gradient(800px 420px at 50% 92%, rgba(245, 248, 252, 0.12) 0%, rgba(245, 248, 252, 0.0) 70%);
+}
+
+.landingPage .heroOrb {
+  opacity: 0.35;
+}
+
+.landingPage .blobs {
+  opacity: 0.18;
+}
+
+.landingPage .heroTitle,
+.landingPage .heroSubtitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.landingPage .heroSubtitle {
+  opacity: 0.82;
+}
+
+.landingPage .heroBadge {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .heroTitleAccent {
+  color: #d7ff59;
+}
+
+.landingPage .heroValueChips li {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .heroCtaPrimary {
+  background: #d7ff59;
+  color: #0a0f14;
+  box-shadow: 0 14px 34px -16px rgba(215, 255, 89, 0.55);
+}
+
+.landingPage .heroCtaPrimary:hover {
+  color: #0a0f14;
+  box-shadow: 0 18px 44px -18px rgba(215, 255, 89, 0.62);
+}
+
+.landingPage .heroCtaGhost {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .heroCtaGhost:hover {
+  color: #fff;
+  border-bottom-color: rgba(215, 255, 89, 0.7);
+}
+
+.landingPage .heroMediaCard {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 60px -34px rgba(0, 0, 0, 0.75);
+}
+
+.landingPage .heroPreviewCard {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.landingPage .heroPreviewCol {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.landingPage .heroPreviewColAfter {
+  background: rgba(47, 127, 134, 0.08);
 }
 
 [data-theme="dark"] .hero[data-hero-bg="true"] .heroBackdrop::after {
