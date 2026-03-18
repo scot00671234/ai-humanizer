@@ -22,6 +22,11 @@ export default function Terms() {
           <p>
             We may suspend or terminate your account if you breach these terms or for other operational or legal reasons. You may close your account at any time through your account settings.
           </p>
+          <h2>Contact</h2>
+          <p>
+            Questions about these terms? Email us at{' '}
+            <a href="mailto:bioqz-customer@outlook.com" className="contentLink">bioqz-customer@outlook.com</a>.
+          </p>
         </div>
         <Link to="/" className="contentBack">← Back to home</Link>
       </div>

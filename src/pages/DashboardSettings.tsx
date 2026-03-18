@@ -138,8 +138,8 @@ export default function DashboardSettings() {
           <p className="dashboardSettingsHint">
             Questions, feedback, or support? Reach us by email.
           </p>
-          <a href="mailto:bioqz@outlook.com" className="dashboardSettingsContactLink">
-            bioqz@outlook.com
+          <a href="mailto:bioqz-customer@outlook.com" className="dashboardSettingsContactLink">
+            bioqz-customer@outlook.com
           </a>
         </div>
       </section>
