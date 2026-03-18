@@ -2778,18 +2778,6 @@ body[data-page="dashboard"] .dashboard {
   background: var(--accent-soft);
 }
 
-/* Slight indent under Editor only; same type scale as other nav links */
-.dashboardNavLinkSub {
-  margin: 0 0 0 0.5rem;
-  padding: 0.5rem 0.75rem;
-  padding-left: 0.7rem;
-  border-left: 2px solid var(--glass-border);
-}
-
-[data-theme="dark"] body[data-page="dashboard"] .dashboardNavLinkSub {
-  border-left-color: rgba(255, 255, 255, 0.1);
-}
-
 /* —— Dashboard Guide —— */
 .dashboardGuidePage {
   width: 100%;

@@ -123,7 +123,7 @@ export default function DashboardLayout() {
           </Link>
           <Link
             to={`${basePath}/guide`}
-            className={`dashboardNavLink dashboardNavLinkSub ${location.pathname === `${basePath}/guide` ? 'dashboardNavLinkActive' : ''}`}
+            className={`dashboardNavLink ${location.pathname === `${basePath}/guide` ? 'dashboardNavLinkActive' : ''}`}
           >
             Guide
           </Link>
