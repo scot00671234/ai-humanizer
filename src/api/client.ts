@@ -136,8 +136,11 @@ export const api = {
         body: JSON.stringify({ plan: plan || 'pro' }),
       }),
 
-    createPortalSession: () =>
-      request<{ url: string }>('/api/auth/create-portal-session', { method: 'POST', body: '{}' }),
+    createPortalSession: (plan?: 'pro' | 'elite') =>
+      request<{ url: string }>('/api/auth/create-portal-session', {
+        method: 'POST',
+        body: JSON.stringify(plan ? { plan } : {}),
+      }),
   },
 
   ai: {

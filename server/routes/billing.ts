@@ -63,6 +63,7 @@ router.post('/create-checkout-session', requireAuth, async (req: Request, res: R
 router.post('/create-portal-session', requireAuth, async (req: Request, res: Response): Promise<void> => {
   if (billingNotConfigured(res)) return
   const { user } = req as Request & { user: JwtPayload }
+  const { plan } = (req.body as { plan?: string } | undefined) || {}
 
   if (!pool) {
     res.status(503).json({ error: 'Database not configured' })
@@ -81,10 +82,46 @@ router.post('/create-portal-session', requireAuth, async (req: Request, res: Res
     }
 
     const baseUrl = config.app.baseUrl
-    const session = await stripe!.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: `${baseUrl}/dashboard/settings`,
-    })
+    const returnUrl = `${baseUrl}/dashboard/settings`
+
+    // If a target plan is provided, deep-link into a subscription update confirmation flow.
+    // This upgrades/downgrades the EXISTING subscription (proper proration/payment handled by Stripe),
+    // instead of creating a second subscription via Checkout.
+    if (plan === 'elite' || plan === 'pro') {
+      const targetPriceId = plan === 'elite' ? config.stripe.priceElite : config.stripe.pricePro
+      if (!targetPriceId) {
+        const envVar = plan === 'elite' ? 'STRIPE_PRICE_ELITE' : 'STRIPE_PRICE_PRO'
+        res.status(400).json({ error: `Stripe price not configured. Set ${envVar} in .env.` })
+        return
+      }
+
+      const subs = await stripe!.subscriptions.list({ customer: customerId, status: 'active', limit: 1 })
+      const sub = subs.data[0]
+      const item = sub?.items?.data?.[0]
+      if (!sub || !item) {
+        res.status(400).json({ error: 'No active subscription found to update.' })
+        return
+      }
+
+      // Note: Stripe requires the target price to be allowed by your Billing Portal configuration
+      // (features.subscription_update.products). If not, Stripe will error with a helpful message.
+      const session = await stripe!.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: returnUrl,
+        flow_data: {
+          type: 'subscription_update_confirm',
+          after_completion: { type: 'redirect', redirect: { return_url: returnUrl } },
+          subscription_update_confirm: {
+            subscription: sub.id,
+            items: [{ id: item.id, price: targetPriceId, quantity: 1 }],
+          },
+        } as any,
+      })
+      res.json({ url: session.url })
+      return
+    }
+
+    const session = await stripe!.billingPortal.sessions.create({ customer: customerId, return_url: returnUrl })
     res.json({ url: session.url })
   } catch (err) {
     console.error('Create portal session error:', err)

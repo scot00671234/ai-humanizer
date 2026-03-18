@@ -49,6 +49,19 @@ export default function DashboardSettings() {
     }
   }
 
+  async function handleChangePlan(plan: 'pro' | 'elite') {
+    setBillingError(null)
+    setBillingLoading('portal')
+    try {
+      const { url } = await api.auth.createPortalSession(plan)
+      if (url) window.location.href = url
+    } catch (err) {
+      setBillingError(err instanceof Error ? err.message : 'Failed to open billing portal')
+    } finally {
+      setBillingLoading(null)
+    }
+  }
+
   async function handleDeleteAccount() {
     setDeleteError(null)
     setDeleteLoading(true)
@@ -85,7 +98,7 @@ export default function DashboardSettings() {
           </p>
           {billingError && <p className="dashboardSettingsError">{billingError}</p>}
           <div className="dashboardSettingsActions">
-            {!isPro && (
+            {(!isElite && !isPro) && (
               <>
                 <button
                   type="button"
@@ -104,6 +117,16 @@ export default function DashboardSettings() {
                   {billingLoading === 'elite' ? 'Opening…' : 'Upgrade to Elite'}
                 </button>
               </>
+            )}
+            {isPro && (
+              <button
+                type="button"
+                className="dashboardBtn dashboardBtnPrimary"
+                onClick={() => handleChangePlan('elite')}
+                disabled={!user || billingLoading !== null}
+              >
+                {billingLoading === 'portal' ? 'Opening…' : 'Upgrade to Elite'}
+              </button>
             )}
             {(isElite || isPro) && (
               <button
