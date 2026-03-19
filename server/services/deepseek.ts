@@ -38,18 +38,11 @@ function buildRewritePrompt(text: string, options: RewriteOptions): string {
   const langKey = (options.language || 'same').toLowerCase()
   const languageInstruction = LANGUAGE_MAP[langKey] ?? (langKey === 'same' ? 'the same language as the input text' : langKey)
   const mode = options.mode === 'job_application' ? 'job_application' : 'resume'
-  const userContext = options.context?.trim()
-  const jd = options.jobDescription?.trim()
-
-  // If the user asks for a conversion (e.g. CV -> job application / cover letter),
-  // we must allow structure changes; otherwise the prompt's "preserve structure"
-  // rule can prevent the conversion from happening.
-  const conversionSignals = /(cv|cover\s*letter|job\s*application|convert|turn\s*(it)?\s*into|write\s+my\s+cv|rewrite\s+as)/i
-  const allowStructureChange = mode === 'job_application' || (userContext ? conversionSignals.test(userContext) : false)
 
   const resumeIntro = `You are an expert resume editor. Rewrite the following resume content so it is strong, ATS-friendly, and professional.`
-  const jobAppIntro = `You are an expert at job applications and cover letters. The following text is from a job application (e.g. cover letter, application form answers, or personal statement). Rewrite it to be strong, tailored to the role, and professional. For cover letters: keep a letter tone and address the reader. For application answers: keep answers concise and impact-focused.`
+  const jobAppIntro = `You are an expert at job applications and cover letters. The following text can be resume bullets, CV-style content, or a rough draft. Convert it into strong job-application language that is tailored to the role and professional. If the input is resume-style, turn it into 2–4 paragraphs of application-style text. For cover-letter tone: keep a letter voice (but do not include headings like “Cover Letter”). For application-answer tone: keep answers concise and impact-focused.`
 
+  const jd = options.jobDescription?.trim()
   const jdBlock = jd
     ? [
         '',
@@ -64,41 +57,40 @@ function buildRewritePrompt(text: string, options: RewriteOptions): string {
   const parts: string[] = [mode === 'job_application' ? jobAppIntro : resumeIntro]
   if (jd) {
     parts.push(
-      'A target job description is included below — tailor vocabulary and emphasis to that role while staying truthful to the candidate’s content.'
+      'A target job description is included below — tailor vocabulary, emphasis, and themes to that role while staying truthful to the candidate’s content.'
     )
   }
+
+  const preserveRule =
+    mode === 'resume'
+      ? [
+          `- PRESERVE STRUCTURE: Keep the same number of bullets, paragraphs, and line breaks. Do NOT merge multiple bullets or paragraphs into one sentence. Improve each bullet/paragraph in place.`,
+        ]
+      : [
+          `- STRUCTURE (job application): You may restructure the content. Convert bullets into sentences/paragraphs (if needed). Output 2–4 paragraphs separated by blank lines.`,
+        ]
+
   parts.push(
     `Rules:`,
     `- Output in ${languageInstruction}.`,
-    `- Return ONLY the rewritten version of the selected text (nothing before/after).`,
+    ...preserveRule,
     `- Use strong action verbs (e.g. Led, Delivered, Improved, Built, Launched).`,
     `- Add or keep concrete metrics and outcomes where relevant (%, $, time saved, team size).`,
     `- Be concise; remove filler. No generic phrases.`,
-    `- Return ONLY the rewritten text, no preamble or explanation.`
+    `- Do NOT add headings, preambles, or “In conclusion”.`,
+    `- Return ONLY the rewritten text, no preamble or explanation.`,
   )
-
-  // User instructions must be treated as high priority. If they request a format conversion,
-  // we allow structure changes (overrides the default preserve-structure behavior).
-  if (userContext) {
-    parts.push('', 'PRIORITY INSTRUCTIONS (follow exactly):', userContext.slice(0, 1200))
-  }
-
-  if (allowStructureChange) {
-    parts.push(
-      `- YOU MAY CHANGE STRUCTURE/FORMAT to satisfy the PRIORITY INSTRUCTIONS.`,
-      `- If the user asks for a conversion (e.g. CV -> job application / cover letter), rewrite accordingly even if bullets/paragraphs change.`
-    )
-  } else {
-    parts.push(
-      `- PRESERVE STRUCTURE: Keep the same number of bullets, paragraphs, and line breaks. Do NOT merge multiple bullets or paragraphs into one sentence. Improve each bullet/paragraph in place.`
-    )
-  }
-
   const toneKey = (options.tone || 'professional').toLowerCase().replace(/\s+/g, '-')
   const toneInstruction = TONE_INSTRUCTIONS[toneKey] ?? TONE_INSTRUCTIONS.professional
   parts.push('', toneInstruction)
+  if (options.context?.trim()) {
+    parts.push('', 'Additional instructions from the user:', options.context.trim())
+  }
   if (jdBlock) parts.push(jdBlock)
-  const contentLabel = mode === 'job_application' ? 'Job application content to rewrite:' : 'Resume content to rewrite:'
+  const contentLabel =
+    mode === 'job_application'
+      ? 'TEXT TO CONVERT INTO JOB APPLICATION LANGUAGE:'
+      : 'Resume content to rewrite:'
   parts.push('', '---', '', contentLabel, '', text)
   return parts.join('\n')
 }
