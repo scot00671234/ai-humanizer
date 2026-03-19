@@ -8,9 +8,9 @@ export default function Blog() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Blog — bioqz | AI Humanizer & Natural Writing Tips',
+      title: 'Blog - Sosiol | Natural Writing & Tone Tips',
       description:
-        'Guides on making AI-assisted drafts sound human, choosing tone for your audience, and exporting clean documents—aligned with the bioqz workspace.',
+        'Guides on making model-assisted drafts sound human, choosing tone for your audience, and exporting clean documents, aligned with the Sosiol workspace.',
       path: '/blog',
       keywords: 'ai humanizer, natural writing, tone in writing, ai text editing, writing clarity',
     })
@@ -21,7 +21,7 @@ export default function Blog() {
       <div className="blogHero">
         <h1 className="blogHeroTitle">Blog</h1>
         <p className="blogHeroLead">
-          Tips for clearer, more natural writing—aligned with what bioqz helps you do: analyze drafts, humanize selections,
+          Tips for clearer, more natural writing, aligned with what Sosiol helps you do: analyze drafts, humanize selections,
           adjust length, and export when you are done.
         </p>
       </div>

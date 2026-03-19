@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 export default function DashboardGuide() {
   return (
     <div className="dashboardPage dashboardGuidePage">
-      <h1 className="dashboardPageTitle">How to use bioqz</h1>
+      <h1 className="dashboardPageTitle">How to use Sosiol</h1>
       <p className="dashboardPageSubtitle dashboardGuideLead">
-        A short guide to the Workspace: optional context for your audience, naturalness analysis, humanizing selections with AI,
+        A short guide to the Workspace: optional context for your audience, naturalness analysis, humanizing selections with tone and intensity,
         shortening or expanding the whole draft, and exporting when you are ready.
       </p>
 
@@ -13,18 +13,18 @@ export default function DashboardGuide() {
         <h2 className="dashboardGuideSectionTitle">What you can do here</h2>
         <ul className="dashboardGuideList">
           <li>
-            <strong>Analyze</strong> — Run a naturalness check on your full draft: rhythm, specificity, voice, and tone fit
+            <strong>Analyze</strong>: Run a naturalness check on your full draft: rhythm, specificity, voice, and tone fit
             (when context is set). Use suggestions and “phrases to refine” as an edit list.
           </li>
           <li>
-            <strong>Humanize</strong> — Select text, choose tone, intensity, and language, add optional instructions, then
-            replace the selection with clearer, more human wording. Facts stay yours—we do not invent experience.
+            <strong>Humanize</strong>: Select text, choose tone, intensity, and language, add optional instructions, then
+            replace the selection with clearer, more human wording. Facts stay yours; we do not invent experience.
           </li>
           <li>
-            <strong>Shorten / expand</strong> — Adjust length for the entire document in one step when you need tighter or fuller copy.
+            <strong>Shorten / expand</strong>: Adjust length for the entire document in one step when you need tighter or fuller copy.
           </li>
           <li>
-            <strong>Projects</strong> — Save your document and optional context together. Open a project from the Dashboard anytime.
+            <strong>Projects</strong>: Save your document and optional context together. Open a project from the Dashboard anytime.
           </li>
         </ul>
       </div>
@@ -42,21 +42,21 @@ export default function DashboardGuide() {
           <li>
             <span className="dashboardGuideStepNum">2</span>
             <div>
-              <strong>Add your content</strong> — upload a supported file, paste, or type in the editor. Use headings and lists
+              <strong>Add your content</strong>: upload a supported file, paste, or type in the editor. Use headings and lists
               if they help structure.
             </div>
           </li>
           <li>
             <span className="dashboardGuideStepNum">3</span>
             <div>
-              <strong>Run analysis</strong> — click <strong>Analyze writing</strong> with text in the editor. Review the score,
+              <strong>Run analysis</strong>: click <strong>Analyze writing</strong> with text in the editor. Review the score,
               breakdown, and phrases to refine.
             </div>
           </li>
           <li>
             <span className="dashboardGuideStepNum">4</span>
             <div>
-              <strong>Humanize in passes</strong> — select a sentence or paragraph, set options under <em>Humanize options</em>, then{' '}
+              <strong>Humanize in passes</strong>: select a sentence or paragraph, set options under <em>Humanize options</em>, then{' '}
               <strong>Humanize selection</strong>. If you click into the instructions field first, your selection is kept until you
               click back in the document.
             </div>
@@ -64,14 +64,14 @@ export default function DashboardGuide() {
           <li>
             <span className="dashboardGuideStepNum">5</span>
             <div>
-              <strong>Length</strong> — use <strong>Shorten all</strong> or <strong>Expand all</strong> when the whole piece needs a
+              <strong>Length</strong>: use <strong>Shorten all</strong> or <strong>Expand all</strong> when the whole piece needs a
               different size (same meaning, no new facts).
             </div>
           </li>
           <li>
             <span className="dashboardGuideStepNum">6</span>
             <div>
-              <strong>Save and export</strong> — name your project and click <strong>Save</strong>. Use <strong>Export</strong> for
+              <strong>Save and export</strong>: name your project and click <strong>Save</strong>. Use <strong>Export</strong> for
               PDF, Word, or plain text.
             </div>
           </li>
@@ -83,7 +83,7 @@ export default function DashboardGuide() {
         <ul className="dashboardGuideList dashboardGuideListCompact">
           <li>Free plans include daily limits on humanize/shorten/expand and on analysis; paid plans raise those caps (see Settings).</li>
           <li>Starting from the landing page with sample text? Sign in and your first humanize can run automatically in the Workspace.</li>
-          <li>Follow your school or workplace rules on AI assistance—we help you edit; compliance is yours.</li>
+          <li>Follow your school or workplace rules on AI assistance. We help you edit; compliance is yours.</li>
         </ul>
       </div>
 

@@ -5,9 +5,9 @@ import { setSeoMeta } from '../utils/seoMeta'
 export default function Contact() {
   useEffect(() => {
     setSeoMeta({
-      title: 'Contact — bioqz | AI Humanizer Support',
+      title: 'Contact — Sosiol | AI Humanizer Support',
       description:
-        'Contact bioqz support for questions about humanizing text, billing, or your account. We reply within about one business day.',
+        'Contact Sosiol support for questions about humanizing text, billing, or your account. We reply within about one business day.',
       path: '/contact',
     })
   }, [])

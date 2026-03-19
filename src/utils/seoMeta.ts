@@ -59,7 +59,7 @@ export function setSeoMeta(opts: SeoMetaOptions): void {
   setMeta('property', 'og:title', opts.title)
   setMeta('property', 'og:description', opts.description)
   setMeta('property', 'og:image', image)
-  setMeta('property', 'og:site_name', 'bioqz')
+  setMeta('property', 'og:site_name', 'Sosiol')
   setMeta('property', 'og:locale', 'en_US')
 
   setMeta('name', 'twitter:card', 'summary_large_image')

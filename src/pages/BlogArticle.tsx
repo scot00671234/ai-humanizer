@@ -57,8 +57,8 @@ export default function BlogArticlePage() {
       headline: article.title,
       description: article.metaDescription,
       datePublished: article.date,
-      author: { '@type': 'Organization', name: 'bioqz' },
-      publisher: { '@type': 'Organization', name: 'bioqz' },
+      author: { '@type': 'Organization', name: 'Sosiol' },
+      publisher: { '@type': 'Organization', name: 'Sosiol' },
       mainEntityOfPage: { '@type': 'WebPage', '@id': url },
       keywords: article.keywords.join(', '),
     }
@@ -67,7 +67,7 @@ export default function BlogArticlePage() {
   useEffect(() => {
     if (!article) return
     setSeoMeta({
-      title: `${article.title} | bioqz AI Humanizer Blog`,
+      title: `${article.title} | Sosiol AI Humanizer Blog`,
       description: article.metaDescription,
       path: `/blog/${article.slug}`,
       type: 'article',
@@ -122,7 +122,7 @@ export default function BlogArticlePage() {
           <p className="blogCta">
             Ready to humanize your writing in a real workspace?{' '}
             <Link to="/register" className="blogCtaLink">
-              Get started free on bioqz
+              Get started free on Sosiol
             </Link>
           </p>
           <Link to="/blog" className="contentBack">

@@ -36,7 +36,7 @@ function Nav() {
       <div className="navInner">
         <Link to="/" className="navBrand">
           <img src="/logo.svg" alt="" className="navLogo" width="28" height="28" />
-          <span>bioqz</span>
+          <span>Sosiol</span>
         </Link>
         <div className="navLinks">
           <a href="/#about">About</a>

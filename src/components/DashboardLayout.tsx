@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
-const SIDEBAR_STORAGE_KEY = 'bioqz-dashboard-sidebar-open'
+const SIDEBAR_STORAGE_KEY = 'sosiol-dashboard-sidebar-open'
 
 const SEARCH_ITEMS = [
   { label: 'Dashboard', path: '' },
@@ -104,7 +104,7 @@ export default function DashboardLayout() {
         </button>
         <Link to={basePath} className="dashboardBrand">
           <img src="/logo.svg" alt="" className="dashboardLogo" width="24" height="24" />
-          <span className="dashboardBrandText">bioqz</span>
+          <span className="dashboardBrandText">Sosiol</span>
         </Link>
         <div className={`dashboardSidebarContent ${sidebarOpen ? '' : 'dashboardSidebarContent--hidden'}`}>
 

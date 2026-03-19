@@ -1,5 +1,5 @@
 /**
- * Blog content for SEO + AEO. Aligned with bioqz: humanizer workspace, naturalness analysis, PDF export.
+ * Blog content for SEO + AEO. Aligned with Sosiol: humanizer workspace, naturalness analysis, PDF export.
  */
 
 export type BlogBlock =
@@ -24,14 +24,14 @@ export const blogArticles: BlogArticle[] = [
     slug: 'make-ai-writing-sound-human',
     title: 'How to Make AI-Generated Writing Sound More Human',
     metaDescription:
-      'Practical edits for rhythm, specificity, and voice—plus how bioqz helps you analyze drafts and humanize selections with tone controls.',
+      'Practical edits for rhythm, specificity, and voice, plus how Sosiol helps you analyze drafts and humanize selections with tone controls.',
     date: '2025-03-18',
     readTime: '6 min',
     keywords: ['ai humanizer', 'natural writing', 'ai text editing', 'writing rhythm'],
     blocks: [
       {
         type: 'p',
-        text: 'AI drafts often share the same tells: even sentence length, vague abstractions (“leverage”, “robust”, “landscape”), and transitions that feel stamped from a template. Readers notice before they can name it. The fix is not louder adjectives—it is variety, specificity, and a voice that matches your audience.',
+        text: 'Model-assisted drafts often share the same tells: even sentence length, vague abstractions (“leverage”, “robust”, “landscape”), and transitions that feel stamped from a template. Readers notice before they can name it. The fix is not louder adjectives; it is variety, specificity, and a voice that matches your audience.',
       },
       {
         type: 'h2',
@@ -42,16 +42,16 @@ export const blogArticles: BlogArticle[] = [
         items: [
           'Rhythm: mix short sentences with longer ones; break up paragraphs that all look the same.',
           'Specificity: swap general nouns for concrete ones; tie claims to real examples you can defend.',
-          'Voice: read a paragraph aloud; if you would not say it, rewrite it closer to speech—still professional if the context demands it.',
+          'Voice: read a paragraph aloud; if you would not say it, rewrite it closer to speech; still professional if the context demands it.',
         ],
       },
       {
         type: 'h2',
-        text: 'Where bioqz fits',
+        text: 'Where Sosiol fits',
       },
       {
         type: 'p',
-        text: 'bioqz gives you a workspace to paste or upload text, optional context (audience, channel, assignment), and a naturalness-style analysis with dimensions like rhythm and specificity. You then humanize selected passages with tone and intensity—or shorten or expand the whole document—while keeping your facts intact.',
+        text: 'Sosiol gives you a workspace to paste or upload text, optional context (audience, channel, assignment), and a naturalness-style analysis with dimensions like rhythm and specificity. You then humanize selected passages with tone and intensity, or shorten or expand the whole document, while keeping your facts intact.',
       },
       {
         type: 'blockquote',
@@ -63,7 +63,7 @@ export const blogArticles: BlogArticle[] = [
     slug: 'tone-academic-professional-casual',
     title: 'Choosing Tone: Academic, Professional, and Casual (Without Sounding Robotic)',
     metaDescription:
-      'Match register to audience—formal paper vs. client email vs. social post—and use tools like bioqz to steer rewrites consistently.',
+      'Match register to audience, including formal paper vs. client email vs. social post, and use tools like Sosiol to steer rewrites consistently.',
     date: '2025-03-10',
     readTime: '5 min',
     keywords: ['writing tone', 'academic tone', 'professional writing', 'casual writing'],
@@ -81,16 +81,16 @@ export const blogArticles: BlogArticle[] = [
         items: [
           'Academic: precise terms, explicit reasoning, minimal hype; citations and discipline norms rule.',
           'Professional: clear, direct, polite; jargon only when the audience shares it.',
-          'Casual: shorter sentences, plain words, more personality—still appropriate to the platform.',
+          'Casual: shorter sentences, plain words, more personality; still appropriate to the platform.',
         ],
       },
       {
         type: 'h2',
-        text: 'Using bioqz for tone',
+        text: 'Using Sosiol for tone',
       },
       {
         type: 'p',
-        text: 'Set optional context (“memo for legal team”, “LinkedIn post for designers”) and pick a style preset before you humanize a selection. Analysis can factor in tone fit when context is present—so you get feedback aligned with intent, not a single generic ideal.',
+        text: 'Set optional context (“memo for legal team”, “LinkedIn post for designers”) and pick a style preset before you humanize a selection. Analysis can factor in tone fit when context is present, so you get feedback aligned with intent, not a single generic ideal.',
       },
     ],
   },
@@ -98,14 +98,14 @@ export const blogArticles: BlogArticle[] = [
     slug: 'export-clean-pdf-from-editor',
     title: 'Exporting a Clean PDF From Your Humanizer Workspace',
     metaDescription:
-      'Why a simple PDF still matters for submissions and archives—and how bioqz exports from your formatted document.',
+      'Why a simple PDF still matters for submissions and archives, and how Sosiol exports from your formatted document.',
     date: '2025-03-05',
     readTime: '4 min',
     keywords: ['export pdf text', 'document pdf', 'writing workflow'],
     blocks: [
       {
         type: 'p',
-        text: 'After you humanize and refine, you often need a file you can attach or archive. bioqz includes PDF (and Word) export from the same rich-text workspace you edited in—headings, lists, and paragraphs preserved for a readable layout.',
+        text: 'After you humanize and refine, you often need a file you can attach or archive. Sosiol includes PDF (and Word) export from the same rich-text workspace you edited in, with headings, lists, and paragraphs preserved for a readable layout.',
       },
       {
         type: 'h2',

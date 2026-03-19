@@ -6,9 +6,9 @@ import { getSiteUrl } from '../utils/siteUrl'
 import { setSeoMeta } from '../utils/seoMeta'
 
 const PATH_STEPS = [
-  { id: 1, title: 'Readers feel tone before facts', body: 'Flat, uniform sentences read like a template—whether the draft came from you or a model. Natural rhythm keeps people reading.' },
+  { id: 1, title: 'Readers feel tone before facts', body: 'Flat, uniform sentences read like a template, whether the draft came from you or a model. Natural rhythm keeps people reading.' },
   { id: 2, title: 'Clarity beats clever', body: 'Specific verbs and concrete nouns do more than buzzwords. Say what happened in words a tired reader can scan.' },
-  { id: 3, title: 'Match the room', body: 'Academic, professional, casual—each audience expects a different register. The right tone builds trust.' },
+  { id: 3, title: 'Match the room', body: 'Academic, professional, casual, each audience expects a different register. The right tone builds trust.' },
   { id: 4, title: 'Edit with intent', body: 'Analyze, humanize selection by selection, then export. You stay in control of what ships.' },
 ] as const
 
@@ -59,8 +59,8 @@ function BlobBottom() {
 }
 
 const FEATURES = [
-  { icon: '◇', title: 'Humanize any selection', description: 'Pick tone and intensity. We rewrite in place—varied rhythm, fewer clichés, same facts you started with.' },
-  { icon: '◆', title: 'See how natural it reads', description: 'A naturalness-style score with rhythm, specificity, voice, and tone fit—plus phrases worth tightening.' },
+  { icon: '◇', title: 'Humanize any selection', description: 'Pick tone and intensity. We rewrite in place, with varied rhythm, fewer clichés, and the same facts you started with.' },
+  { icon: '◆', title: 'See how natural it reads', description: 'A naturalness-style score with rhythm, specificity, voice, and tone fit, plus phrases worth tightening.' },
   { icon: '○', title: 'Shorten, expand, export', description: 'Adjust length for the whole draft when you need it, then grab PDF, Word, or plain text from your workspace.' },
 ] as const
 
@@ -97,7 +97,7 @@ function usePathStepVisible() {
 }
 
 const HOME_META_DESC =
-  'bioqz: AI humanizer for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF—free tier to start.'
+  'Sosiol: AI humanizer for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -107,7 +107,7 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'bioqz — AI Humanizer | Natural Writing, Tone Control & PDF Export',
+      title: 'Sosiol - AI Humanizer | Natural Writing, Tone Control & PDF Export',
       description: HOME_META_DESC,
       path: '/',
       keywords: HOME_SEO_KEYWORDS,
@@ -124,7 +124,7 @@ export default function Landing() {
   const homeJsonLd = useMemo(() => {
     const base = getSiteUrl().replace(/\/$/, '')
     const orgId = `${base}/#organization`
-    const org = { '@id': orgId, '@type': 'Organization', name: 'bioqz', url: base }
+    const org = { '@id': orgId, '@type': 'Organization', name: 'Sosiol', url: base }
     return {
       '@context': 'https://schema.org',
       '@graph': [
@@ -132,7 +132,7 @@ export default function Landing() {
         {
           '@type': 'WebSite',
           '@id': `${base}/#website`,
-          name: 'bioqz',
+          name: 'Sosiol',
           url: `${base}/`,
           description: HOME_META_DESC,
           publisher: { '@id': orgId },
@@ -140,7 +140,7 @@ export default function Landing() {
         },
         {
           '@type': 'SoftwareApplication',
-          name: 'bioqz',
+          name: 'Sosiol',
           applicationCategory: 'BusinessApplication',
           operatingSystem: 'Web browser',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -208,9 +208,9 @@ export default function Landing() {
                 Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
               </h1>
               <p className="heroSubtitle">
-                bioqz analyzes stiff or AI-heavy drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
+                Sosiol analyzes stiff or model-like drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
               </p>
-              <ul className="heroValueChips" aria-label="What bioqz does">
+              <ul className="heroValueChips" aria-label="What Sosiol does">
                 <li>Naturalness analysis</li>
                 <li>Humanize selections</li>
                 <li>PDF &amp; Word export</li>
@@ -252,7 +252,7 @@ export default function Landing() {
                   <div className="heroPreviewCol heroPreviewColAfter">
                     <div className="heroPreviewLabel">After</div>
                     <p className="heroPreviewText">
-                      We shipped simpler tools, cut handoffs, and got clearer results—our stakeholders finally saw progress they could measure.
+                      We shipped simpler tools, cut handoffs, and got clearer results. Our stakeholders finally saw progress they could measure.
                     </p>
                   </div>
                 </div>
@@ -310,7 +310,7 @@ export default function Landing() {
         <section className="section landingTrySection" id="try">
         <div className="landingTryHeader">
           <h2 className="landingTryTitle">Paste a stiff sentence. See it open up.</h2>
-          <p className="landingTrySubtitle">We’ll humanize it after you sign up—free, in seconds.</p>
+          <p className="landingTrySubtitle">We’ll humanize it after you sign up, free in seconds.</p>
         </div>
         <form onSubmit={handleTrySubmit} className="landingTryCard">
           <label className="landingTryLabel" htmlFor="landing-try-text">
@@ -329,7 +329,7 @@ export default function Landing() {
           <p id="landing-try-hint" className="landingTryHint">{tryText.length} / {LANDING_TRY_MAX_LENGTH} characters</p>
           {tryError && <p id="landing-try-error" className="landingTryError" role="alert">{tryError}</p>}
           <button type="submit" className="landingTryCta">
-            Humanize this — sign up free
+            Humanize this, sign up free
           </button>
           <p className="landingTryLogin">
             Already have an account? <Link to="/login" state={{ fromLandingTry: true }} className="landingTryLoginLink">Sign in</Link>
@@ -339,8 +339,8 @@ export default function Landing() {
 
         <section className="section aboutSection" id="about">
         <div className="sectionHeader aboutSectionHeader">
-          <p className="sectionLabel">Why bioqz</p>
-          <h2 className="sectionTitle">Make every draft clearer—in a few simple steps.</h2>
+          <p className="sectionLabel">Why Sosiol</p>
+          <h2 className="sectionTitle">Make every draft clearer, in a few simple steps.</h2>
           <p className="aboutLead">
             You bring the ideas. We help them land in language readers trust.
           </p>
@@ -356,9 +356,9 @@ export default function Landing() {
           </div>
         </div>
         <div className="aboutContent aboutContentSimple">
-          <ul className="aboutPoints" aria-label="What bioqz does for you">
+          <ul className="aboutPoints" aria-label="What Sosiol does for you">
             <li><strong>Paste or upload</strong> your draft and optional context (audience, channel, assignment).</li>
-            <li><strong>Analyze</strong> for rhythm, specificity, and voice—then humanize line by line.</li>
+            <li><strong>Analyze</strong> for rhythm, specificity, and voice, then humanize line by line.</li>
             <li><strong>Shorten or expand</strong> the whole piece when length needs to change.</li>
             <li><strong>Export PDF or Word</strong> from the same formatted workspace.</li>
           </ul>
@@ -410,10 +410,10 @@ export default function Landing() {
         <div className="sectionHeader">
           <p className="sectionLabel">FAQ</p>
           <h2 id="landing-faq-heading" className="sectionTitle">
-            AI humanizer — common questions
+            Common questions about humanizing
           </h2>
           <p className="landingFaqIntro">
-            Quick answers for people who want clearer, more natural writing—not louder buzzwords.
+            Quick answers for people who want clearer, more natural writing, not louder buzzwords.
           </p>
         </div>
         <dl className="landingFaqList">
@@ -436,7 +436,7 @@ export default function Landing() {
 
         <footer className="footer">
         <div className="footerInner">
-          <Link to="/" className="footerBrand">bioqz</Link>
+          <Link to="/" className="footerBrand">Sosiol</Link>
           <div className="footerLinks">
             <a href="/#about">About</a>
             <a href="/#features">Features</a>
@@ -447,7 +447,7 @@ export default function Landing() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>
-          <span className="footerCopy">© {new Date().getFullYear()} bioqz. All rights reserved.</span>
+          <span className="footerCopy">© {new Date().getFullYear()} Sosiol. All rights reserved.</span>
         </div>
         </footer>
       </div>
