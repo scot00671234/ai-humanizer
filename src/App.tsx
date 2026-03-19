@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
+import { Routes, Route, Link, useLocation, Navigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import ThemeToggle from './components/ThemeToggle'
 import Landing from './pages/Landing'
@@ -21,6 +21,12 @@ import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 import GuestRoute from './components/GuestRoute'
 import './App.css'
+
+function LegacyResumeToWorkspace() {
+  const [params] = useSearchParams()
+  const q = params.toString()
+  return <Navigate to={`/dashboard/workspace${q ? `?${q}` : ''}`} replace />
+}
 
 function Nav() {
   const { user, logout } = useAuth()
@@ -71,7 +77,8 @@ function App() {
         <Route path="/reset-password" element={<GuestRoute><ResetPassword /></GuestRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
-          <Route path="resume" element={<DashboardResume />} />
+          <Route path="workspace" element={<DashboardResume />} />
+          <Route path="resume" element={<LegacyResumeToWorkspace />} />
           <Route path="guide" element={<DashboardGuide />} />
           <Route path="settings" element={<DashboardSettings />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

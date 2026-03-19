@@ -93,14 +93,17 @@ export default function DashboardSettings() {
         <div className="dashboardCard">
           <p className="dashboardSettingsPlan">
             Current plan: <strong>{isElite ? 'Elite' : isPro ? 'Pro' : 'Free'}</strong>
-            {(isElite || isPro) && user?.rewriteLimit != null && (
-              <span className="dashboardSettingsPlanHint"> — {user.rewriteLimit} rewrites/day</span>
+            {(isElite || isPro) && user?.rewriteLimit != null && user?.scoreLimit != null && (
+              <span className="dashboardSettingsPlanHint">
+                {' '}
+                — {user.rewriteLimit} humanize / shorten / expand per day, {user.scoreLimit} analyses per day
+              </span>
             )}
           </p>
           <p className="dashboardSettingsHint">
             {isElite || isPro
               ? 'Billing is managed with Stripe. Use the portal to update payment or cancel your subscription.'
-              : 'Choose a plan for more daily rewrites. Billing is managed with Stripe.'}
+              : 'Choose a plan for higher daily limits on humanizing and analysis. Billing is managed with Stripe.'}
           </p>
           {billingError && <p className="dashboardSettingsError">{billingError}</p>}
           <div className="dashboardSettingsActions">

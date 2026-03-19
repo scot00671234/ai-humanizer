@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 
 type ResumePreviewProps = {
   originalContent: string
@@ -7,7 +7,7 @@ type ResumePreviewProps = {
   className?: string
 }
 
-function highlightKeywords(text: string, keywords: string[]): React.ReactNode[] {
+function highlightKeywords(text: string, keywords: string[]): ReactNode[] {
   if (!keywords?.length) return [text]
   const lower = text.toLowerCase()
   const parts: React.ReactNode[] = []

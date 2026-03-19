@@ -16,7 +16,7 @@ router.use(requireAuth)
 const MARGIN = 48
 const LINE_HEIGHT = 16
 
-/** POST /api/resume/export-pdf — body: { content: string } (plain text from editor) */
+/** POST /api/resume/export-pdf — body: { content: string } (plain text from workspace editor) */
 router.post('/export-pdf', async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
   let content: string
@@ -67,7 +67,7 @@ router.post('/export-pdf', async (req: Request, res: Response): Promise<void> =>
     })
     await insertUsageLog(user.userId, 'export', null)
     res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader('Content-Disposition', 'attachment; filename="resume.pdf"')
+    res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"')
     res.send(buffer)
   } catch (err) {
     console.error('Export PDF error:', err)
@@ -144,7 +144,7 @@ router.post('/export-docx', async (req: Request, res: Response): Promise<void> =
     const buffer = await Packer.toBuffer(doc)
     await insertUsageLog(user.userId, 'export', null)
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    res.setHeader('Content-Disposition', 'attachment; filename="resume.docx"')
+    res.setHeader('Content-Disposition', 'attachment; filename="document.docx"')
     res.send(buffer)
   } catch (err) {
     console.error('Export DOCX error:', err)

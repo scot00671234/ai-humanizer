@@ -35,7 +35,7 @@ export default function DashboardHome() {
     <div className="dashboardPage dashboardPageOverview">
       <h1 className="dashboardPageTitle">Dashboard</h1>
       <p className="dashboardPageSubtitle dashboardPageSubtitleCentered">
-        Welcome back. Pick a project to jump right into the editor.
+        Welcome back. Pick a project to jump into the workspace.
       </p>
 
       <div className="dashboardCard dashboardOverviewCard dashboardOverviewCardTight">
@@ -45,7 +45,7 @@ export default function DashboardHome() {
             Click any project to open it in the Editor with the exact content you saved.
           </p>
           <div className="dashboardWelcomeActions">
-            <Link to="/dashboard/resume" className="dashboardBtn dashboardBtnPrimary">
+            <Link to="/dashboard/workspace" className="dashboardBtn dashboardBtnPrimary">
               New project
             </Link>
           </div>
@@ -61,11 +61,11 @@ export default function DashboardHome() {
         ) : projects.length === 0 ? (
           <div className="dashboardCard">
             <p className="dashboardCardText">
-              No projects yet. Open the Editor and save your first resume or application.
+              No projects yet. Open the Workspace and save your first document.
             </p>
             <div style={{ marginTop: '1rem' }}>
-              <Link to="/dashboard/resume" className="dashboardBtn dashboardBtnPrimary">
-                Open Editor
+              <Link to="/dashboard/workspace" className="dashboardBtn dashboardBtnPrimary">
+                Open Workspace
               </Link>
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function DashboardHome() {
                 const snippet = snippetFromHtml(p.content || '')
                 return (
                   <li key={p.id}>
-                    <Link to={`/dashboard/resume?projectId=${p.id}`} className="dashboardProjectCard" aria-label={`Open project ${title}`}>
+                    <Link to={`/dashboard/workspace?projectId=${p.id}`} className="dashboardProjectCard" aria-label={`Open project ${title}`}>
                       <div className="dashboardProjectCardTop">
                         <span className="dashboardProjectName">{title}</span>
                         <span className="dashboardProjectMeta">

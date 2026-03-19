@@ -1,4 +1,4 @@
--- AI Resume Builder: usage tracking and Pro/suspend flags.
+-- AI Humanizer: usage tracking and Pro/suspend flags.
 -- Run after server/schema.sql. Example: psql -U postgres -d your_db -f server/migrations/002_resume_builder.sql
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_pro BOOLEAN NOT NULL DEFAULT false;

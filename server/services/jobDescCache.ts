@@ -2,11 +2,18 @@ import NodeCache from 'node-cache'
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 })
 
-export function getCachedScore(key: string): { score: number; breakdown?: Record<string, number>; keywords?: string[] } | undefined {
+export type CachedAnalyzeResult = {
+  score: number
+  breakdown?: Record<string, number>
+  keywords?: string[]
+  notes?: string
+}
+
+export function getCachedScore(key: string): CachedAnalyzeResult | undefined {
   return cache.get(key)
 }
 
-export function setCachedScore(key: string, value: { score: number; breakdown?: Record<string, number>; keywords?: string[] }): void {
+export function setCachedScore(key: string, value: CachedAnalyzeResult): void {
   cache.set(key, value)
 }
 

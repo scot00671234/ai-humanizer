@@ -515,7 +515,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
     const rewriteLimit = isTeam ? 1500 : row.is_pro === true ? 500 : 2
     const projectLimit = isTeam ? 100 : (row.is_pro === true ? 10 : 1)
     const scoreCountToday = scoreUsageResult.rows[0]?.c ?? 0
-    const scoreLimit = isTeam ? 100 : (row.is_pro === true ? 50 : 0)
+    const scoreLimit = isTeam ? 100 : (row.is_pro === true ? 50 : 2)
     res.json({
       user: {
         id: row.id,
@@ -555,6 +555,8 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
             rewriteCountToday: 0,
             rewriteLimit: 2,
             projectLimit: 1,
+            scoreCountToday: 0,
+            scoreLimit: 2,
           },
         })
         return

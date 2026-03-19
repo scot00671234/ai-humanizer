@@ -20,7 +20,7 @@ const DAILY_REWRITE_SUSPEND = 1000
 
 export type ActionType = 'rewrite' | 'summary' | 'score' | 'export'
 
-const DAILY_SCORE_CAP_FREE = 0
+const DAILY_SCORE_CAP_FREE = 2
 const DAILY_SCORE_CAP_PRO = 50
 const DAILY_SCORE_CAP_ELITE = 100
 
@@ -70,7 +70,7 @@ export async function checkRewriteLimits(req: Request, res: Response, next: Next
     const cap = isElite ? DAILY_CAP_ELITE : isPro ? DAILY_CAP_PRO : DAILY_CAP_FREE
 
     if (daily >= cap) {
-      res.status(429).json({ error: 'Daily rewrite limit reached.' })
+      res.status(429).json({ error: 'Daily editing limit reached (humanize, shorten, expand).' })
       return
     }
     if (burst >= REWRITE_BURST_MAX) {
@@ -118,11 +118,11 @@ export async function checkScoreLimits(req: Request, res: Response, next: NextFu
     const cap = isElite ? DAILY_SCORE_CAP_ELITE : isPro ? DAILY_SCORE_CAP_PRO : DAILY_SCORE_CAP_FREE
     const used = dailyCount.rows[0]?.c ?? 0
     if (cap <= 0) {
-      res.status(403).json({ error: 'AI scoring is available on Pro and Elite plans.' })
+      res.status(403).json({ error: 'Analysis is not available on your plan.' })
       return
     }
     if (used >= cap) {
-      res.status(429).json({ error: 'Daily score limit reached. Try again tomorrow or upgrade your plan.' })
+      res.status(429).json({ error: 'Daily analysis limit reached. Try again tomorrow or upgrade your plan.' })
       return
     }
     next()
@@ -132,18 +132,30 @@ export async function checkScoreLimits(req: Request, res: Response, next: NextFu
   }
 }
 
-/** Check job-desc cooldown for score (same hash >10 in 24h). Optionally pass jobDescription in body. */
+/** Cooldown when the same document fingerprint is analyzed >10 times in 24h (abuse). */
 export function checkScoreCooldown(req: Request, res: Response, next: NextFunction): void {
   const { user } = req as Request & { user: JwtPayload }
-  const jobDescription = (req.body as { jobDescription?: string })?.jobDescription
-  if (!jobDescription || typeof jobDescription !== 'string') {
+  const body = req.body as {
+    resumeText?: string
+    documentText?: string
+    jobDescription?: string
+    documentContext?: string
+  }
+  const rawText = typeof body.documentText === 'string' ? body.documentText : body.resumeText
+  if (!rawText || typeof rawText !== 'string') {
     next()
     return
   }
-  const hash = hashJobDesc(jobDescription)
-  const { cooldown } = recordJobDescHash(user.userId, hash)
+  const ctx =
+    typeof body.documentContext === 'string'
+      ? body.documentContext
+      : typeof body.jobDescription === 'string'
+        ? body.jobDescription
+        : ''
+  const fingerprint = hashJobDesc(`${rawText.slice(0, 12000)}\n${ctx.slice(0, 4000)}`)
+  const { cooldown } = recordJobDescHash(user.userId, fingerprint)
   if (cooldown) {
-    res.status(429).set('Retry-After', '30').json({ error: 'Too many requests with the same job description. Please wait 30 seconds.' })
+    res.status(429).set('Retry-After', '30').json({ error: 'Too many analyses of the same text. Please wait 30 seconds.' })
     return
   }
   next()

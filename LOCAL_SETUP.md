@@ -42,7 +42,7 @@ If the API isn't running or `DATABASE_URL` is wrong, register/login will fail; c
    - Start a Postgres database in Docker (no need to install Postgres yourself).
    - Wait for it to be ready and run the database migrations (create `users` and `usage_logs` tables).
    - Start the API server (port 3001) and the frontend (port 5173) in the background.
-4. Open **http://localhost:5173** in your browser → Register → verify email (link in the terminal where you ran `local:up`) → Sign in → go to **/dashboard/resume**.
+4. Open **http://localhost:5173** in your browser → Register → verify email (link in the terminal where you ran `local:up`) → Sign in → go to **/dashboard/workspace**.
 
 If Docker isn’t installed or won’t start, use the manual steps below (you’ll need Postgres installed and running).
 
@@ -58,7 +58,7 @@ If Docker isn’t installed or won’t start, use the manual steps below (you’
 |----------|----------------|------------------------|
 | `DATABASE_URL` | Postgres connection string so the API can read/write users and usage. | `postgresql://postgres:yourpassword@localhost:5432/frosted` (use your DB name and password) |
 | `JWT_SECRET` | Secret used to sign login tokens. Can be any long random string. | e.g. `my-dev-secret-key-12345` (use something longer in production) |
-| `DEEPSEEK_API_KEY` | Needed for “Rewrite with AI” on the resume page. Get it from DeepSeek. | Paste the key; leave empty to run without AI rewrite. |
+| `DEEPSEEK_API_KEY` | Needed for Humanize and Analyze on the workspace. Get it from DeepSeek. | Paste the key; leave empty to run without AI features. |
 | `APP_BASE_URL` | Base URL of the app; used in emails (e.g. verify link). For local dev this is the Vite URL. | `http://localhost:5173` (already set) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. For “Continue with Google” on login/register. Create OAuth 2.0 credentials in Google Cloud Console and set the redirect URI to `http://localhost:3001/api/auth/google/callback` (or your API base + `/api/auth/google/callback`). | Leave empty to hide Google sign-in. |
 | `VITE_SITE_URL` | **Production SEO:** canonical URLs, Open Graph, and JSON-LD use this as your public site origin (no trailing slash). | e.g. `https://bioqz.com`. If unset, the browser’s `window.location.origin` is used (fine locally). Also update `public/sitemap.xml` and `public/robots.txt` Sitemap line to match your domain. |
@@ -72,7 +72,7 @@ If Docker isn’t installed or won’t start, use the manual steps below (you’
 **What they do:**
 
 - **`server/schema.sql`** — Creates the `users` table (email, password hash, verification, Stripe customer id, etc.).
-- **`server/migrations/002_resume_builder.sql`** — Adds `is_pro` and `suspended_at` on `users`, and creates the `usage_logs` table for the resume builder.
+- **`server/migrations/002_resume_builder.sql`** — Adds `is_pro` and `suspended_at` on `users`, and creates the `usage_logs` table for AI usage tracking.
 - **`server/migrations/005_google_auth.sql`** — Adds `google_id` and allows password-less users for Google sign-in.
 
 **What you do:** From the project root, with Postgres running and a database created, run `node scripts/run-migrations.js` (or run the SQL files above in order with psql).
@@ -85,7 +85,7 @@ Use the same database name as in `DATABASE_URL` in `.env`. If you don’t have a
 
 **Why two processes:**
 
-- **Backend (Express):** Serves the API (`/api/auth/*`, `/api/ai/*`, `/api/resume/*`). It must run so the frontend can log in, call AI rewrite, score, and export PDF.
+- **Backend (Express):** Serves the API (`/api/auth/*`, `/api/ai/*`, `/api/resume/*`). It must run so the frontend can log in, humanize, analyze, and export PDF.
 - **Frontend (Vite):** Serves the React app with hot reload so you can edit the UI and see changes immediately.
 
 They run on different ports: API on **3001**, frontend on **5173**. The frontend is configured (when `VITE_API_URL` is unset) to call `http://localhost:3001` for API requests.
@@ -113,9 +113,9 @@ They run on different ports: API on **3001**, frontend on **5173**. The frontend
 1. **Register** — Creates a user; the server will log the verification link (or send email if you’ve wired it).
 2. **Verify email** — Open the link from the server log (or the email); that marks the user as verified.
 3. **Sign in** — Uses the same `.env` credentials (DB, JWT) to issue a token.
-4. **Dashboard → Resume** — Go to **/dashboard/resume** to use the editor, job description, “Rewrite with AI” (needs `DEEPSEEK_API_KEY`), score, and PDF export.
+4. **Dashboard → Workspace** — Go to **/dashboard/workspace** to use the editor, optional context, Humanize / Analyze (needs `DEEPSEEK_API_KEY`), shorten/expand, and PDF export.
 
-If the API isn’t running or `.env` is wrong, login and resume features will fail; the frontend will show errors in the UI or in the browser dev tools (Network tab).
+If the API isn’t running or `.env` is wrong, login and workspace features will fail; the frontend will show errors in the UI or in the browser dev tools (Network tab).
 
 ---
 
@@ -125,6 +125,6 @@ If the API isn’t running or `.env` is wrong, login and resume features will fa
 |------|----------------|-----------------|
 | `.env` created | You edit it with real `DATABASE_URL`, `JWT_SECRET`, `DEEPSEEK_API_KEY`. | Backend and frontend read config from this one file. |
 | Run migrations | You ran `schema.sql` and `002_resume_builder.sql` on your DB. | Creates `users` and `usage_logs` so the app can store data. |
-| Terminal 1: `npm run server` | Started the Express API. | Serves auth and resume builder API. |
+| Terminal 1: `npm run server` | Started the Express API. | Serves auth and humanizer API. |
 | Terminal 2: `npm run dev` | Started the Vite dev server. | Serves the React app and hot reload. |
 | Open http://localhost:5173 | Use the app in the browser. | Frontend talks to API at localhost:3001. |

@@ -125,7 +125,21 @@ export const api = {
       }),
 
     me: () =>
-      request<{ user: { id: string; email: string; emailVerified: boolean; createdAt: string; isPro?: boolean; isTeam?: boolean; rewriteCountToday?: number; rewriteLimit?: number; projectLimit?: number } }>('/api/auth/me'),
+      request<{
+        user: {
+          id: string
+          email: string
+          emailVerified: boolean
+          createdAt: string
+          isPro?: boolean
+          isTeam?: boolean
+          rewriteCountToday?: number
+          rewriteLimit?: number
+          projectLimit?: number
+          scoreCountToday?: number
+          scoreLimit?: number
+        }
+      }>('/api/auth/me'),
 
     deleteAccount: () =>
       request<{ message: string }>('/api/auth/account', { method: 'DELETE' }),
@@ -150,8 +164,9 @@ export const api = {
         language?: string
         context?: string
         tone?: string
-        mode?: 'resume' | 'job_application'
+        documentContext?: string
         jobDescription?: string
+        intensity?: 'light' | 'medium' | 'strong'
       }
     ) =>
       request<{ rewritten: string; tokensUsed?: number }>('/api/ai/rewrite', {
@@ -161,20 +176,42 @@ export const api = {
           language: options?.language,
           context: options?.context,
           tone: options?.tone,
-          mode: options?.mode,
-          jobDescription: options?.jobDescription,
+          documentContext: options?.documentContext ?? options?.jobDescription,
+          intensity: options?.intensity,
         }),
       }),
-    summary: (resumeText: string, options?: { jobDescription?: string; mode?: 'resume' | 'job_application' }) =>
-      request<{ summary: string }>('/api/ai/summary', {
+    summary: (
+      documentText: string,
+      options?: { documentContext?: string; jobDescription?: string; direction?: 'shorten' | 'expand' }
+    ) =>
+      request<{ summary: string; direction?: string }>('/api/ai/summary', {
         method: 'POST',
-        body: JSON.stringify({ resumeText, jobDescription: options?.jobDescription, mode: options?.mode }),
+        body: JSON.stringify({
+          documentText,
+          resumeText: documentText,
+          documentContext: options?.documentContext ?? options?.jobDescription,
+          jobDescription: options?.jobDescription ?? options?.documentContext,
+          direction: options?.direction ?? 'shorten',
+        }),
       }),
-    score: (resumeText: string, jobDescription: string, mode?: 'resume' | 'job_application') =>
-      request<{ score: number; breakdown?: Record<string, number>; keywords?: string[]; notes?: string }>('/api/ai/score', {
-        method: 'POST',
-        body: JSON.stringify({ resumeText, jobDescription, mode }),
-      }),
+    score: (
+      documentText: string,
+      options?: { documentContext?: string; jobDescription?: string; targetTone?: string; tone?: string }
+    ) =>
+      request<{ score: number; breakdown?: Record<string, number>; keywords?: string[]; notes?: string }>(
+        '/api/ai/score',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            documentText,
+            resumeText: documentText,
+            documentContext: options?.documentContext ?? options?.jobDescription,
+            jobDescription: options?.jobDescription ?? options?.documentContext,
+            targetTone: options?.targetTone ?? options?.tone,
+            tone: options?.tone ?? options?.targetTone,
+          }),
+        }
+      ),
   },
 
   resume: {

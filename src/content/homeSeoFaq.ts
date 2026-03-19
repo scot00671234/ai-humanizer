@@ -1,30 +1,30 @@
 /** Homepage FAQ: visible copy + FAQPage JSON-LD (AEO). */
 export const HOME_SEO_FAQ = [
   {
-    q: 'What is an AI resume builder?',
-    a: 'An AI resume builder is online software that uses artificial intelligence to improve your resume wording. bioqz is an AI resume builder and AI resume writer: you paste a job description, select text, and get stronger bullet suggestions tailored to that role—not generic filler.',
+    q: 'What is an AI humanizer?',
+    a: 'An AI humanizer helps text sound more natural: less generic cadence, clearer rhythm, and wording that reads like a person wrote it. bioqz analyzes drafts for “AI-ish” patterns and lets you humanize selections with controls for tone and intensity.',
   },
   {
-    q: 'Is bioqz a free AI resume maker?',
-    a: 'Yes. You can start free with no credit card. The free plan includes AI resume rewrites per day, a job fit score against any job description you paste, and ATS-friendly PDF export so you can apply with confidence.',
+    q: 'Is bioqz free to try?',
+    a: 'Yes. You can start free with no credit card. The free plan includes a daily allowance for humanizing, shortening, or expanding text, plus a few naturalness analyses and document export.',
   },
   {
-    q: 'How is bioqz different from other AI resume software?',
-    a: 'bioqz focuses on each application: paste the job posting, see how well your resume matches (score + feedback), rewrite bullets with AI, and compare before and after side by side. It is built as AI resume software for people applying to many roles, not one static template.',
+    q: 'How is bioqz different from a generic AI chat?',
+    a: 'bioqz is built around a writing workspace: optional context for audience, naturalness feedback with concrete dimensions, selection-based humanize with tone and intensity, and whole-document shorten or expand—without inventing new facts.',
   },
   {
-    q: 'What does “ATS-friendly” mean?',
-    a: 'ATS (Applicant Tracking System) software reads your resume before a human does. bioqz helps you align keywords and structure so your PDF is easier for those systems to parse—plus clean layouts designed for screening tools.',
+    q: 'Does bioqz “beat” AI detectors?',
+    a: 'We focus on clarity and authentic voice, not evading academic or platform policies. Our analysis is guidance for your editing, not a guarantee about third-party detectors.',
   },
   {
-    q: 'Can I use bioqz as an AI resume writer for every job?',
-    a: 'Yes. Treat bioqz as your AI resume writer for each application: upload or paste your resume, add the job description, improve sections with AI, check your score, then export a PDF tailored to that posting.',
+    q: 'Can I use bioqz for school or work writing?',
+    a: 'Yes—essays, emails, posts, reports, and more. Add optional context so tone matches your audience; always follow your institution’s or employer’s rules on AI assistance.',
   },
   {
     q: 'Who is bioqz for?',
-    a: 'Job seekers who want an AI-powered resume tool to tailor quickly—whether you are switching careers, applying in bulk, or perfecting one dream role. It works in the browser; no download required.',
+    a: 'Anyone who drafts with AI or wants a second pass on stiff copy: creators, students, marketers, and professionals who care how their writing lands.',
   },
 ] as const
 
 export const HOME_SEO_KEYWORDS =
-  'ai resume builder, ai resume maker, ai resume writer, ai resume software, ats resume builder, ai powered resume, resume ai tool, job tailored resume, resume fit score, ats friendly pdf, ai bullet points resume'
+  'ai humanizer, humanize ai text, make ai writing sound natural, ai text rewriter, natural writing tool, tone rewriter, ai paraphrase human, writing clarity tool, bioqz'

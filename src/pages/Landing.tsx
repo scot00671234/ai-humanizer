@@ -6,10 +6,10 @@ import { getSiteUrl } from '../utils/siteUrl'
 import { setSeoMeta } from '../utils/seoMeta'
 
 const PATH_STEPS = [
-  { id: 1, title: 'One document opens the door', body: 'Recruiters decide in or out from one thing: your resume. Not luck, not timing. The words on the page.' },
-  { id: 2, title: 'Get past the gate', body: 'Most applications never reach a human. The right wording gets you past the screeners and into the room.' },
-  { id: 3, title: 'Speak their language', body: 'Sharp bullets and strong verbs. The language hiring managers notice. Sound like the candidate they want to hire.' },
-  { id: 4, title: 'The job. The life.', body: 'A strong resume changes your trajectory. The job you want starts here.' },
+  { id: 1, title: 'Readers feel tone before facts', body: 'Flat, uniform sentences read like a template—whether the draft came from you or a model. Natural rhythm keeps people reading.' },
+  { id: 2, title: 'Clarity beats clever', body: 'Specific verbs and concrete nouns do more than buzzwords. Say what happened in words a tired reader can scan.' },
+  { id: 3, title: 'Match the room', body: 'Academic, professional, casual—each audience expects a different register. The right tone builds trust.' },
+  { id: 4, title: 'Edit with intent', body: 'Analyze, humanize selection by selection, then export. You stay in control of what ships.' },
 ] as const
 
 function BlobTop() {
@@ -59,15 +59,15 @@ function BlobBottom() {
 }
 
 const FEATURES = [
-  { icon: '◇', title: 'Sound like a top candidate', description: 'Select any bullet. One click. Your wording gets sharper: strong verbs, real metrics, the kind recruiters actually notice. No fluff, no generic phrases.' },
-  { icon: '◆', title: 'Know exactly where you stand', description: 'Paste the job description. Get a 0 to 100 score and a clear breakdown: keyword match, verb strength, length, ATS safety. Fix the gaps before you hit submit.' },
-  { icon: '○', title: 'Submit with confidence', description: 'One-click PDF. Clean, professional layouts that pass every ATS. Three templates. Pick the one that fits your industry and your story.' },
+  { icon: '◇', title: 'Humanize any selection', description: 'Pick tone and intensity. We rewrite in place—varied rhythm, fewer clichés, same facts you started with.' },
+  { icon: '◆', title: 'See how natural it reads', description: 'A naturalness-style score with rhythm, specificity, voice, and tone fit—plus phrases worth tightening.' },
+  { icon: '○', title: 'Shorten, expand, export', description: 'Adjust length for the whole draft when you need it, then grab PDF, Word, or plain text from your workspace.' },
 ] as const
 
 const PLANS = [
-  { name: 'Free', price: 0, period: 'month', description: 'Everything you need to land your next role. No credit card required.', features: ['2 AI rewrites per day', 'ATS score & keyword highlights', 'Side-by-side original vs current', 'PDF export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
-  { name: 'Pro', price: 29, period: 'month', description: 'When you are applying to dozens of roles, we have you covered.', features: ['500 AI rewrites per day', 'Everything in Free', 'Priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
-  { name: 'Elite', price: 59, period: 'month', description: 'Unlimited ambition. No compromise on rewrites.', features: ['1,500 AI rewrites per day', 'Everything in Pro', 'Highest priority processing', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
+  { name: 'Free', price: 0, period: 'month', description: 'Try the full workflow on real drafts. No credit card required.', features: ['2 humanize / shorten / expand per day', '2 naturalness analyses per day', 'Optional context for audience', 'PDF & Word export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
+  { name: 'Pro', price: 29, period: 'month', description: 'For people who iterate on copy every day.', features: ['500 humanize / shorten / expand per day', '50 analyses per day', 'Everything in Free', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
+  { name: 'Elite', price: 59, period: 'month', description: 'Maximum headroom for teams and power users.', features: ['1,500 humanize / shorten / expand per day', '100 analyses per day', 'Everything in Pro', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
 const LANDING_TRY_MAX_LENGTH = 800
@@ -97,7 +97,7 @@ function usePathStepVisible() {
 }
 
 const HOME_META_DESC =
-  'bioqz: AI resume builder & AI resume writer. Paste any job description—get AI bullet rewrites, a 0–100 job fit score, and ATS-friendly PDF export. Free AI resume maker tier; upgrade anytime.'
+  'bioqz: AI humanizer for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF—free tier to start.'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -107,7 +107,7 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'bioqz — AI Resume Builder & Writer | Free Job Fit Score & ATS PDF',
+      title: 'bioqz — AI Humanizer | Natural Writing, Tone Control & PDF Export',
       description: HOME_META_DESC,
       path: '/',
       keywords: HOME_SEO_KEYWORDS,
@@ -145,12 +145,12 @@ export default function Landing() {
           operatingSystem: 'Web browser',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
           description:
-            'AI resume software: builder, maker, and writer in one. Job-specific AI rewrites, resume fit scoring vs. job descriptions, and ATS-friendly PDF templates.',
+            'Humanize AI-assisted and stiff drafts: naturalness analysis, selection-based rewrites with tone and intensity, shorten/expand, and document export.',
           featureList: [
-            'AI resume bullet rewrites',
-            'Job description fit score',
-            'ATS-friendly PDF export',
-            'Side-by-side resume compare',
+            'Humanize selected text',
+            'Naturalness analysis',
+            'Shorten and expand document',
+            'PDF and Word export',
           ],
           provider: { '@id': orgId },
           url: `${base}/`,
@@ -172,7 +172,7 @@ export default function Landing() {
     setTryError(null)
     const trimmed = tryText.trim()
     if (!trimmed) {
-      setTryError('Paste a resume bullet or sentence to continue.')
+      setTryError('Paste a sentence or short paragraph to continue.')
       return
     }
     if (trimmed.length > LANDING_TRY_MAX_LENGTH) {
@@ -205,19 +205,19 @@ export default function Landing() {
             <div className="heroContent heroContentSplit">
               <span className="heroBadge">Free to start · No credit card</span>
               <h1 className="heroTitle">
-                Your resume, <span className="heroTitleAccent">matched to every job</span> you apply for.
+                Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
               </h1>
               <p className="heroSubtitle">
-                Paste a job posting. bioqz rewrites your bullets with AI, scores how well you fit the role, and exports a clean PDF hiring systems can read.
+                bioqz analyzes stiff or AI-heavy drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
               </p>
               <ul className="heroValueChips" aria-label="What bioqz does">
-                <li>AI bullet rewrites</li>
-                <li>Job fit score</li>
-                <li>ATS-friendly PDF</li>
+                <li>Naturalness analysis</li>
+                <li>Humanize selections</li>
+                <li>PDF &amp; Word export</li>
               </ul>
               <div className="heroCtaRow">
                 <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
-                <a href="#try" className="heroCtaGhost">Try one bullet first</a>
+                <a href="#try" className="heroCtaGhost">Try one paragraph first</a>
               </div>
             </div>
 
@@ -232,43 +232,43 @@ export default function Landing() {
               </div>
               <div className="heroPreviewCard">
                 <div className="heroPreviewTop">
-                  <div className="heroPreviewTitle">Example: Job fit score</div>
-                  <div className="heroPreviewScore" aria-label="Score 82 out of 100">
-                    <span>82</span>
+                  <div className="heroPreviewTitle">Example: Naturalness</div>
+                  <div className="heroPreviewScore" aria-label="Score 78 out of 100">
+                    <span>78</span>
                     <small>/100</small>
                   </div>
                 </div>
                 <div className="heroPreviewBar" aria-hidden>
-                  <span style={{ width: '82%' }} />
+                  <span style={{ width: '78%' }} />
                 </div>
 
-                <div className="heroPreviewGrid" aria-label="Before and after rewrite">
+                <div className="heroPreviewGrid" aria-label="Before and after humanize">
                   <div className="heroPreviewCol">
                     <div className="heroPreviewLabel">Before</div>
                     <p className="heroPreviewText">
-                      Worked with the team to improve the checkout experience and fix bugs.
+                      It is important to note that we leveraged robust solutions to drive impactful outcomes across the stakeholder landscape.
                     </p>
                   </div>
                   <div className="heroPreviewCol heroPreviewColAfter">
                     <div className="heroPreviewLabel">After</div>
                     <p className="heroPreviewText">
-                      Improved checkout conversion by 12% by shipping UX fixes and resolving 30+ payment bugs.
+                      We shipped simpler tools, cut handoffs, and got clearer results—our stakeholders finally saw progress they could measure.
                     </p>
                   </div>
                 </div>
 
                 <div className="heroPreviewTags" aria-label="What improved">
-                  <span>Stronger verbs</span>
-                  <span>Metrics</span>
-                  <span>ATS keywords</span>
+                  <span>Clearer rhythm</span>
+                  <span>Concrete wording</span>
+                  <span>Less filler</span>
                 </div>
               </div>
             </aside>
           </div>
         </main>
 
-        <section className="section pathSection" id="path" aria-label="Why your resume matters">
-        <h2 className="pathSectionTitle">The right resume changes everything</h2>
+        <section className="section pathSection" id="path" aria-label="Why natural writing matters">
+        <h2 className="pathSectionTitle">The right voice changes everything</h2>
         <div className="pathImagesRow" aria-label="Professional workspace">
           <div className="landingPhotoCard pathImageTile">
             <img
@@ -309,17 +309,17 @@ export default function Landing() {
 
         <section className="section landingTrySection" id="try">
         <div className="landingTryHeader">
-          <h2 className="landingTryTitle">Paste a bullet. See what we can do.</h2>
-          <p className="landingTrySubtitle">We’ll rewrite it once you’re in. Sign up free and get your result in seconds.</p>
+          <h2 className="landingTryTitle">Paste a stiff sentence. See it open up.</h2>
+          <p className="landingTrySubtitle">We’ll humanize it after you sign up—free, in seconds.</p>
         </div>
         <form onSubmit={handleTrySubmit} className="landingTryCard">
           <label className="landingTryLabel" htmlFor="landing-try-text">
-            Resume bullet or sentence
+            Sentence or short paragraph
           </label>
           <textarea
             id="landing-try-text"
             className="landingTryInput"
-            placeholder="e.g. Worked with the engineering team to ship new features."
+            placeholder="e.g. It is worth noting that our initiative delivered substantial synergies across teams."
             value={tryText}
             onChange={(e) => setTryText(e.target.value)}
             maxLength={LANDING_TRY_MAX_LENGTH + 100}
@@ -329,7 +329,7 @@ export default function Landing() {
           <p id="landing-try-hint" className="landingTryHint">{tryText.length} / {LANDING_TRY_MAX_LENGTH} characters</p>
           {tryError && <p id="landing-try-error" className="landingTryError" role="alert">{tryError}</p>}
           <button type="submit" className="landingTryCta">
-            Get my AI rewrite sign up free
+            Humanize this — sign up free
           </button>
           <p className="landingTryLogin">
             Already have an account? <Link to="/login" state={{ fromLandingTry: true }} className="landingTryLoginLink">Sign in</Link>
@@ -340,9 +340,9 @@ export default function Landing() {
         <section className="section aboutSection" id="about">
         <div className="sectionHeader aboutSectionHeader">
           <p className="sectionLabel">Why bioqz</p>
-          <h2 className="sectionTitle">Make every application stronger—in a few simple steps.</h2>
+          <h2 className="sectionTitle">Make every draft clearer—in a few simple steps.</h2>
           <p className="aboutLead">
-            You bring the experience. We help you show it in a way recruiters and hiring systems understand.
+            You bring the ideas. We help them land in language readers trust.
           </p>
         </div>
         <div className="aboutImageCenter">
@@ -357,13 +357,13 @@ export default function Landing() {
         </div>
         <div className="aboutContent aboutContentSimple">
           <ul className="aboutPoints" aria-label="What bioqz does for you">
-            <li><strong>Add your resume</strong> and paste the job you want. That’s all you need to start.</li>
-            <li><strong>Improve your wording</strong> with AI suggestions. See old vs new side by side.</li>
-            <li><strong>Check your fit</strong> with a score against the job description so you know what to fix.</li>
-            <li><strong>Download a clean PDF</strong> that works with applicant systems—no design skills required.</li>
+            <li><strong>Paste or upload</strong> your draft and optional context (audience, channel, assignment).</li>
+            <li><strong>Analyze</strong> for rhythm, specificity, and voice—then humanize line by line.</li>
+            <li><strong>Shorten or expand</strong> the whole piece when length needs to change.</li>
+            <li><strong>Export PDF or Word</strong> from the same formatted workspace.</li>
           </ul>
           <p className="aboutFootnote">
-            <strong>Free:</strong> 2 AI rewrites per day. Upgrade when you want more. Cancel anytime.
+            <strong>Free:</strong> daily humanize/shorten/expand and analysis credits. Upgrade when you want more. Cancel anytime.
           </p>
         </div>
       </section>
@@ -371,7 +371,7 @@ export default function Landing() {
         <section className="section" id="features">
         <div className="sectionHeader">
           <p className="sectionLabel">How it works</p>
-          <h2 className="sectionTitle">Built to get you past the screeners</h2>
+          <h2 className="sectionTitle">Built for drafts you actually ship</h2>
         </div>
         <div className="featureGrid">
           {FEATURES.map((f) => (
@@ -410,10 +410,10 @@ export default function Landing() {
         <div className="sectionHeader">
           <p className="sectionLabel">FAQ</p>
           <h2 id="landing-faq-heading" className="sectionTitle">
-            AI resume builder &amp; writer — common questions
+            AI humanizer — common questions
           </h2>
           <p className="landingFaqIntro">
-            Quick answers for people searching for AI resume software, an AI resume maker, or ATS-friendly tools.
+            Quick answers for people who want clearer, more natural writing—not louder buzzwords.
           </p>
         </div>
         <dl className="landingFaqList">
@@ -428,8 +428,8 @@ export default function Landing() {
 
         <section className="section ctaSection">
         <div className="ctaBox">
-          <h2>Your next job is out there. Your resume should be ready.</h2>
-          <p>Join free. 2 AI rewrites today. No credit card.</p>
+          <h2>Your draft deserves a human voice.</h2>
+          <p>Join free. Daily humanize and analysis credits on us. No credit card.</p>
           <Link to="/register" className="heroCta">Get started free</Link>
         </div>
       </section>

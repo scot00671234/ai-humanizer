@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 
 const BREAKDOWN_LABELS: Record<string, string> = {
-  keyword: 'Keyword match',
-  verbStrength: 'Strong verbs',
-  length: 'Length & clarity',
-  atsSafety: 'ATS-friendly structure',
+  rhythm: 'Sentence rhythm',
+  specificity: 'Specificity',
+  voice: 'Natural voice',
+  toneFit: 'Tone fit',
 }
 
 type ResumeAnalysisFeedbackProps = {
@@ -12,42 +12,40 @@ type ResumeAnalysisFeedbackProps = {
   breakdown: Record<string, number> | null
   keywords: string[]
   resumeText: string
+  notes?: string
   className?: string
-  /** Affects wording in tips (resume vs application). */
-  mode?: 'resume' | 'job_application'
 }
 
-/** Renders score, breakdown, missing keywords, and actionable tips. */
+/** Naturalness score, breakdown, and phrases the model flags for humanizing. */
 export default function ResumeAnalysisFeedback({
   score,
   breakdown,
   keywords,
   resumeText,
+  notes,
   className = '',
-  mode = 'resume',
 }: ResumeAnalysisFeedbackProps) {
-  const doc = mode === 'job_application' ? 'application' : 'resume'
-  const lowerResume = resumeText.toLowerCase()
+  const lowerText = resumeText.toLowerCase()
 
-  const missingKeywords = useMemo(() => {
+  const focusPhrases = useMemo(() => {
     if (!keywords.length) return []
-    return keywords.filter((k) => !lowerResume.includes(k.toLowerCase()))
-  }, [keywords, lowerResume])
+    return keywords.filter((k) => lowerText.includes(k.toLowerCase()))
+  }, [keywords, lowerText])
 
   const tips = useMemo(() => {
     const list: string[] = []
     if (!breakdown) return list
-    if ((breakdown.keyword ?? 100) < 70) {
-      list.push(`Add more terms from the job description so your ${doc} matches what recruiters look for.`)
+    if ((breakdown.rhythm ?? 100) < 65) {
+      list.push('Mix short, direct sentences with a few longer ones so the rhythm feels less uniform.')
     }
-    if ((breakdown.verbStrength ?? 100) < 60) {
-      list.push('Use stronger action verbs in your bullets (e.g. Led, Delivered, Achieved, Improved).')
+    if ((breakdown.specificity ?? 100) < 65) {
+      list.push('Swap vague words (e.g. “various”, “robust”, “leverage”) for concrete nouns and verbs.')
     }
-    if ((breakdown.length ?? 100) < 70) {
-      list.push('Keep bullets concise. Avoid very long lines or single-word lines.')
+    if ((breakdown.voice ?? 100) < 65) {
+      list.push('Cut stock transitions and AI clichés; use simpler connectors you’d say out loud.')
     }
-    if ((breakdown.atsSafety ?? 100) < 80) {
-      list.push(`Remove special characters and complex formatting so ATS systems can read your ${doc}.`)
+    if ((breakdown.toneFit ?? 100) < 60) {
+      list.push('Adjust formality and word choice so they match your audience (see optional context).')
     }
     return list
   }, [breakdown])
@@ -55,7 +53,7 @@ export default function ResumeAnalysisFeedback({
   return (
     <div className={`resumeAnalysisFeedback ${className}`}>
       <div className="resumeAnalysisScoreRow">
-        <span className="resumeAnalysisScoreLabel">Match score</span>
+        <span className="resumeAnalysisScoreLabel">Naturalness</span>
         <span className="resumeAnalysisScoreValue">
           {score}<span className="resumeAnalysisScoreMax">/100</span>
         </span>
@@ -79,16 +77,22 @@ export default function ResumeAnalysisFeedback({
         </div>
       )}
 
-      {missingKeywords.length > 0 && (
+      {(focusPhrases.length > 0 || keywords.length > 0) && (
         <div className="resumeAnalysisBlock">
-          <h4 className="resumeAnalysisBlockTitle">Missing keywords</h4>
-          <p className="resumeAnalysisBlockHint">Consider adding these terms from the job description.</p>
+          <h4 className="resumeAnalysisBlockTitle">Phrases to refine</h4>
+          <p className="resumeAnalysisBlockHint">
+            {focusPhrases.length > 0
+              ? 'Select these in the editor and run Humanize, or rewrite them manually.'
+              : 'Candidates from the model — search for them in your text if they don’t match exactly.'}
+          </p>
           <div className="resumeAnalysisTags">
-            {missingKeywords.slice(0, 24).map((kw) => (
+            {(focusPhrases.length > 0 ? focusPhrases : keywords).slice(0, 24).map((kw) => (
               <span key={kw} className="resumeAnalysisTag">{kw}</span>
             ))}
-            {missingKeywords.length > 24 && (
-              <span className="resumeAnalysisTag resumeAnalysisTagMuted">+{missingKeywords.length - 24} more</span>
+            {(focusPhrases.length > 0 ? focusPhrases : keywords).length > 24 && (
+              <span className="resumeAnalysisTag resumeAnalysisTagMuted">
+                +{(focusPhrases.length > 0 ? focusPhrases : keywords).length - 24} more
+              </span>
             )}
           </div>
         </div>
@@ -102,6 +106,13 @@ export default function ResumeAnalysisFeedback({
               <li key={i}>{tip}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {typeof notes === 'string' && notes.trim() && (
+        <div className="resumeAnalysisBlock">
+          <h4 className="resumeAnalysisBlockTitle">Coach notes</h4>
+          <p className="resumeAnalysisBlockHint">{notes.trim()}</p>
         </div>
       )}
     </div>

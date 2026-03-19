@@ -3,12 +3,13 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ResumeEditor, { type ResumeEditorHandle } from '../components/ResumeEditor'
 import ResumeAnalysisFeedback from '../components/ResumeAnalysisFeedback'
+import ResumePreview from '../components/ResumePreview'
 import { api } from '../api/client'
 import { extractResumeText, RESUME_UPLOAD_ACCEPT } from '../utils/extractResumeText'
-
-const UPLOAD_PASTE_HINT = ' Can\'t upload? Copy and paste your text into the editor below.'
 import { getPendingRewrite, clearPendingRewrite } from '../utils/landingPendingRewrite'
 import type { Content } from '@tiptap/react'
+
+const UPLOAD_PASTE_HINT = ' Can\'t upload? Copy and paste your text into the editor below.'
 
 const REWRITE_LANGUAGES = [
   { value: 'same', label: 'Same as input' },
@@ -31,19 +32,22 @@ const REWRITE_TONES = [
   { value: 'technical', label: 'Technical' },
   { value: 'concise', label: 'Concise' },
   { value: 'achievement-focused', label: 'Achievement-focused' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'creative', label: 'Creative' },
+  { value: 'simple', label: 'Simple / plain' },
 ] as const
-
-type EditorMode = 'resume' | 'job_application'
 
 export default function DashboardResume() {
   const { user, refreshUser } = useAuth()
-  const [editorMode, setEditorMode] = useState<EditorMode>('resume')
+  const [humanizeIntensity, setHumanizeIntensity] = useState<'light' | 'medium' | 'strong'>('medium')
   const [editorContent, setEditorContent] = useState<Content>('')
   const [editorText, setEditorText] = useState('')
-  const [jobDescription, setJobDescription] = useState('')
+  const [originalText, setOriginalText] = useState('')
+  const [documentContext, setDocumentContext] = useState('')
   const [score, setScore] = useState<number | null>(null)
   const [scoreBreakdown, setScoreBreakdown] = useState<Record<string, number> | null>(null)
   const [keywords, setKeywords] = useState<string[]>([])
+  const [analysisNotes, setAnalysisNotes] = useState<string | undefined>(undefined)
   const [rewriteLoading, setRewriteLoading] = useState(false)
   const [rewriteError, setRewriteError] = useState<string | null>(null)
   const [scoreLoading, setScoreLoading] = useState(false)
@@ -57,6 +61,7 @@ export default function DashboardResume() {
   const [uploadLoading, setUploadLoading] = useState(false)
   const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
   const [summaryLoading, setSummaryLoading] = useState(false)
+  const [lengthAdjustKind, setLengthAdjustKind] = useState<'shorten' | 'expand' | null>(null)
   const [summaryError, setSummaryError] = useState<string | null>(null)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null)
@@ -91,7 +96,8 @@ export default function DashboardResume() {
     if (!projectIdFromUrl) {
       setCurrentProjectId(null)
       setCurrentProjectTitle('')
-      setJobDescription('')
+      setDocumentContext('')
+      setOriginalText('')
       setSaveError(null)
       return
     }
@@ -104,12 +110,16 @@ export default function DashboardResume() {
         setCurrentProjectId(proj.id)
         setCurrentProjectTitle(proj.title || 'Untitled')
         setEditorContent(proj.content || '')
-        setEditorText(proj.content ? (() => {
-          const div = document.createElement('div')
-          div.innerHTML = proj.content
-          return div.textContent || ''
-        })() : '')
-        setJobDescription(typeof proj.job_description === 'string' ? proj.job_description : '')
+        const computedText = proj.content
+          ? (() => {
+              const div = document.createElement('div')
+              div.innerHTML = proj.content
+              return div.textContent || ''
+            })()
+          : ''
+        setEditorText(computedText)
+        setOriginalText(computedText)
+        setDocumentContext(typeof proj.job_description === 'string' ? proj.job_description : '')
         setProjects((prev) => prev.some((p) => p.id === proj.id) ? prev : [...prev, { id: proj.id, title: proj.title || 'Untitled' }])
       })
       .catch(() => { if (!cancelled) setSaveError('Failed to load project') })
@@ -127,24 +137,26 @@ export default function DashboardResume() {
         await api.projects.update(currentProjectId, {
           content,
           title: name,
-          jobDescription: jobDescription,
+          jobDescription: documentContext,
         })
         setCurrentProjectTitle(name)
         setProjects((prev) => prev.map((p) => (p.id === currentProjectId ? { ...p, title: name } : p)))
+        setOriginalText(editorText)
       } else {
         const created = await api.projects.create(name)
         setCurrentProjectId(created.id)
         setCurrentProjectTitle(created.title || name)
         setProjects((prev) => [...prev, { id: created.id, title: created.title || name }])
-        navigate(`/dashboard/resume?projectId=${created.id}`, { replace: true })
-        await api.projects.update(created.id, { content, jobDescription: jobDescription })
+        navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
+        await api.projects.update(created.id, { content, jobDescription: documentContext })
+        setOriginalText(editorText)
       }
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save')
     } finally {
       setSaveLoading(false)
     }
-  }, [currentProjectId, currentProjectTitle, editorContent, jobDescription, navigate])
+  }, [currentProjectId, currentProjectTitle, editorContent, documentContext, navigate, editorText])
 
   const handleSaveAs = useCallback(async () => {
     const title = currentProjectTitle.trim() || 'Untitled'
@@ -153,17 +165,18 @@ export default function DashboardResume() {
     const content = typeof editorContent === 'string' ? editorContent : ''
     try {
       const created = await api.projects.create(title)
-      await api.projects.update(created.id, { content, jobDescription: jobDescription })
+      await api.projects.update(created.id, { content, jobDescription: documentContext })
       setCurrentProjectId(created.id)
       setCurrentProjectTitle(created.title || 'Untitled')
       setProjects((prev) => [...prev, { id: created.id, title: created.title || 'Untitled' }])
-      navigate(`/dashboard/resume?projectId=${created.id}`, { replace: true })
+      navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
+      setOriginalText(editorText)
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save as new project')
     } finally {
       setSaveLoading(false)
     }
-  }, [currentProjectTitle, editorContent, jobDescription, navigate])
+  }, [currentProjectTitle, editorContent, documentContext, navigate, editorText])
 
   const handleRewrite = useCallback(async () => {
     const text = editorRef.current?.getSelectedText()?.trim()
@@ -178,8 +191,8 @@ export default function DashboardResume() {
         language: rewriteLanguage,
         tone: rewriteTone,
         context: rewriteContext.trim() || undefined,
-        mode: editorMode,
-        jobDescription: jobDescription.trim() || undefined,
+        documentContext: documentContext.trim() || undefined,
+        intensity: humanizeIntensity,
       })
       if (res.rewritten) {
         editorRef.current?.replaceSelection(res.rewritten)
@@ -190,26 +203,58 @@ export default function DashboardResume() {
     } finally {
       setRewriteLoading(false)
     }
-  }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, editorMode, jobDescription])
+  }, [refreshUser, rewriteLanguage, rewriteTone, rewriteContext, documentContext, humanizeIntensity])
+
+  const handleHumanizeFullDocument = useCallback(async () => {
+    const text = editorText.trim()
+    if (!text) {
+      setRewriteError('Add some text in the editor first.')
+      return
+    }
+    setRewriteError(null)
+    setRewriteLoading(true)
+    try {
+      const res = await api.ai.rewrite(text, {
+        language: rewriteLanguage,
+        tone: rewriteTone,
+        context: rewriteContext.trim() || undefined,
+        documentContext: documentContext.trim() || undefined,
+        intensity: humanizeIntensity,
+      })
+      if (res.rewritten) {
+        editorRef.current?.replaceFullDocumentFromPlain(res.rewritten)
+      }
+      await refreshUser()
+    } catch (err) {
+      setRewriteError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setRewriteLoading(false)
+    }
+  }, [editorText, refreshUser, rewriteLanguage, rewriteTone, rewriteContext, documentContext, humanizeIntensity])
 
   const handleScore = useCallback(async () => {
-    if (!editorText.trim() || !jobDescription.trim()) {
-      setScoreError('Add content and a job description.')
+    if (!editorText.trim()) {
+      setScoreError('Add some text in the editor first.')
       return
     }
     setScoreError(null)
     setScoreLoading(true)
     try {
-      const res = await api.ai.score(editorText, jobDescription, editorMode)
+      const res = await api.ai.score(editorText, {
+        documentContext: documentContext.trim() || undefined,
+        targetTone: rewriteTone,
+      })
       setScore(res.score)
       setScoreBreakdown(res.breakdown ?? null)
       setKeywords(res.keywords ?? [])
+      setAnalysisNotes(res.notes ?? undefined)
+      await refreshUser()
     } catch (err) {
       setScoreError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setScoreLoading(false)
     }
-  }, [editorText, jobDescription])
+  }, [editorText, documentContext, rewriteTone, refreshUser])
 
   useEffect(() => {
     if (wasScoreLoading.current && !scoreLoading && score !== null) {
@@ -240,14 +285,14 @@ export default function DashboardResume() {
     setExportLoading(true)
     try {
       const blob = await api.resume.exportPdf(contentToExport)
-      downloadBlob(blob, editorMode === 'job_application' ? 'application.pdf' : 'resume.pdf')
+      downloadBlob(blob, 'document.pdf')
       await refreshUser()
     } catch (err) {
       setExportError(err instanceof Error ? err.message : 'Export failed. Please try again.')
     } finally {
       setExportLoading(false)
     }
-  }, [getContentToExport, editorMode, downloadBlob, refreshUser])
+  }, [getContentToExport, downloadBlob, refreshUser])
 
   const handleExportDocx = useCallback(async () => {
     setExportMenuOpen(false)
@@ -260,14 +305,14 @@ export default function DashboardResume() {
     setExportLoading(true)
     try {
       const blob = await api.resume.exportDocx(contentToExport)
-      downloadBlob(blob, editorMode === 'job_application' ? 'application.docx' : 'resume.docx')
+      downloadBlob(blob, 'document.docx')
       await refreshUser()
     } catch (err) {
       setExportError(err instanceof Error ? err.message : 'Export failed. Please try again.')
     } finally {
       setExportLoading(false)
     }
-  }, [getContentToExport, editorMode, downloadBlob, refreshUser])
+  }, [getContentToExport, downloadBlob, refreshUser])
 
   const handleExportText = useCallback(() => {
     setExportMenuOpen(false)
@@ -278,31 +323,36 @@ export default function DashboardResume() {
     }
     setExportError(null)
     const blob = new Blob([contentToExport], { type: 'text/plain;charset=utf-8' })
-    downloadBlob(blob, editorMode === 'job_application' ? 'application.txt' : 'resume.txt')
-  }, [getContentToExport, editorMode, downloadBlob])
+    downloadBlob(blob, 'document.txt')
+  }, [getContentToExport, downloadBlob])
 
-  const handleGenerateSummary = useCallback(async () => {
-    if (!editorText?.trim() || editorText.trim().length < 50) {
-      setSummaryError('Add more resume content (at least a few lines) before generating a summary.')
-      return
-    }
-    setSummaryError(null)
-    setSummaryLoading(true)
-    try {
-      const { summary } = await api.ai.summary(editorText, {
-        jobDescription: jobDescription.trim() || undefined,
-        mode: editorMode,
-      })
-      if (summary?.trim()) {
-        editorRef.current?.insertContentAtStart(summary.trim())
+  const handleLengthAdjust = useCallback(
+    async (direction: 'shorten' | 'expand') => {
+      if (!editorText?.trim() || editorText.trim().length < 50) {
+        setSummaryError('Add more text (at least a few lines) before shortening or expanding.')
+        return
       }
-      await refreshUser()
-    } catch (err) {
-      setSummaryError(err instanceof Error ? err.message : 'Could not generate summary. Please try again.')
-    } finally {
-      setSummaryLoading(false)
-    }
-  }, [editorText, jobDescription, editorMode, refreshUser])
+      setSummaryError(null)
+      setLengthAdjustKind(direction)
+      setSummaryLoading(true)
+      try {
+        const { summary } = await api.ai.summary(editorText, {
+          documentContext: documentContext.trim() || undefined,
+          direction,
+        })
+        if (summary?.trim()) {
+          editorRef.current?.replaceFullDocumentFromPlain(summary.trim())
+        }
+        await refreshUser()
+      } catch (err) {
+        setSummaryError(err instanceof Error ? err.message : 'Could not adjust length. Please try again.')
+      } finally {
+        setSummaryLoading(false)
+        setLengthAdjustKind(null)
+      }
+    },
+    [editorText, documentContext, refreshUser]
+  )
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const text = e.clipboardData.getData('text/plain')
@@ -359,6 +409,7 @@ export default function DashboardResume() {
     if (!pending?.text?.trim()) return
     clearPendingRewrite()
     const text = pending.text.trim()
+    setOriginalText(text)
     setLandingRewriteLoading(true)
     setRewriteError(null)
     api.ai
@@ -382,39 +433,23 @@ export default function DashboardResume() {
 
   const used = user?.rewriteCountToday ?? 0
   const limit = user?.rewriteLimit ?? 2
+  const scoreUsed = user?.scoreCountToday ?? 0
+  const scoreLimit = user?.scoreLimit ?? 2
 
   return (
     <div className="dashboardPage dashboardResume">
       <header className="resumePageHeader">
         <div className="resumePageHeaderTop">
-          <h1 className="dashboardPageTitle">Editor</h1>
-          <div className="editorModeSwitch" role="group" aria-label="Editing mode">
-            <button
-              type="button"
-              className={`editorModeBtn ${editorMode === 'resume' ? 'editorModeBtnActive' : ''}`}
-              onClick={() => setEditorMode('resume')}
-              aria-pressed={editorMode === 'resume'}
-            >
-              Resume
-            </button>
-            <button
-              type="button"
-              className={`editorModeBtn ${editorMode === 'job_application' ? 'editorModeBtnActive' : ''}`}
-              onClick={() => setEditorMode('job_application')}
-              aria-pressed={editorMode === 'job_application'}
-            >
-              Job application
-            </button>
-          </div>
+          <h1 className="dashboardPageTitle">Workspace</h1>
         </div>
         <p className="dashboardPageSubtitle">
-          {editorMode === 'resume'
-            ? 'Edit your resume, analyze it against a job description, then export to PDF.'
-            : 'Edit your cover letter or application answers. Paste the job description to score and tailor your text.'}
+          Analyze how natural your writing sounds, humanize selections with AI, optionally shorten or expand the whole draft, then export.
         </p>
         <div className="resumeUsage">
-          Rewrites today: {used} / {limit}
-          {user?.isPro && ' (Pro)'}
+          Editing (humanize / shorten / expand) today: {used} / {limit}
+          {' · '}
+          Analysis today: {scoreUsed} / {scoreLimit}
+          {(user?.isPro || user?.isTeam) && ' (paid plan)'}
         </div>
         <div className="resumeProjectBar">
           <div className="resumeProjectNameWrap">
@@ -427,7 +462,7 @@ export default function DashboardResume() {
               className="resumeProjectTitleInput"
               value={projectLoading ? '' : currentProjectTitle}
               onChange={(e) => setCurrentProjectTitle(e.target.value)}
-              placeholder={projectLoading ? 'Loading…' : 'e.g. Acme PM role — resume'}
+              placeholder={projectLoading ? 'Loading…' : 'e.g. Blog post — draft 2'}
               disabled={projectLoading}
               maxLength={255}
               autoComplete="off"
@@ -440,8 +475,8 @@ export default function DashboardResume() {
               value={currentProjectId ?? ''}
               onChange={(e) => {
                 const id = e.target.value
-                if (id) navigate(`/dashboard/resume?projectId=${id}`)
-                else navigate('/dashboard/resume')
+                if (id) navigate(`/dashboard/workspace?projectId=${id}`)
+                else navigate('/dashboard/workspace')
               }}
               aria-label="Switch project"
             >
@@ -461,33 +496,31 @@ export default function DashboardResume() {
         {saveError && <p className="dashboardSettingsError">{saveError}</p>}
         {landingRewriteLoading && (
           <p className="resumeLandingBanner" role="status">
-            Generating your rewrite from the landing page…
+            Humanizing your sample from the landing page…
           </p>
         )}
       </header>
 
       <div className="resumeFlow">
         <section className="resumeSection resumeCard" id="resume-job-description">
-          <h2 className="resumeStepTitle">Job description</h2>
+          <h2 className="resumeStepTitle">Context (optional)</h2>
           <p className="resumeStepHint">
-            Paste the role description for fit scoring — and so AI rewrites, summaries, and opening paragraphs use this role as context (both resume and job application modes).
+            Audience, channel, assignment, or goal — helps humanize and analyze tone. Leave blank for a general pass.
           </p>
           <textarea
             className="resumeJobDesc"
-            placeholder="Paste the job description here..."
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
+            placeholder="e.g. LinkedIn post for engineers; first-year essay; client email…"
+            value={documentContext}
+            onChange={(e) => setDocumentContext(e.target.value)}
             rows={4}
-            aria-label="Job description"
+            aria-label="Optional context for AI"
           />
         </section>
 
         <section className="resumeSection resumeCard">
-          <h2 className="resumeStepTitle">{editorMode === 'resume' ? 'Your resume' : 'Your application'}</h2>
+          <h2 className="resumeStepTitle">Your text</h2>
           <p className="resumeStepHint">
-            {editorMode === 'resume'
-              ? 'Upload a file or paste your resume. Use the toolbar to format (Title H1, Section H2, bold, bullets). Select text and click Rewrite to improve it with AI. Export to PDF, Word, or Text when ready.'
-              : 'Paste your cover letter or application answers. Use the toolbar to format. Select text and click Rewrite; the AI will adapt to job application tone. Export to PDF, Word, or Text when ready.'}
+            Upload a file or paste below. Format with the toolbar (headings, bold, bullets). Select text and click Humanize, or run Analyze on the full draft. Shorten / expand replaces the whole document.
           </p>
           <div className="resumeToolbar">
             <input
@@ -509,27 +542,45 @@ export default function DashboardResume() {
               type="button"
               className="dashboardBtn dashboardBtnPrimary"
               onClick={handleScore}
-              disabled={scoreLoading || !editorText.trim() || !jobDescription.trim()}
+              disabled={scoreLoading || !editorText.trim()}
             >
-              {scoreLoading ? 'Analyzing…' : editorMode === 'resume' ? 'Analyze resume' : 'Analyze application'}
+              {scoreLoading ? 'Analyzing…' : 'Analyze writing'}
             </button>
             <button
               type="button"
               className="dashboardBtn dashboardBtnSecondary"
-              onClick={handleGenerateSummary}
+              onClick={() => handleLengthAdjust('shorten')}
               disabled={summaryLoading || !editorText.trim() || editorText.trim().length < 50}
-              title={editorMode === 'resume' ? 'Add a professional summary at the top' : 'Add a strong opening paragraph for your application'}
+              title="Make the full document shorter while keeping meaning"
             >
-              {summaryLoading ? 'Generating…' : editorMode === 'resume' ? 'Generate summary' : 'Generate opening'}
+              {summaryLoading && lengthAdjustKind === 'shorten' ? 'Shortening…' : 'Shorten all'}
+            </button>
+            <button
+              type="button"
+              className="dashboardBtn dashboardBtnSecondary"
+              onClick={() => handleLengthAdjust('expand')}
+              disabled={summaryLoading || !editorText.trim() || editorText.trim().length < 50}
+              title="Expand the full document with smoother flow — no new facts"
+            >
+              {summaryLoading && lengthAdjustKind === 'expand' ? 'Expanding…' : 'Expand all'}
             </button>
             <button
               type="button"
               className="dashboardBtn dashboardBtnSecondary"
               onClick={handleRewrite}
               disabled={rewriteLoading}
-              title={editorRef.current?.getSelectedText()?.trim() ? 'Replace selection with AI rewrite' : 'Select text in the editor first'}
+              title={editorRef.current?.getSelectedText()?.trim() ? 'Replace selection with humanized text' : 'Select text in the editor first'}
             >
-              {rewriteLoading ? 'Rewriting…' : 'Rewrite selection'}
+              {rewriteLoading ? 'Humanizing…' : 'Humanize selection'}
+            </button>
+            <button
+              type="button"
+              className="dashboardBtn dashboardBtnSecondary"
+              onClick={handleHumanizeFullDocument}
+              disabled={rewriteLoading || !editorText.trim()}
+              title="Humanize the full draft while preserving meaning"
+            >
+              {rewriteLoading ? 'Humanizing…' : 'Humanize full draft'}
             </button>
             <div className="resumeExportWrap" ref={exportMenuRef}>
               <button
@@ -560,11 +611,11 @@ export default function DashboardResume() {
             <p className="resumeExportHint">PDF, Word, or Text. Upload the Word file to Google Docs if you use it.</p>
           </div>
           <div className="resumeRewriteOptionsPanel">
-            <p className="resumeRewriteOptionsHeading">Rewrite options</p>
-            <p className="resumeRewriteOptionsHint">Style, language & extra instructions apply to AI rewrites.</p>
+            <p className="resumeRewriteOptionsHeading">Humanize options</p>
+            <p className="resumeRewriteOptionsHint">Tone, intensity, language, and extra instructions apply to Humanize selection. Tone also guides Analyze.</p>
             {rewriteBookmarkHint && (
               <p className="resumeRewriteBookmarkHint" role="status">
-                Selection saved for rewrite — click in the document when you want to clear it.
+                Selection saved for humanize — click in the document when you want to clear it.
               </p>
             )}
             <div className="resumeRewriteOptions">
@@ -574,11 +625,24 @@ export default function DashboardResume() {
                   className="resumeRewriteSelect"
                   value={rewriteTone}
                   onChange={(e) => setRewriteTone(e.target.value)}
-                  aria-label="Tone or style for AI rewrite"
+                  aria-label="Tone or style for AI"
                 >
                   {REWRITE_TONES.map((t) => (
                     <option key={t.value} value={t.value}>{t.label}</option>
                   ))}
+                </select>
+              </label>
+              <label className="resumeRewriteOption">
+                <span className="resumeRewriteOptionLabel">Intensity</span>
+                <select
+                  className="resumeRewriteSelect"
+                  value={humanizeIntensity}
+                  onChange={(e) => setHumanizeIntensity(e.target.value as 'light' | 'medium' | 'strong')}
+                  aria-label="How strongly to humanize the selection"
+                >
+                  <option value="light">Light touch</option>
+                  <option value="medium">Balanced</option>
+                  <option value="strong">Strong rewrite</option>
                 </select>
               </label>
               <label className="resumeRewriteOption">
@@ -587,7 +651,7 @@ export default function DashboardResume() {
                   className="resumeRewriteSelect"
                   value={rewriteLanguage}
                   onChange={(e) => setRewriteLanguage(e.target.value)}
-                  aria-label="Output language for AI rewrite"
+                  aria-label="Output language for humanize"
                 >
                   {REWRITE_LANGUAGES.map((l) => (
                     <option key={l.value} value={l.value}>{l.label}</option>
@@ -599,10 +663,10 @@ export default function DashboardResume() {
                 <input
                   type="text"
                   className="resumeRewriteContext"
-                  placeholder="e.g. More formal, focus on leadership"
+                  placeholder="e.g. warmer opening, fewer adverbs"
                   value={rewriteContext}
                   onChange={(e) => setRewriteContext(e.target.value)}
-                  aria-label="Additional instructions for AI rewrite"
+                  aria-label="Additional instructions for humanize"
                 />
               </label>
             </div>
@@ -629,41 +693,44 @@ export default function DashboardResume() {
               {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
             </p>
 
+            <div className="resumeSection">
+              <ResumePreview
+                originalContent={originalText}
+                currentContent={editorText}
+                keywords={keywords}
+              />
+            </div>
+
             <div className="resumeAtsPanel" ref={atsPanelRef}>
-              <h3 className="resumeAtsPanelTitle">How well do you match this job?</h3>
+              <h3 className="resumeAtsPanelTitle">Naturalness check</h3>
               <p className="resumeAtsPanelExplainer">
-                <strong>ATS</strong> = Applicant Tracking System (the software employers use to read résumés).
-                Your score compares this document to <strong>your pasted job description</strong>—keywords, strong verbs, line length, and plain text readability. It’s a guide, not a guarantee.
+                We estimate how human-like your draft reads: rhythm, specificity, voice, and (if you added context) tone fit.
+                It’s guidance for editing — not a claim about AI detection tools.
               </p>
               <div className="resumeAtsPanelActions">
                 <button
                   type="button"
                   className="dashboardBtn dashboardBtnPrimary"
                   onClick={handleScore}
-                  disabled={scoreLoading || !editorText.trim() || !jobDescription.trim()}
+                  disabled={scoreLoading || !editorText.trim()}
                 >
-                  {scoreLoading ? 'Scoring…' : score !== null ? 'Update score' : 'Get score'}
+                  {scoreLoading ? 'Analyzing…' : score !== null ? 'Refresh analysis' : 'Run analysis'}
                 </button>
-                {!jobDescription.trim() && (
-                  <p className="resumeAtsPanelNeed">
-                    Paste the role in <a href="#resume-job-description" className="resumeAtsPanelLink">Job description</a> first, then score.
-                  </p>
-                )}
-                {jobDescription.trim() && !editorText.trim() && (
-                  <p className="resumeAtsPanelNeed">Add your {editorMode === 'resume' ? 'resume' : 'application'} in the editor, then get your score.</p>
+                {!editorText.trim() && (
+                  <p className="resumeAtsPanelNeed">Add text in the editor, then run analysis.</p>
                 )}
               </div>
               {score !== null && (
                 <div className="resumeAtsPanelResults">
                   <p className="resumeAtsPanelRefreshHint">
-                    Edited something? Tap <strong>Update score</strong>.
+                    Edited something? Tap <strong>Refresh analysis</strong>.
                   </p>
                   <ResumeAnalysisFeedback
                     score={score}
                     breakdown={scoreBreakdown}
                     keywords={keywords}
                     resumeText={editorText}
-                    mode={editorMode}
+                    notes={analysisNotes}
                     className="resumeAtsPanelFeedback"
                   />
                 </div>

@@ -19,10 +19,65 @@ export function inlineMarkdownToHtml(line: string): string {
 /** Plain text with markdown line breaks → <p>…</p> blocks (full document / paste). */
 export function plainMarkdownToDocumentHtml(text: string): string {
   const normalized = text.replace(/\r\n/g, '\n')
-  return normalized.split('\n').map((line) => {
-    const inner = inlineMarkdownToHtml(line)
-    return `<p>${inner || '<br>'}</p>`
-  }).join('')
+  const lines = normalized.split('\n')
+
+  type ListKind = 'ul' | 'ol'
+  let currentList: ListKind | null = null
+  let listItems: string[] = []
+  const blocks: string[] = []
+
+  const flushList = () => {
+    if (!currentList) return
+    if (!listItems.length) return
+    const tag = currentList
+    blocks.push(`<${tag}>${listItems.map((it) => `<li>${it}</li>`).join('')}</${tag}>`)
+    currentList = null
+    listItems = []
+  }
+
+  for (const rawLine of lines) {
+    const trimmed = rawLine.trim()
+
+    // Preserve blank lines as paragraph breaks.
+    if (!trimmed) {
+      flushList()
+      blocks.push('<p><br></p>')
+      continue
+    }
+
+    // Bullet list: "-", "*", "•"
+    const bullet = rawLine.match(/^(\s*[-*•]\s+)(.+)$/)
+    if (bullet) {
+      const bulletText = bullet[2] ?? ''
+      const item = inlineMarkdownToHtml(bulletText)
+      if (currentList !== 'ul') {
+        flushList()
+        currentList = 'ul'
+      }
+      listItems.push(item)
+      continue
+    }
+
+    // Ordered list: "1. item"
+    const ordered = rawLine.match(/^(\s*\d+\.\s+)(.+)$/)
+    if (ordered) {
+      const orderedText = ordered[2] ?? ''
+      const item = inlineMarkdownToHtml(orderedText)
+      if (currentList !== 'ol') {
+        flushList()
+        currentList = 'ol'
+      }
+      listItems.push(item)
+      continue
+    }
+
+    flushList()
+    const inner = inlineMarkdownToHtml(rawLine)
+    blocks.push(`<p>${inner || '<br>'}</p>`)
+  }
+
+  flushList()
+  return blocks.join('')
 }
 
 export type ResumeEditorHandle = {
@@ -31,6 +86,8 @@ export type ResumeEditorHandle = {
   getText: () => string
   /** Insert HTML or plain text at the start of the document (e.g. for generated summary). */
   insertContentAtStart: (htmlOrText: string) => void
+  /** Replace the whole document from plain text (e.g. shorten / expand). */
+  replaceFullDocumentFromPlain: (text: string) => void
   /** Plain text with ## for H2 and ### for H3, for PDF export. */
   getExportText: () => string
 }
@@ -222,6 +279,20 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
           ? htmlOrText
           : plainMarkdownToDocumentHtml(htmlOrText.replace(/\r\n/g, '\n'))
         editor.chain().focus().insertContentAt(0, content).run()
+      },
+      replaceFullDocumentFromPlain: (text: string) => {
+        if (!editor) return
+        const raw = text.replace(/\r\n/g, '\n').trim()
+        if (!raw) return
+        const html = plainMarkdownToDocumentHtml(raw)
+        storedRangeRef.current = null
+        onRewriteBookmarkHint?.(false)
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+        } catch {
+          // ignore
+        }
+        editor.chain().focus().setContent(html, false).run()
       },
       getExportText: () => {
         if (!editor?.state.doc) return editor?.getText() ?? ''

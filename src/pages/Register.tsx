@@ -71,7 +71,7 @@ export default function Register() {
       <div className="authCard">
         <h1 className="authTitle">Create account</h1>
         <p className="authSubtitle">
-          {fromLandingTry ? 'Sign up to see your AI rewrite. Free—no credit card required.' : 'Get started with a free account.'}
+          {fromLandingTry ? 'Sign up to see your humanized text. Free—no credit card required.' : 'Get started with a free account.'}
         </p>
         {error && <div className="authError" role="alert">{error}</div>}
         <form onSubmit={handleSubmit} className="authForm">

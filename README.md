@@ -1,6 +1,6 @@
 # bioqz
 
-A minimal SaaS app: landing page, auth (email/password + optional Google), Stripe billing, and an **AI resume** MVP (Tiptap editor, DeepSeek rewrites, Rezi-style score, PDF export, usage caps).
+A minimal SaaS app: landing page, auth (email/password + optional Google), Stripe billing, and an **AI humanizer** (Tiptap editor, DeepSeek humanize + analyze, optional shorten/expand, PDF export, usage caps).
 
 ## Tech stack
 
@@ -10,7 +10,7 @@ A minimal SaaS app: landing page, auth (email/password + optional Google), Strip
 - **Database:** PostgreSQL via **pg** driver (no Prisma)
 - **Auth:** JWT (email/password, email verification); optional Google (Passport.js)
 - **Billing:** Stripe (Checkout, Customer Portal, webhooks)
-- **bioqz:** DeepSeek API, Tiptap editor, pdfmake (PDF export)
+- **bioqz:** DeepSeek API, Tiptap editor, pdfmake (document PDF export)
 
 ## Commands
 
@@ -68,28 +68,29 @@ npm run server
 
 ---
 
-## bioqz (resume builder)
+## bioqz (AI humanizer)
 
-Full product design (features, data model, API, abuse protection, file map): **[docs/PRODUCT_DESIGN.md](docs/PRODUCT_DESIGN.md)**.
+Product spec: **[docs/PRODUCT_AI_HUMANIZER.md](docs/PRODUCT_AI_HUMANIZER.md)** · design index: **[docs/PRODUCT_DESIGN.md](docs/PRODUCT_DESIGN.md)**.
 
-Open **/dashboard/resume** after signing in to use the resume builder.
+Open **/dashboard/workspace** after signing in (legacy **/dashboard/resume** redirects).
 
 ### Features
 
-- **Dashboard:** Upload resume (.txt) or paste text; paste job description; Tiptap editor (bold, italic, lists, Inter font, ATS-safe margins).
-- **AI rewrite:** Select text → “Rewrite with AI” → DeepSeek rewrites with strong verbs and metrics; selection replaced in editor.
-- **Rezi-style score (0–100):** Keyword match %, verb strength, length, ATS safety (regex); optional breakdown and keyword list for highlighting.
-- **Side-by-side preview:** Original vs current; keywords from job description highlighted (e.g. yellow).
-- **PDF export:** One-click export via pdfmake from editor state.
-- **Templates:** One-column, two-column (skills sidebar), creative — switchable.
-- **Abuse protection:** Usage logged in PostgreSQL (`usage_logs`); daily caps (50 free / 500 Pro); spam/lockout/suspend; rate limit 1 req/s; optional job-desc cache (in-memory or Redis).
+- **Dashboard:** Upload `.txt` or paste text; optional **context** (audience, assignment, channel); Tiptap editor (bold, italic, lists, Inter).
+- **Humanize:** Select text → DeepSeek rewrites for natural rhythm and voice; tone + intensity; selection replaced in editor.
+- **Analyze (0–100):** How generic / AI-like the text reads; breakdown + phrases to refine; optional context for tone fit.
+- **Shorten / expand:** Whole-document length adjust via AI (same daily pool as humanize).
+- **Side-by-side preview:** Original vs current; optional highlight phrases from analysis.
+- **PDF export:** One-click document export via pdfmake.
+- **Templates:** Layout presets for editor + PDF.
+- **Abuse protection:** `usage_logs`; daily caps; burst lockout; rate limit; optional Redis for cache/lockout.
 
-### Env (resume builder)
+### Env (AI)
 
 Add to `.env`:
 
-- `DEEPSEEK_API_KEY` — required for AI rewrite.
-- Optional: `REDIS_URL` — for job-desc cache and lockout (otherwise in-memory).
+- `DEEPSEEK_API_KEY` — required for humanize and analyze.
+- Optional: `REDIS_URL` — analyze cache and lockout (otherwise in-memory).
 
 Existing: `DATABASE_URL`, `JWT_SECRET`, `APP_BASE_URL`, Stripe vars. Run migration `server/migrations/002_resume_builder.sql` (adds `usage_logs`, `users.is_pro`).
 
@@ -143,7 +144,7 @@ npm run server     # Express (API)
    ```
    You should see: `Local: http://localhost:5173`
 
-5. **Test in the browser:** Open http://localhost:5173 → Register → check Terminal 1 for the verify-email link (or use the link from the logged email) → Verify → Sign in → go to **/dashboard/resume**.
+5. **Test in the browser:** Open http://localhost:5173 → Register → check Terminal 1 for the verify-email link (or use the link from the logged email) → Verify → Sign in → go to **/dashboard/workspace**.
 
 **Production-like test (single process):**  
 `npm run build` then `NODE_ENV=production npm start` → serves app + API on http://localhost:3001. Use this to verify the combined build before deploying.

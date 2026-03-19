@@ -8,12 +8,11 @@ export default function Blog() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Blog — bioqz | AI Resume Builder Tips, ATS & Job Search',
+      title: 'Blog — bioqz | AI Humanizer & Natural Writing Tips',
       description:
-        'Guides on AI resume writing, tailoring your resume to job descriptions, ATS scores, AI resume rewrites, PDF formatting, and application answers—aligned with bioqz AI resume software.',
+        'Guides on making AI-assisted drafts sound human, choosing tone for your audience, and exporting clean documents—aligned with the bioqz workspace.',
       path: '/blog',
-      keywords:
-        'ai resume builder tips, ats resume, tailor resume to job, ai resume rewrite, resume optimization',
+      keywords: 'ai humanizer, natural writing, tone in writing, ai text editing, writing clarity',
     })
   }, [])
 
@@ -22,8 +21,8 @@ export default function Blog() {
       <div className="blogHero">
         <h1 className="blogHeroTitle">Blog</h1>
         <p className="blogHeroLead">
-          Tips for stronger resumes, ATS alignment, and applying with confidence—aligned with what bioqz helps you do:
-          paste a job description, score and refine your resume, rewrite with AI, and export.
+          Tips for clearer, more natural writing—aligned with what bioqz helps you do: analyze drafts, humanize selections,
+          adjust length, and export when you are done.
         </p>
       </div>
       <ul className="blogGrid">

@@ -45,7 +45,7 @@ export default function Login() {
     try {
       await login(email, password)
       const from = (location.state as { from?: { pathname: string } })?.from?.pathname
-      const goTo = from && from.startsWith('/dashboard') ? from : (hasPendingRewrite() ? '/dashboard/resume' : '/dashboard')
+      const goTo = from && from.startsWith('/dashboard') ? from : (hasPendingRewrite() ? '/dashboard/workspace' : '/dashboard')
       navigate(goTo, { replace: true })
     } catch (err) {
       // error set in context if API returns message
@@ -88,7 +88,7 @@ export default function Login() {
           <button type="submit" className="authSubmit">Sign in</button>
         </form>
         <div className="authDivider">or</div>
-        <a href={getGoogleAuthUrl((location.state as { from?: { pathname: string } })?.from?.pathname || (hasPendingRewrite() ? '/dashboard/resume' : '/dashboard'))} className="authGoogleBtn" data-auth="google">
+        <a href={getGoogleAuthUrl((location.state as { from?: { pathname: string } })?.from?.pathname || (hasPendingRewrite() ? '/dashboard/workspace' : '/dashboard'))} className="authGoogleBtn" data-auth="google">
           Continue with Google
         </a>
         <p className="authFooter">

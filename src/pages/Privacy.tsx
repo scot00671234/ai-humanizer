@@ -7,7 +7,7 @@ export default function Privacy() {
     setSeoMeta({
       title: 'Privacy Policy — bioqz',
       description:
-        'How bioqz collects and uses data when you use our AI resume builder and resume software. Read our privacy policy.',
+        'How bioqz collects and uses data when you use our AI humanizer and writing workspace. Read our privacy policy.',
       path: '/privacy',
     })
   }, [])

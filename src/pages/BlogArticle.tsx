@@ -67,7 +67,7 @@ export default function BlogArticlePage() {
   useEffect(() => {
     if (!article) return
     setSeoMeta({
-      title: `${article.title} | bioqz AI Resume Blog`,
+      title: `${article.title} | bioqz AI Humanizer Blog`,
       description: article.metaDescription,
       path: `/blog/${article.slug}`,
       type: 'article',
@@ -120,7 +120,7 @@ export default function BlogArticlePage() {
         </div>
         <footer className="blogArticleFooter">
           <p className="blogCta">
-            Ready to tailor your resume to a real job description?{' '}
+            Ready to humanize your writing in a real workspace?{' '}
             <Link to="/register" className="blogCtaLink">
               Get started free on bioqz
             </Link>
