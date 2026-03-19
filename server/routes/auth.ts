@@ -511,8 +511,8 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
       return
     }
     const rewriteCountToday = usageResult.rows[0]?.c ?? 0
-    const rewriteLimit = row.is_pro === true ? 500 : 2
     const isTeam = row.is_team === true
+    const rewriteLimit = isTeam ? 1500 : row.is_pro === true ? 500 : 2
     const projectLimit = isTeam ? 100 : (row.is_pro === true ? 10 : 1)
     const scoreCountToday = scoreUsageResult.rows[0]?.c ?? 0
     const scoreLimit = isTeam ? 100 : (row.is_pro === true ? 50 : 0)

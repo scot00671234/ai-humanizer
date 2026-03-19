@@ -13,6 +13,7 @@ import {
 
 const DAILY_CAP_FREE = 2
 const DAILY_CAP_PRO = 500
+const DAILY_CAP_ELITE = 1500
 const REWRITE_BURST_WINDOW_MS = 60 * 1000
 const REWRITE_BURST_MAX = 20
 const DAILY_REWRITE_SUSPEND = 1000
@@ -45,7 +46,7 @@ export async function checkRewriteLimits(req: Request, res: Response, next: Next
 
   try {
     const [userRow, dailyCount, burstCount] = await Promise.all([
-      pool.query('SELECT is_pro, suspended_at FROM users WHERE id = $1', [userId]),
+      pool.query('SELECT is_pro, COALESCE(is_team, false) AS is_team, suspended_at FROM users WHERE id = $1', [userId]),
       pool.query(
         `SELECT COUNT(*)::int AS c FROM usage_logs WHERE user_id = $1 AND action_type IN ('rewrite', 'summary') AND timestamp > now() - interval '24 hours'`,
         [userId]
@@ -57,6 +58,7 @@ export async function checkRewriteLimits(req: Request, res: Response, next: Next
     ])
 
     const isPro = userRow.rows[0]?.is_pro === true
+    const isElite = userRow.rows[0]?.is_team === true
     const suspendedAt = userRow.rows[0]?.suspended_at
     if (suspendedAt) {
       res.status(403).json({ error: 'Account paused—contact support.' })
@@ -65,7 +67,7 @@ export async function checkRewriteLimits(req: Request, res: Response, next: Next
 
     const daily = dailyCount.rows[0]?.c ?? 0
     const burst = burstCount.rows[0]?.c ?? 0
-    const cap = isPro ? DAILY_CAP_PRO : DAILY_CAP_FREE
+    const cap = isElite ? DAILY_CAP_ELITE : isPro ? DAILY_CAP_PRO : DAILY_CAP_FREE
 
     if (daily >= cap) {
       res.status(429).json({ error: 'Daily rewrite limit reached.' })
