@@ -17,6 +17,12 @@ export default function DashboardSettings() {
   const isPro = user?.isPro === true && !isElite
 
   useEffect(() => {
+    // After Stripe checkout/portal redirects back to /dashboard/settings,
+    // we need to refresh the user so plan flags + rewrite/project limits update immediately.
+    refreshUser()
+  }, [refreshUser])
+
+  useEffect(() => {
     if (searchParams.get('session_id')) {
       refreshUser()
       window.history.replaceState({}, '', '/dashboard/settings')
