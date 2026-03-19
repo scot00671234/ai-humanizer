@@ -3186,6 +3186,14 @@ body[data-page="dashboard"] .resumeExportItem:hover {
   background: rgba(255, 255, 255, 0.085);
   border-color: rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.92);
+  /* Native select dropdown list: avoid OS light popup + light text (Windows/Chrome). */
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body[data-page="dashboard"] .resumeRewriteSelect option,
+[data-theme="dark"] body[data-page="dashboard"] .resumeProjectSelect option {
+  background-color: #141b26;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 [data-theme="dark"] body[data-page="dashboard"] .resumeRewriteContext::placeholder,

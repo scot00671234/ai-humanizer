@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   /* Background */
   --bg-base: #f5f7fb;
   --bg-gradient-from: #eef3f8;
@@ -47,6 +48,7 @@
 
 /* Dark theme */
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-base: #0f141d;
   --bg-gradient-from: #0b1118;
   --bg-gradient-to: #162233;
