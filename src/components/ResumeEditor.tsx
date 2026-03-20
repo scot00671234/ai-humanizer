@@ -111,6 +111,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
   const storedRangeRef = useRef<{ from: number; to: number } | null>(null)
   /** Last mousedown was inside the document (not toolbar) — used to clear bookmark only when clicking in the doc. */
   const lastMousedownInProseRef = useRef(false)
+  /** True after we save a selection highlight; cleared only after first click back inside the prose. */
+  const bookmarkVisibleRef = useRef(false)
   const editor = useEditor({
     extensions,
     content: content || '',
@@ -170,11 +172,27 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
 
     const onDocMouseDown = (e: MouseEvent) => {
       const t = e.target as Node
-      lastMousedownInProseRef.current = proseEl.contains(t)
+      const clickedInsideProse = proseEl.contains(t)
+      lastMousedownInProseRef.current = clickedInsideProse
+
+      // Only clear the saved selection highlight on an actual click back into the text.
+      if (bookmarkVisibleRef.current && clickedInsideProse) {
+        storedRangeRef.current = null
+        bookmarkVisibleRef.current = false
+        onRewriteBookmarkHint?.(false)
+        try {
+          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+        } catch {
+          // ignore
+        }
+        notify()
+        return
+      }
       if (root.contains(t)) return
       const { from, to } = editor.state.selection
       if (from !== to) {
         storedRangeRef.current = { from, to }
+        bookmarkVisibleRef.current = true
         onRewriteBookmarkHint?.(true)
         notify()
         try {
@@ -190,12 +208,16 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (from !== to) {
         storedRangeRef.current = { from, to }
       } else if (editor.isFocused && lastMousedownInProseRef.current) {
-        storedRangeRef.current = null
-        onRewriteBookmarkHint?.(false)
-        try {
-          editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
-        } catch {
-          // ignore
+        // Guard: only clear when we currently have an active saved highlight.
+        if (bookmarkVisibleRef.current) {
+          storedRangeRef.current = null
+          bookmarkVisibleRef.current = false
+          onRewriteBookmarkHint?.(false)
+          try {
+            editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
+          } catch {
+            // ignore
+          }
         }
       }
       notify()
@@ -205,6 +227,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       const { from, to } = editor.state.selection
       if (from !== to) {
         storedRangeRef.current = { from, to }
+        bookmarkVisibleRef.current = true
         onRewriteBookmarkHint?.(true)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, { from, to }))
@@ -263,6 +286,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         }
         if (a >= b) return
         storedRangeRef.current = null
+        bookmarkVisibleRef.current = false
         onRewriteBookmarkHint?.(false)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -286,6 +310,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         if (!raw) return
         const html = plainMarkdownToDocumentHtml(raw)
         storedRangeRef.current = null
+        bookmarkVisibleRef.current = false
         onRewriteBookmarkHint?.(false)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -336,6 +361,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
     const current = isHtml ? editor.getHTML() : editor.getText()
     if (trimmed !== current.trim()) {
       storedRangeRef.current = null
+      bookmarkVisibleRef.current = false
       onRewriteBookmarkHint?.(false)
       try {
         editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
