@@ -97,7 +97,7 @@ function usePathStepVisible() {
 }
 
 const HOME_META_DESC =
-  'Sosiol: AI humanizer for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
+  'Sosiol: AI humanizer (AI humaniser) for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -107,7 +107,7 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Sosiol - AI Humanizer | Natural Writing, Tone Control & PDF Export',
+      title: 'Sosiol — AI Humanizer (AI Humaniser) | Natural Writing, Tone Control & PDF Export',
       description: HOME_META_DESC,
       path: '/',
       keywords: HOME_SEO_KEYWORDS,

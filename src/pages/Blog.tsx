@@ -10,9 +10,10 @@ export default function Blog() {
     setSeoMeta({
       title: 'Blog - Sosiol | Natural Writing & Tone Tips',
       description:
-        'Guides on making model-assisted drafts sound human, choosing tone for your audience, and exporting clean documents, aligned with the Sosiol workspace.',
+        'AI humanizer tips: humanize AI writing, control tone, improve rhythm and clarity, and rewrite sentences to sound natural, plus export workflows from your Sosiol workspace.',
       path: '/blog',
-      keywords: 'ai humanizer, natural writing, tone in writing, ai text editing, writing clarity',
+      keywords:
+        'ai humanizer, ai humaniser, humanize ai text, humanize ai writing, ai writing rewrite, rewrite ai text, tone control, natural writing, text rewriter, ai text editing, writing clarity, paraphrase ai',
     })
   }, [])
 
