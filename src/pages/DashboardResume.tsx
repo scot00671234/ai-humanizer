@@ -3,7 +3,6 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ResumeEditor, { type ResumeEditorHandle } from '../components/ResumeEditor'
 import ResumeAnalysisFeedback from '../components/ResumeAnalysisFeedback'
-import ResumePreview from '../components/ResumePreview'
 import { api } from '../api/client'
 import { extractResumeText, RESUME_UPLOAD_ACCEPT } from '../utils/extractResumeText'
 import { getPendingRewrite, clearPendingRewrite } from '../utils/landingPendingRewrite'
@@ -42,7 +41,6 @@ export default function DashboardResume() {
   const [humanizeIntensity, setHumanizeIntensity] = useState<'light' | 'medium' | 'strong'>('medium')
   const [editorContent, setEditorContent] = useState<Content>('')
   const [editorText, setEditorText] = useState('')
-  const [originalText, setOriginalText] = useState('')
   const [documentContext, setDocumentContext] = useState('')
   const [score, setScore] = useState<number | null>(null)
   const [scoreBreakdown, setScoreBreakdown] = useState<Record<string, number> | null>(null)
@@ -97,7 +95,6 @@ export default function DashboardResume() {
       setCurrentProjectId(null)
       setCurrentProjectTitle('')
       setDocumentContext('')
-      setOriginalText('')
       setSaveError(null)
       return
     }
@@ -118,7 +115,6 @@ export default function DashboardResume() {
             })()
           : ''
         setEditorText(computedText)
-        setOriginalText(computedText)
         setDocumentContext(typeof proj.job_description === 'string' ? proj.job_description : '')
         setProjects((prev) => prev.some((p) => p.id === proj.id) ? prev : [...prev, { id: proj.id, title: proj.title || 'Untitled' }])
       })
@@ -141,7 +137,6 @@ export default function DashboardResume() {
         })
         setCurrentProjectTitle(name)
         setProjects((prev) => prev.map((p) => (p.id === currentProjectId ? { ...p, title: name } : p)))
-        setOriginalText(editorText)
       } else {
         const created = await api.projects.create(name)
         setCurrentProjectId(created.id)
@@ -149,7 +144,6 @@ export default function DashboardResume() {
         setProjects((prev) => [...prev, { id: created.id, title: created.title || name }])
         navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
         await api.projects.update(created.id, { content, jobDescription: documentContext })
-        setOriginalText(editorText)
       }
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save')
@@ -170,7 +164,6 @@ export default function DashboardResume() {
       setCurrentProjectTitle(created.title || 'Untitled')
       setProjects((prev) => [...prev, { id: created.id, title: created.title || 'Untitled' }])
       navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
-      setOriginalText(editorText)
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save as new project')
     } finally {
@@ -409,7 +402,6 @@ export default function DashboardResume() {
     if (!pending?.text?.trim()) return
     clearPendingRewrite()
     const text = pending.text.trim()
-    setOriginalText(text)
     setLandingRewriteLoading(true)
     setRewriteError(null)
     api.ai
@@ -677,14 +669,6 @@ export default function DashboardResume() {
             <p className="resumeEditorWordCount" aria-live="polite">
               {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
             </p>
-
-            <div className="resumeSection">
-              <ResumePreview
-                originalContent={originalText}
-                currentContent={editorText}
-                keywords={keywords}
-              />
-            </div>
 
             <div className="resumeAtsPanel" ref={atsPanelRef}>
               <h3 className="resumeAtsPanelTitle">Naturalness check</h3>
