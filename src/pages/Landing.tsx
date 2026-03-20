@@ -67,7 +67,7 @@ const FEATURES = [
 const PLANS = [
   { name: 'Free', price: 0, period: 'month', description: 'Try the full workflow on real drafts. No credit card required.', features: ['2 humanize / shorten / expand per day', '2 naturalness analyses per day', 'Optional context for audience', 'PDF & Word export'], cta: 'Get started free', ctaTo: '/register', featured: false },
   { name: 'Pro', price: 29, period: 'month', description: 'For people who iterate on copy every day.', features: ['500 humanize / shorten / expand per day', '50 analyses per day', 'Everything in Free', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
-  { name: 'Elite', price: 59, period: 'month', description: 'Maximum headroom for teams and power users.', features: ['1,500 humanize / shorten / expand per day', '100 analyses per day', 'Everything in Pro', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
+  { name: 'Elite', price: 59, period: 'month', description: 'Maximum headroom for power users.', features: ['1,500 humanize / shorten / expand per day', '100 analyses per day', 'Everything in Pro', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
 
 const LANDING_TRY_MAX_LENGTH = 800
@@ -319,7 +319,7 @@ export default function Landing() {
           <textarea
             id="landing-try-text"
             className="landingTryInput"
-            placeholder="e.g. It is worth noting that our initiative delivered substantial synergies across teams."
+                      placeholder="e.g. It is worth noting that our initiative delivered measurable results across departments."
             value={tryText}
             onChange={(e) => setTryText(e.target.value)}
             maxLength={LANDING_TRY_MAX_LENGTH + 100}
