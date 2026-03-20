@@ -68,15 +68,6 @@ export default function DashboardGuide() {
         </ol>
       </div>
 
-      <div className="dashboardCard dashboardGuideCard">
-        <h2 className="dashboardGuideSectionTitle">Quick tips</h2>
-        <ul className="dashboardGuideList dashboardGuideListCompact">
-          <li>Free plans include daily limits on humanize and on analysis; paid plans raise those caps (see Settings).</li>
-          <li>Starting from the landing page with sample text? Sign in and your first humanize can run automatically in the Workspace.</li>
-          <li>Follow your school or workplace rules on AI assistance. We help you edit; compliance is yours.</li>
-        </ul>
-      </div>
-
       <div className="dashboardGuideCta">
         <Link to="/dashboard/workspace" className="dashboardBtn dashboardBtnPrimary">
           Open Workspace
