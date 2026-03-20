@@ -194,28 +194,41 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
     }
   }
 
+  async function getPriceIdFromSubscriptionId(subscriptionId: string): Promise<string | undefined> {
+    if (!stripe) return undefined
+    try {
+      const sub = await stripe.subscriptions.retrieve(subscriptionId, { expand: ['items.data.price'] })
+      const priceId = (sub as Stripe.Subscription).items?.data?.[0]?.price?.id
+      return typeof priceId === 'string' ? priceId : undefined
+    } catch (e) {
+      console.warn('Stripe: failed to retrieve subscription price id:', subscriptionId)
+      return undefined
+    }
+  }
+
   if (event.type === 'checkout.session.completed' && event.data.object) {
     const session = event.data.object as Stripe.Checkout.Session
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
     let email = session.customer_email || session.customer_details?.email
     if (customerId && pool) {
+      console.log('Stripe webhook checkout.session.completed received')
       if (!email) {
         email = await getCustomerEmail(customerId)
       }
       email = typeof email === 'string' ? email.trim().toLowerCase() : undefined
 
+      // For checkout.session.completed we should mark the user as paid immediately.
+      // Derive tier from the purchased price id rather than subscription status (which may not be "active" yet).
       let isPro = true
       let isTeam = false
       if (typeof session.subscription === 'string') {
-        const tier = await getTierFromSubscriptionId(session.subscription)
-        if (tier) {
-          isPro = tier.isPro
-          isTeam = tier.isTeam
-        }
+        const priceId = await getPriceIdFromSubscriptionId(session.subscription)
+        if (priceElite && priceId && priceId === priceElite) isTeam = true
       }
 
       if (email) {
       try {
+          console.log('Stripe webhook updating user tier by email', { email, isPro, isTeam })
         await pool.query(
           'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
           [customerId, isPro, isTeam, email]
