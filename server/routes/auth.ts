@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import Stripe from 'stripe'
 import { pool } from '../db'
 import { config } from '../config'
 import { emailService, buildVerificationEmail, buildPasswordResetEmail } from '../services/email'
@@ -9,6 +10,7 @@ import { requireAuth } from '../middleware/auth'
 import type { JwtPayload } from '../middleware/auth'
 
 const router = Router()
+const stripe = config.stripe.secretKey ? new Stripe(config.stripe.secretKey) : null
 
 const MAX_EMAIL_LENGTH = 254
 const MAX_PASSWORD_LENGTH = 256
@@ -493,7 +495,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
   try {
     const [userResult, usageResult, scoreUsageResult] = await Promise.all([
       pool.query(
-        'SELECT id, email, email_verified_at, created_at, is_pro, COALESCE(is_team, false) AS is_team FROM users WHERE id = $1',
+        'SELECT id, email, email_verified_at, created_at, is_pro, COALESCE(is_team, false) AS is_team, stripe_customer_id FROM users WHERE id = $1',
         [user.userId]
       ),
       pool.query(
@@ -510,19 +512,64 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
       res.status(404).json({ error: 'User not found' })
       return
     }
+    let isPro = row.is_pro === true
+    let isTeam = row.is_team === true
+    const stripeCustomerId = typeof row.stripe_customer_id === 'string' ? row.stripe_customer_id : null
+
+    // Fallback sync: if webhook is delayed/missed in production, keep plan state accurate
+    // by reconciling from Stripe at /me time.
+    if (stripe && stripeCustomerId) {
+      try {
+        const subscriptions = await stripe.subscriptions.list({
+          customer: stripeCustomerId,
+          status: 'all',
+          limit: 20,
+        })
+        const activeSubs = subscriptions.data.filter((s) => s.status === 'active' || s.status === 'trialing')
+        const syncedIsPro = activeSubs.length > 0
+        const priceElite = config.stripe.priceElite || ''
+        const syncedIsTeam =
+          !!priceElite &&
+          activeSubs.some((s) => s.items?.data?.some((item) => item.price?.id === priceElite))
+
+        if (syncedIsPro !== isPro || syncedIsTeam !== isTeam) {
+          console.log('[auth/me] syncing plan flags from Stripe', {
+            userId: row.id,
+            stripeCustomerId,
+            old: { isPro, isTeam },
+            next: { isPro: syncedIsPro, isTeam: syncedIsTeam },
+          })
+          await pool.query(
+            'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE id = $3',
+            [syncedIsPro, syncedIsTeam, row.id]
+          )
+          isPro = syncedIsPro
+          isTeam = syncedIsTeam
+        }
+      } catch (stripeSyncErr) {
+        console.warn('[auth/me] stripe sync failed:', stripeSyncErr)
+      }
+    }
     const rewriteCountToday = usageResult.rows[0]?.c ?? 0
-    const isTeam = row.is_team === true
-    const rewriteLimit = isTeam ? 1500 : row.is_pro === true ? 500 : 2
-    const projectLimit = isTeam ? 100 : (row.is_pro === true ? 10 : 1)
+    const rewriteLimit = isTeam ? 1500 : isPro ? 500 : 2
+    const projectLimit = isTeam ? 100 : (isPro ? 10 : 1)
     const scoreCountToday = scoreUsageResult.rows[0]?.c ?? 0
-    const scoreLimit = isTeam ? 100 : (row.is_pro === true ? 50 : 2)
+    const scoreLimit = isTeam ? 100 : (isPro ? 50 : 2)
+    console.log('[auth/me] responding with plan', {
+      userId: row.id,
+      isPro,
+      isTeam,
+      rewriteLimit,
+      scoreLimit,
+      stripeCustomerIdPresent: !!stripeCustomerId,
+    })
     res.json({
       user: {
         id: row.id,
         email: row.email,
         emailVerified: !!row.email_verified_at,
         createdAt: row.created_at,
-        isPro: !!row.is_pro,
+        isPro: !!isPro,
         isTeam: !!isTeam,
         rewriteCountToday,
         rewriteLimit,
