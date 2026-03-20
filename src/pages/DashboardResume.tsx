@@ -36,6 +36,11 @@ const REWRITE_TONES = [
   { value: 'simple', label: 'Simple / plain' },
 ] as const
 
+const UPGRADE_LIMITS = {
+  pro: { humanizePerDay: 500, analysesPerDay: 50, projectLimit: 10 },
+  elite: { humanizePerDay: 1500, analysesPerDay: 100, projectLimit: 100 },
+} as const
+
 export default function DashboardResume() {
   const { user, refreshUser } = useAuth()
   const [humanizeIntensity, setHumanizeIntensity] = useState<'light' | 'medium' | 'strong'>('medium')
@@ -59,6 +64,8 @@ export default function DashboardResume() {
   const [uploadLoading, setUploadLoading] = useState(false)
   const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
+  const [billingLoading, setBillingLoading] = useState<'pro' | 'elite' | null>(null)
+  const [billingError, setBillingError] = useState<string | null>(null)
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null)
   const [currentProjectTitle, setCurrentProjectTitle] = useState<string>('')
   const [projects, setProjects] = useState<{ id: string; title: string }[]>([])
@@ -396,6 +403,22 @@ export default function DashboardResume() {
   const limit = user?.rewriteLimit ?? 2
   const scoreUsed = user?.scoreCountToday ?? 0
   const scoreLimit = user?.scoreLimit ?? 2
+  const isElite = user?.isTeam === true
+  const isPro = user?.isPro === true && !isElite
+  const isFree = !!user && !isElite && !isPro
+
+  async function handleUpgrade(plan: 'pro' | 'elite') {
+    setBillingError(null)
+    setBillingLoading(plan)
+    try {
+      const { url } = await api.auth.createCheckoutSession(plan)
+      if (url) window.location.href = url
+    } catch (err) {
+      setBillingError(err instanceof Error ? err.message : 'Failed to start checkout')
+    } finally {
+      setBillingLoading(null)
+    }
+  }
 
   return (
     <div className="dashboardPage dashboardResume">
@@ -404,10 +427,10 @@ export default function DashboardResume() {
           <h1 className="dashboardPageTitle">Workspace</h1>
         </div>
         <p className="dashboardPageSubtitle">
-          Analyze how natural your writing sounds, humanize selections with AI, optionally shorten or expand the whole draft, then export.
+          Analyze how natural your writing sounds, humanize selections with AI, then export.
         </p>
         <div className="resumeUsage">
-          Editing (humanize / shorten / expand) today: {used} / {limit}
+          Editing (humanize) today: {used} / {limit}
           {' · '}
           Analysis today: {scoreUsed} / {scoreLimit}
           {(user?.isPro || user?.isTeam) && ' (paid plan)'}
@@ -463,6 +486,62 @@ export default function DashboardResume() {
       </header>
 
       <div className="resumeFlow">
+        {isFree && (
+          <section className="resumeUpgradeCallout" aria-label="Upgrade to Pro or Elite">
+            <div className="resumeUpgradeCalloutHeader">
+              <p className="resumeUpgradeCalloutKicker">Free plan</p>
+              <h2 className="resumeUpgradeCalloutTitle">Unlock higher limits with Pro or Elite</h2>
+              <p className="resumeUpgradeCalloutCopy">
+                You currently get {limit} humanize edits per day and {scoreLimit} naturalness analyses per day.
+                Upgrade to Pro or Elite for faster iteration.
+              </p>
+            </div>
+
+            <div className="resumeUpgradeCalloutPlans">
+              <div className="resumeUpgradeCalloutPlan">
+                <p className="resumeUpgradeCalloutPlanName">Pro</p>
+                <ul className="resumeUpgradeCalloutList">
+                  <li>{UPGRADE_LIMITS.pro.humanizePerDay} humanize/day</li>
+                  <li>{UPGRADE_LIMITS.pro.analysesPerDay} analyses/day</li>
+                  <li>Up to {UPGRADE_LIMITS.pro.projectLimit} projects</li>
+                </ul>
+              </div>
+              <div className="resumeUpgradeCalloutPlan">
+                <p className="resumeUpgradeCalloutPlanName">Elite</p>
+                <ul className="resumeUpgradeCalloutList">
+                  <li>{UPGRADE_LIMITS.elite.humanizePerDay} humanize/day</li>
+                  <li>{UPGRADE_LIMITS.elite.analysesPerDay} analyses/day</li>
+                  <li>Up to {UPGRADE_LIMITS.elite.projectLimit} projects</li>
+                </ul>
+              </div>
+            </div>
+
+            {billingError && <p className="dashboardSettingsError">{billingError}</p>}
+
+            <div className="resumeUpgradeCalloutActions">
+              <button
+                type="button"
+                className="dashboardBtn dashboardBtnPrimary"
+                onClick={() => handleUpgrade('pro')}
+                disabled={billingLoading !== null}
+              >
+                {billingLoading === 'pro' ? 'Opening…' : 'Upgrade to Pro'}
+              </button>
+              <button
+                type="button"
+                className="dashboardBtn dashboardBtnSecondary"
+                onClick={() => handleUpgrade('elite')}
+                disabled={billingLoading !== null}
+              >
+                {billingLoading === 'elite' ? 'Opening…' : 'Upgrade to Elite'}
+              </button>
+            </div>
+            <p className="resumeUpgradeCalloutFootnote">
+              Click an upgrade button to go to Stripe checkout and complete payment.
+            </p>
+          </section>
+        )}
+
         <section className="resumeSection resumeCard">
           <h2 className="resumeStepTitle">Your text</h2>
           <p className="resumeStepHint">
