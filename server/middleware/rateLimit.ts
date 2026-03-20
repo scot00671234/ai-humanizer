@@ -7,6 +7,7 @@ export const aiRateLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true,
 })
 
 /** Auth routes: limit per IP to slow brute force and abuse (login, register, forgot-password, resend). */
@@ -16,4 +17,5 @@ export const authRateLimiter = rateLimit({
   message: { error: 'Too many attempts. Please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true,
 })
