@@ -208,10 +208,12 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (from !== to) {
         storedRangeRef.current = { from, to }
       } else if (editor.isFocused && lastMousedownInProseRef.current) {
-        // Guard: only clear when we currently have an active saved highlight.
-        if (bookmarkVisibleRef.current) {
+        // Only clear the stored range in normal mode (no saved bookmark).
+        // In "bookmarkVisibleRef.current" mode, we want the highlight to persist even if the
+        // selection collapses while the user clicks away; it will be cleared on the
+        // first click back inside the prose area.
+        if (!bookmarkVisibleRef.current) {
           storedRangeRef.current = null
-          bookmarkVisibleRef.current = false
           onRewriteBookmarkHint?.(false)
           try {
             editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
