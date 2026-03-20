@@ -708,6 +708,9 @@ router.delete('/account', requireAuth, async (req: Request, res: Response): Prom
       cancelErrors.push(new Error('STRIPE_SECRET_KEY missing'))
     }
 
+    // usage_logs.user_id references users(id) without ON DELETE CASCADE.
+    // Delete dependents first so the user row can be removed successfully.
+    await pool.query('DELETE FROM usage_logs WHERE user_id = $1', [user.userId])
     await pool.query('DELETE FROM users WHERE id = $1', [user.userId])
 
     // If cancellations failed, surface it as a warning (still succeed delete).
