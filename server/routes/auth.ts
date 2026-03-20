@@ -514,37 +514,72 @@ router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void
     }
     let isPro = row.is_pro === true
     let isTeam = row.is_team === true
-    const stripeCustomerId = typeof row.stripe_customer_id === 'string' ? row.stripe_customer_id : null
+    let stripeCustomerId = typeof row.stripe_customer_id === 'string' ? row.stripe_customer_id : null
 
     // Fallback sync: if webhook is delayed/missed in production, keep plan state accurate
     // by reconciling from Stripe at /me time.
-    if (stripe && stripeCustomerId) {
+    if (stripe) {
       try {
-        const subscriptions = await stripe.subscriptions.list({
-          customer: stripeCustomerId,
-          status: 'all',
-          limit: 20,
-        })
-        const activeSubs = subscriptions.data.filter((s) => s.status === 'active' || s.status === 'trialing')
-        const syncedIsPro = activeSubs.length > 0
         const priceElite = config.stripe.priceElite || ''
-        const syncedIsTeam =
-          !!priceElite &&
-          activeSubs.some((s) => s.items?.data?.some((item) => item.price?.id === priceElite))
 
-        if (syncedIsPro !== isPro || syncedIsTeam !== isTeam) {
-          console.log('[auth/me] syncing plan flags from Stripe', {
-            userId: row.id,
-            stripeCustomerId,
-            old: { isPro, isTeam },
-            next: { isPro: syncedIsPro, isTeam: syncedIsTeam },
+        async function syncFromStripeCustomerId(customerId: string): Promise<{ isPro: boolean; isTeam: boolean } | null> {
+          const subscriptions = await stripe.subscriptions.list({
+            customer: customerId,
+            status: 'all',
+            limit: 20,
           })
-          await pool.query(
-            'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE id = $3',
-            [syncedIsPro, syncedIsTeam, row.id]
-          )
-          isPro = syncedIsPro
-          isTeam = syncedIsTeam
+          const activeSubs = subscriptions.data.filter((s) => s.status === 'active' || s.status === 'trialing')
+          const syncedIsPro = activeSubs.length > 0
+          const syncedIsTeam =
+            !!priceElite &&
+            activeSubs.some((s) => s.items?.data?.some((item) => item.price?.id === priceElite))
+          return { isPro: syncedIsPro, isTeam: syncedIsTeam }
+        }
+
+        async function syncFromEmail(email: string): Promise<void> {
+          const customers = await stripe.customers.list({ email, limit: 1 })
+          const customer = customers.data[0]
+          if (!customer?.id) return
+          const nextTier = await syncFromStripeCustomerId(customer.id)
+          if (!nextTier) return
+
+          if (customer.id !== stripeCustomerId || nextTier.isPro !== isPro || nextTier.isTeam !== isTeam) {
+            console.log('[auth/me] syncing from Stripe customer by email', {
+              userId: row.id,
+              email,
+              old: { stripeCustomerId, isPro, isTeam },
+              next: { stripeCustomerId: customer.id, isPro: nextTier.isPro, isTeam: nextTier.isTeam },
+            })
+            await pool.query(
+              'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE id = $4',
+              [customer.id, nextTier.isPro, nextTier.isTeam, row.id],
+            )
+            stripeCustomerId = customer.id
+            isPro = nextTier.isPro
+            isTeam = nextTier.isTeam
+          }
+        }
+
+        if (stripeCustomerId) {
+          const nextTier = await syncFromStripeCustomerId(stripeCustomerId)
+          if (nextTier && (nextTier.isPro !== isPro || nextTier.isTeam !== isTeam)) {
+            console.log('[auth/me] syncing plan flags from Stripe', {
+              userId: row.id,
+              stripeCustomerId,
+              old: { isPro, isTeam },
+              next: { isPro: nextTier.isPro, isTeam: nextTier.isTeam },
+            })
+            await pool.query(
+              'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE id = $3',
+              [nextTier.isPro, nextTier.isTeam, row.id],
+            )
+            isPro = nextTier.isPro
+            isTeam = nextTier.isTeam
+          }
+        } else {
+          // If we don't have stripe_customer_id, use email-based sync.
+          // This prevents the UI from getting stuck in Free state when webhook updates are delayed.
+          await syncFromEmail(row.email)
         }
       } catch (stripeSyncErr) {
         console.warn('[auth/me] stripe sync failed:', stripeSyncErr)
