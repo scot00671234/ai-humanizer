@@ -65,7 +65,7 @@ const FEATURES = [
 ] as const
 
 const PLANS = [
-  { name: 'Free', price: 0, period: 'month', description: 'Try the full workflow on real drafts. No credit card required.', features: ['2 humanize / shorten / expand per day', '2 naturalness analyses per day', 'Optional context for audience', 'PDF & Word export', '3 layout templates'], cta: 'Get started free', ctaTo: '/register', featured: false },
+  { name: 'Free', price: 0, period: 'month', description: 'Try the full workflow on real drafts. No credit card required.', features: ['2 humanize / shorten / expand per day', '2 naturalness analyses per day', 'Optional context for audience', 'PDF & Word export'], cta: 'Get started free', ctaTo: '/register', featured: false },
   { name: 'Pro', price: 29, period: 'month', description: 'For people who iterate on copy every day.', features: ['500 humanize / shorten / expand per day', '50 analyses per day', 'Everything in Free', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: true },
   { name: 'Elite', price: 59, period: 'month', description: 'Maximum headroom for teams and power users.', features: ['1,500 humanize / shorten / expand per day', '100 analyses per day', 'Everything in Pro', 'Cancel anytime'], cta: 'Start free trial', ctaTo: '/register', featured: false },
 ] as const
