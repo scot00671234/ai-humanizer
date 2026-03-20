@@ -169,6 +169,11 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
     return
   }
   const priceElite = config.stripe.priceElite || ''
+  console.log('[stripe-webhook]', {
+    eventId: event.id,
+    type: event.type,
+    priceEliteConfigured: !!priceElite,
+  })
 
   async function getCustomerEmail(customerId: string): Promise<string | undefined> {
     if (!stripe) return undefined
@@ -223,19 +228,27 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
       let isTeam = false
       if (typeof session.subscription === 'string') {
         const priceId = await getPriceIdFromSubscriptionId(session.subscription)
+        console.log('[stripe-webhook] checkout:', {
+          customerId,
+          email,
+          subscriptionId: session.subscription,
+          priceId,
+          priceElite,
+        })
         if (priceElite && priceId && priceId === priceElite) isTeam = true
       }
 
       if (email) {
-      try {
-          console.log('Stripe webhook updating user tier by email', { email, isPro, isTeam })
-        await pool.query(
-          'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
-          [customerId, isPro, isTeam, email]
-        )
-      } catch (err) {
-        console.error('Webhook update user tier failed:', err)
-      }
+        try {
+          console.log('[stripe-webhook] updating user tier by email', { email, isPro, isTeam })
+          const result = await pool.query(
+            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
+            [customerId, isPro, isTeam, email]
+          )
+          console.log('[stripe-webhook] users rows updated', { rowCount: result.rowCount })
+        } catch (err) {
+          console.error('[stripe-webhook] update user tier failed:', err)
+        }
       } else {
         console.warn('Webhook checkout.session.completed: missing customer email for customerId:', customerId)
       }
@@ -255,18 +268,20 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
       try {
         const email = await getCustomerEmail(customerId)
         if (email) {
+          console.log('[stripe-webhook] subscription.created:', { customerId, email, isPro, isTeam })
           await pool.query(
             'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
             [customerId, isPro, isTeam, email]
           )
         } else {
+          console.warn('[stripe-webhook] subscription.created: missing customer email', { customerId, isPro, isTeam })
           await pool.query(
             'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE stripe_customer_id = $3',
             [isPro, isTeam, customerId]
           )
         }
       } catch (err) {
-        console.error('Webhook subscription.created is_pro/is_team failed:', err)
+        console.error('[stripe-webhook] subscription.created is_pro/is_team failed:', err)
       }
     }
   }
@@ -278,18 +293,20 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
       try {
         const email = await getCustomerEmail(customerId)
         if (email) {
+          console.log('[stripe-webhook] subscription.updated:', { customerId, email, isPro, isTeam })
           await pool.query(
             'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
             [customerId, isPro, isTeam, email]
           )
         } else {
+          console.warn('[stripe-webhook] subscription.updated: missing customer email', { customerId, isPro, isTeam })
           await pool.query(
             'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE stripe_customer_id = $3',
             [isPro, isTeam, customerId]
           )
         }
       } catch (err) {
-        console.error('Webhook subscription.updated is_pro/is_team failed:', err)
+        console.error('[stripe-webhook] subscription.updated is_pro/is_team failed:', err)
       }
     }
   }
@@ -298,12 +315,13 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
     const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id
     if (customerId && pool) {
       try {
+        console.log('[stripe-webhook] subscription.deleted:', { customerId })
         await pool.query(
           'UPDATE users SET is_pro = false, is_team = false, updated_at = now() WHERE stripe_customer_id = $1',
           [customerId]
         )
       } catch (err) {
-        console.error('Webhook subscription.deleted is_pro failed:', err)
+        console.error('[stripe-webhook] subscription.deleted is_pro failed:', err)
       }
     }
   }
