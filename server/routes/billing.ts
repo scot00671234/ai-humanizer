@@ -242,10 +242,22 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
         try {
           console.log('[stripe-webhook] updating user tier by email', { email, isPro, isTeam })
           const result = await pool.query(
-            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
+            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE LOWER(email) = LOWER($4)',
             [customerId, isPro, isTeam, email]
           )
-          console.log('[stripe-webhook] users rows updated', { rowCount: result.rowCount })
+          console.log('[stripe-webhook] users rows updated (email match)', { rowCount: result.rowCount })
+
+          if (result.rowCount === 0) {
+            // Fallback: sometimes existing users already have stripe_customer_id stored,
+            // but email casing can differ. Try updating by stripe_customer_id.
+            const resultByStripeId = await pool.query(
+              'UPDATE users SET is_pro = $1, is_team = $2, updated_at = now() WHERE stripe_customer_id = $3',
+              [isPro, isTeam, customerId]
+            )
+            console.log('[stripe-webhook] users rows updated (stripe_customer_id match)', {
+              rowCount: resultByStripeId.rowCount,
+            })
+          }
         } catch (err) {
           console.error('[stripe-webhook] update user tier failed:', err)
         }
@@ -270,7 +282,7 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
         if (email) {
           console.log('[stripe-webhook] subscription.created:', { customerId, email, isPro, isTeam })
           await pool.query(
-            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
+            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE LOWER(email) = LOWER($4)',
             [customerId, isPro, isTeam, email]
           )
         } else {
@@ -295,7 +307,7 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
         if (email) {
           console.log('[stripe-webhook] subscription.updated:', { customerId, email, isPro, isTeam })
           await pool.query(
-            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE email = $4',
+            'UPDATE users SET stripe_customer_id = $1, is_pro = $2, is_team = $3, updated_at = now() WHERE LOWER(email) = LOWER($4)',
             [customerId, isPro, isTeam, email]
           )
         } else {
