@@ -1,6 +1,6 @@
 import { useEditor, EditorContent, type Content } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
+import { useEffect, useImperativeHandle, forwardRef, useRef, useState } from 'react'
 import { BookmarkHighlightExtension, BOOKMARK_RANGE_META } from '../extensions/BookmarkHighlight'
 
 const extensions = [StarterKit, BookmarkHighlightExtension]
@@ -113,6 +113,8 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
   const lastMousedownInProseRef = useRef(false)
   /** True after we save a selection highlight; cleared only after first click back inside the prose. */
   const bookmarkVisibleRef = useRef(false)
+  /** UI state so the user always sees a clear “marked” indicator even if decoration is subtle. */
+  const [bookmarkVisible, setBookmarkVisible] = useState(false)
   const editor = useEditor({
     extensions,
     content: content || '',
@@ -179,6 +181,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (bookmarkVisibleRef.current && clickedInsideProse) {
         storedRangeRef.current = null
         bookmarkVisibleRef.current = false
+        setBookmarkVisible(false)
         onRewriteBookmarkHint?.(false)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -193,6 +196,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (from !== to) {
         storedRangeRef.current = { from, to }
         bookmarkVisibleRef.current = true
+        setBookmarkVisible(true)
         onRewriteBookmarkHint?.(true)
         notify()
         try {
@@ -214,6 +218,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         // first click back inside the prose area.
         if (!bookmarkVisibleRef.current) {
           storedRangeRef.current = null
+          setBookmarkVisible(false)
           onRewriteBookmarkHint?.(false)
           try {
             editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -230,6 +235,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
       if (from !== to) {
         storedRangeRef.current = { from, to }
         bookmarkVisibleRef.current = true
+        setBookmarkVisible(true)
         onRewriteBookmarkHint?.(true)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, { from, to }))
@@ -289,6 +295,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         if (a >= b) return
         storedRangeRef.current = null
         bookmarkVisibleRef.current = false
+        setBookmarkVisible(false)
         onRewriteBookmarkHint?.(false)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -313,6 +320,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
         const html = plainMarkdownToDocumentHtml(raw)
         storedRangeRef.current = null
         bookmarkVisibleRef.current = false
+        setBookmarkVisible(false)
         onRewriteBookmarkHint?.(false)
         try {
           editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -364,6 +372,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
     if (trimmed !== current.trim()) {
       storedRangeRef.current = null
       bookmarkVisibleRef.current = false
+      setBookmarkVisible(false)
       onRewriteBookmarkHint?.(false)
       try {
         editor.view.dispatch(editor.state.tr.setMeta(BOOKMARK_RANGE_META, null))
@@ -377,7 +386,7 @@ const ResumeEditor = forwardRef<ResumeEditorHandle, ResumeEditorProps>(function 
   if (!editor) return null
 
   return (
-    <div className={`resumeEditor ${className ?? ''}`}>
+    <div className={`resumeEditor ${bookmarkVisible ? 'resumeEditorBookmarkActive' : ''} ${className ?? ''}`}>
       <div className="resumeEditorToolbar">
         <button
           type="button"

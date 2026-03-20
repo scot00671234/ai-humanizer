@@ -4195,6 +4195,19 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   background: rgba(215, 255, 89, 0.2);
 }
 
+/* Strong visual marker when a selection is saved for humanize. */
+.resumeEditorBookmarkActive {
+  border-color: rgba(215, 255, 89, 0.75) !important;
+  box-shadow:
+    0 0 0 2px rgba(215, 255, 89, 0.22) inset;
+}
+
+[data-theme="dark"] .resumeEditorBookmarkActive {
+  border-color: rgba(215, 255, 89, 0.38) !important;
+  box-shadow:
+    0 0 0 2px rgba(215, 255, 89, 0.18) inset;
+}
+
 .resumeEditor .ProseMirror p {
   margin-bottom: 0.5rem;
 }
