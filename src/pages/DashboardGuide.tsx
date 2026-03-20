@@ -6,7 +6,7 @@ export default function DashboardGuide() {
       <h1 className="dashboardPageTitle">How to use Sosiol</h1>
       <p className="dashboardPageSubtitle dashboardGuideLead">
         A short guide to the Workspace: optional context for your audience, naturalness analysis, humanizing selections with tone and intensity,
-        shortening or expanding the whole draft, and exporting when you are ready.
+        and exporting when you are ready.
       </p>
 
       <div className="dashboardCard dashboardGuideCard">
@@ -19,9 +19,6 @@ export default function DashboardGuide() {
           <li>
             <strong>Humanize</strong>: Select text, choose tone, intensity, and language, add optional instructions, then
             replace the selection with clearer, more human wording. Facts stay yours; we do not invent experience.
-          </li>
-          <li>
-            <strong>Shorten / expand</strong>: Adjust length for the entire document in one step when you need tighter or fuller copy.
           </li>
           <li>
             <strong>Projects</strong>: Save your document and optional context together. Open a project from the Dashboard anytime.
@@ -64,13 +61,6 @@ export default function DashboardGuide() {
           <li>
             <span className="dashboardGuideStepNum">5</span>
             <div>
-              <strong>Length</strong>: use <strong>Shorten all</strong> or <strong>Expand all</strong> when the whole piece needs a
-              different size (same meaning, no new facts).
-            </div>
-          </li>
-          <li>
-            <span className="dashboardGuideStepNum">6</span>
-            <div>
               <strong>Save and export</strong>: name your project and click <strong>Save</strong>. Use <strong>Export</strong> for
               PDF, Word, or plain text.
             </div>
@@ -81,7 +71,7 @@ export default function DashboardGuide() {
       <div className="dashboardCard dashboardGuideCard">
         <h2 className="dashboardGuideSectionTitle">Quick tips</h2>
         <ul className="dashboardGuideList dashboardGuideListCompact">
-          <li>Free plans include daily limits on humanize/shorten/expand and on analysis; paid plans raise those caps (see Settings).</li>
+          <li>Free plans include daily limits on humanize and on analysis; paid plans raise those caps (see Settings).</li>
           <li>Starting from the landing page with sample text? Sign in and your first humanize can run automatically in the Workspace.</li>
           <li>Follow your school or workplace rules on AI assistance. We help you edit; compliance is yours.</li>
         </ul>
