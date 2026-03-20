@@ -13,10 +13,6 @@ export const HOME_SEO_FAQ = [
     a: 'Sosiol is built around a writing workspace: optional context for audience, naturalness feedback with concrete dimensions, selection-based humanize with tone and intensity, and whole-document shorten or expand, without inventing new facts.',
   },
   {
-    q: 'Does Sosiol “beat” AI detectors?',
-    a: 'We focus on clarity and authentic voice, not evading academic or platform policies. Our analysis is guidance for your editing, not a guarantee about third-party detectors.',
-  },
-  {
     q: 'Can I use Sosiol for school or work writing?',
     a: 'Yes, essays, emails, posts, reports, and more. Add optional context so tone matches your audience; always follow your institution’s or employer’s rules on AI assistance.',
   },
