@@ -661,17 +661,62 @@ router.delete('/account', requireAuth, async (req: Request, res: Response): Prom
   try {
     const stripe = await import('stripe').then((m) => m.default)
     const stripeSecret = process.env.STRIPE_SECRET_KEY
+    const row = (
+      await pool.query('SELECT stripe_customer_id, email FROM users WHERE id = $1', [user.userId])
+    ).rows[0]
+    if (!row) {
+      res.status(404).json({ error: 'User not found' })
+      return
+    }
+
+    let cancelErrors: unknown[] = []
+
     if (stripeSecret) {
       const stripeClient = new stripe(stripeSecret)
-      const row = (await pool.query('SELECT stripe_customer_id FROM users WHERE id = $1', [user.userId])).rows[0]
-      if (row?.stripe_customer_id) {
-        const subs = await stripeClient.subscriptions.list({ customer: row.stripe_customer_id, status: 'active' })
-        for (const sub of subs.data) {
-          await stripeClient.subscriptions.cancel(sub.id)
+
+      const customerIds = new Set<string>()
+      if (typeof row.stripe_customer_id === 'string' && row.stripe_customer_id.trim()) {
+        customerIds.add(row.stripe_customer_id.trim())
+      }
+      if (typeof row.email === 'string' && row.email.trim()) {
+        try {
+          const customers = await stripeClient.customers.list({ email: row.email.trim(), limit: 5 })
+          for (const c of customers.data) {
+            if (c?.id) customerIds.add(c.id)
+          }
+        } catch (e) {
+          cancelErrors.push(e)
         }
       }
+
+      for (const customerId of customerIds) {
+        // "all" lets us cover active + trialing + past_due, etc. We'll cancel only if not already canceled.
+        const subs = await stripeClient.subscriptions.list({ customer: customerId, status: 'all', limit: 20 })
+        const billableStatuses = new Set(['active', 'trialing', 'past_due', 'unpaid'])
+        const subsToCancel = subs.data.filter((s) => s && s.id && billableStatuses.has((s.status as string) || ''))
+
+        for (const sub of subsToCancel) {
+          try {
+            await stripeClient.subscriptions.cancel(sub.id)
+          } catch (e) {
+            cancelErrors.push(e)
+          }
+        }
+      }
+    } else {
+      // Stripe is not configured; deletion should still work, but cancellation cannot be guaranteed.
+      cancelErrors.push(new Error('STRIPE_SECRET_KEY missing'))
     }
+
     await pool.query('DELETE FROM users WHERE id = $1', [user.userId])
+
+    // If cancellations failed, surface it as a warning (still succeed delete).
+    if (cancelErrors.length) {
+      console.warn('[delete-account] completed user delete, but subscription cancellation had errors', cancelErrors)
+      res.json({ message: 'Account deleted', warning: 'Subscriptions may not have been cancelled' })
+      return
+    }
+
     res.json({ message: 'Account deleted' })
   } catch (err) {
     console.error('Delete account error:', err)
