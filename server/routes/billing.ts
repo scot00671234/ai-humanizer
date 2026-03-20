@@ -47,6 +47,13 @@ router.post('/create-checkout-session', requireAuth, async (req: Request, res: R
       cancel_url: `${baseUrl}/dashboard/settings`,
       customer_email: user.email,
     })
+    console.log('[stripe-checkout] session created', {
+      plan,
+      isElite,
+      priceId,
+      customer_email: user.email,
+      sessionId: session.id,
+    })
     res.json({ url: session.url })
   } catch (err) {
     console.error('Create checkout session error:', err)
@@ -147,16 +154,22 @@ router.post('/create-portal-session', requireAuth, async (req: Request, res: Res
 router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void> => {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
   if (!webhookSecret || !stripe) {
+    console.error('[stripe-webhook] not configured', {
+      hasWebhookSecret: !!webhookSecret,
+      hasStripeClient: !!stripe,
+    })
     res.status(501).json({ error: 'Webhook not configured' })
     return
   }
   const sig = req.headers['stripe-signature'] as string | undefined
   if (!sig) {
+    console.error('[stripe-webhook] missing stripe-signature header')
     res.status(400).json({ error: 'Missing signature' })
     return
   }
   const rawBody = (req as Request & { rawBody?: Buffer }).rawBody
   if (!rawBody) {
+    console.error('[stripe-webhook] missing rawBody (verify hook may not be running)')
     res.status(400).json({ error: 'Raw body required for webhook' })
     return
   }
@@ -336,6 +349,14 @@ router.post('/stripe-webhook', async (req: Request, res: Response): Promise<void
         console.error('[stripe-webhook] subscription.deleted is_pro failed:', err)
       }
     }
+  }
+  const handled =
+    event.type === 'checkout.session.completed' ||
+    event.type === 'customer.subscription.created' ||
+    event.type === 'customer.subscription.updated' ||
+    event.type === 'customer.subscription.deleted'
+  if (!handled) {
+    console.log('[stripe-webhook] unhandled event type (ignored):', event.type)
   }
   res.json({ received: true })
 })
