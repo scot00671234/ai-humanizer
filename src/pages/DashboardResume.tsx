@@ -619,7 +619,9 @@ export default function DashboardResume() {
           </div>
           <div className="resumeRewriteOptionsPanel">
             <p className="resumeRewriteOptionsHeading">Humanize options</p>
-            <p className="resumeRewriteOptionsHint">Tone, intensity, language, and extra instructions apply to Humanize selection. Tone also guides Analyze.</p>
+            <p className="resumeRewriteOptionsHint">
+              Tone, intensity, language, and extra instructions apply to both Humanize selection and Humanize full draft. Tone also guides Analyze.
+            </p>
             {rewriteBookmarkHint && (
               <p className="resumeRewriteBookmarkHint" role="status">
                 Selection saved for humanize — click in the document when you want to clear it.

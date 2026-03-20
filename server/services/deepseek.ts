@@ -20,19 +20,19 @@ export type RewriteOptions = {
   language?: string
   context?: string
   tone?: string
-  /** Optional audience, channel, or assignment — steers vocabulary and formality. */
+  /** Optional audience, channel, or assignment - steers vocabulary and formality. */
   documentContext?: string
   intensity?: HumanizeIntensity
 }
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
-  professional: 'Tone: Clear and professional. Polished but still human — avoid stiff corporatese.',
+  professional: 'Tone: Clear and professional. Polished but still human - avoid stiff corporatese.',
   'business-casual': 'Tone: Approachable and confident. Conversational without being sloppy.',
   academic: 'Tone: Scholarly and precise. Appropriate for papers, grants, and formal academic settings.',
   technical: 'Tone: Direct and precise. Favor concrete terms; keep explanations tight.',
   concise: 'Tone: Short and punchy. Cut filler; keep every sentence earning its place.',
   'achievement-focused': 'Tone: Outcome-led. Emphasize results and specifics where the source supports them.',
-  casual: 'Tone: Relaxed and friendly. Like a knowledgeable peer — not stiff, not slang-heavy.',
+  casual: 'Tone: Relaxed and friendly. Like a knowledgeable peer - not stiff, not slang-heavy.',
   creative: 'Tone: Vivid and engaging. Slightly more personality and rhythm; still truthful to the source.',
   simple: 'Tone: Plain language. Short words, simple sentences, easy for any reader to follow.',
 }
@@ -40,7 +40,7 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
 const INTENSITY_HINTS: Record<HumanizeIntensity, string> = {
   light: 'Make light edits: fix obvious AI-ish phrasing and rhythm, preserve most original wording and structure.',
   medium: 'Balanced rewrite: noticeably more natural rhythm and vocabulary while keeping meaning and structure similar.',
-  strong: 'Strong pass: vary sentence length aggressively, replace generic AI patterns, restructure where it helps clarity — still no new facts.',
+  strong: 'Strong pass: vary sentence length aggressively, replace generic AI patterns, restructure where it helps clarity - still no new facts.',
 }
 
 function buildRewritePrompt(text: string, options: RewriteOptions): string {
@@ -54,19 +54,33 @@ function buildRewritePrompt(text: string, options: RewriteOptions): string {
   const ctxBlock = ctx
     ? [
         '',
-        'CONTEXT FROM USER (use to steer audience, channel, and formality — do not invent facts):',
+        'CONTEXT FROM USER (use to steer audience, channel, and formality - do not invent facts):',
         ctx.slice(0, 8000),
       ].join('\n')
     : ''
 
+  const extraInstructions = options.context?.trim() ?? ''
+  const userRequestedEmDash =
+    /em\s*-?\s*dash|u\+?2014/.test(extraInstructions.toLowerCase())
+
   const parts: string[] = [
     `You are an expert editor helping people make writing sound more natural and human.`,
-    `Rewrite the passage so it reads like a thoughtful human wrote it: varied sentence length, specific word choices, fewer clichés and "AI tells" (e.g. "delve into", "landscape", "leverage", "it is important to note").`,
+    `Rewrite the passage so it reads like a thoughtful human wrote it: varied sentence length, more natural word choice, and smoother flow.`,
+    `Reduce "template AI" phrasing and stock transitions. Watch for phrases like: "delve into", "landscape", "leverage", "it is important to note", "furthermore", "moreover", "in conclusion", "in summary", "robust", "employ".`,
     ``,
     `Rules:`,
     `- Output in ${languageInstruction}.`,
-    `- Preserve meaning, facts, numbers, and claims — do NOT add employers, credentials, or events not present in the source.`,
-    `- Keep the same general format (bullets stay bullets, paragraphs stay paragraphs) unless merging would clearly improve readability.`,
+    `- Preserve meaning, facts, numbers, and claims - do NOT add employers, credentials, or events not present in the source.`,
+    `- Keep the same general format (bullets stay bullets, paragraphs stay paragraphs). Do not add or remove bullet items or headings.`,
+    `- Vary sentence openings and structure. Avoid repeating the same grammatical pattern back-to-back.`,
+    `- Prefer active voice when it fits the meaning. Avoid passive constructions unless they are already in the source.`,
+    `- Use concrete verbs and specific nouns where they already exist in the source. Do not introduce new details.`,
+    `- Keep the same grammatical person (first/third) as the source; do not switch "I" vs neutral voice unless the source does.`,
+    `- Use contractions where the source would naturally use them (avoid switching to unnatural formality).`,
+    userRequestedEmDash
+      ? `- Em dash punctuation (U+2014) is allowed when it naturally fits.`
+      : `- Do NOT use em dash punctuation (U+2014). If the source contains em dashes, replace them with commas, periods, or semicolons.`,
+    `- Avoid hedge-stacking and generic certainty (e.g., "it is important to note", "it is crucial", "this highlights").`,
     `- ${intensityHint}`,
     `- Do NOT add a preamble, title, or meta-commentary.`,
     `- Return ONLY the rewritten text.`,
@@ -94,7 +108,8 @@ export async function rewriteWithDeepSeek(text: string, options: RewriteOptions 
   const userContent = buildRewritePrompt(text, options)
   const intensityKey: HumanizeIntensity =
     options.intensity === 'light' || options.intensity === 'strong' ? options.intensity : 'medium'
-  const temperature = intensityKey === 'light' ? 0.28 : intensityKey === 'strong' ? 0.52 : 0.38
+  // Slightly higher temps help the model escape "same-cadence" rewrites while the prompt rules prevent fact drift.
+  const temperature = intensityKey === 'light' ? 0.3 : intensityKey === 'strong' ? 0.58 : 0.42
 
   const maxTokens = Math.min(2048, 600 + Math.ceil(text.length / 4))
 
@@ -145,7 +160,7 @@ export type ScoreAiResult = {
   /** 0–100: higher = reads more natural / less generically AI-like */
   score: number
   breakdown: NaturalnessBreakdown
-  /** Phrases that often read as generic or overused — user can humanize these */
+  /** Phrases that often read as generic or overused - user can humanize these */
   keywords: string[]
   notes?: string
   usage: { prompt_tokens: number; completion_tokens: number }
@@ -173,10 +188,10 @@ function buildNaturalnessScorePrompt(text: string, options: AnalyzeOptions): str
   const ctx = options.documentContext?.trim()
   const tone = options.targetTone?.trim()
   const ctxBlock = ctx
-    ? `\nUSER CONTEXT (audience/channel — use only to judge tone fit, not to invent facts):\n${ctx.slice(0, 4000)}\n`
+    ? `\nUSER CONTEXT (audience/channel - use only to judge tone fit, not to invent facts):\n${ctx.slice(0, 4000)}\n`
     : ''
   const toneBlock = tone
-    ? `\nTARGET TONE HINT: "${tone.slice(0, 80)}" — score toneFit how well the text matches this intent.\n`
+    ? `\nTARGET TONE HINT: "${tone.slice(0, 80)}" - score toneFit how well the text matches this intent.\n`
     : ''
 
   return [
@@ -192,7 +207,7 @@ function buildNaturalnessScorePrompt(text: string, options: AnalyzeOptions): str
     `- specificity: concrete nouns/verbs vs vague filler ("various", "robust", "leverage").`,
     `- voice: human connective tissue; penalize clichés and stock AI transitions.`,
     `- toneFit: if context or tone hint given, alignment with that audience; if none, set toneFit to the same as voice (neutral target).`,
-    `- keywords: up to 24 short phrases (2-5 words) in the text that are the best candidates to rewrite — generic, repetitive, or AI-flavored.`,
+    `- keywords: up to 24 short phrases (2-5 words) in the text that are the best candidates to rewrite - generic, repetitive, or AI-flavored.`,
     `- score: overall naturalness; should be roughly consistent with the breakdown.`,
     ctxBlock,
     toneBlock,
@@ -292,13 +307,13 @@ export async function adjustLengthWithDeepSeek(
     ? `\n\nCONTEXT (steer register and audience only; do not invent facts):\n${ctx.slice(0, 6000)}`
     : ''
 
-  const shortenPrompt = `You are an expert editor. Shorten the following text while preserving all important meaning, facts, and structure type (keep lists as lists). Remove redundancy and filler. Aim for roughly 60-75% of the length. Return ONLY the shortened text, no preamble.${ctxTail}
+  const shortenPrompt = `You are an expert editor. Shorten the following text while preserving all important meaning, facts, and structure type (keep lists as lists). Remove redundancy and filler. Aim for roughly 60-75% of the length. Do NOT use em dash punctuation (U+2014). Return ONLY the shortened text, no preamble.${ctxTail}
 
 ---
 Text:
 ${documentText.slice(0, 24_000)}`
 
-  const expandPrompt = `You are an expert editor. Expand the following text with useful detail and smoother transitions while preserving all original facts — do NOT invent statistics, employers, or credentials. Aim for roughly 125-150% of the length. Return ONLY the expanded text, no preamble.${ctxTail}
+  const expandPrompt = `You are an expert editor. Expand the following text with useful detail and smoother transitions while preserving all original facts - do NOT invent statistics, employers, or credentials. Aim for roughly 125-150% of the length. Do NOT use em dash punctuation (U+2014). Return ONLY the expanded text, no preamble.${ctxTail}
 
 ---
 Text:
