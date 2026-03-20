@@ -5,7 +5,7 @@ import { setSeoMeta } from '../utils/seoMeta'
 export default function Terms() {
   useEffect(() => {
     setSeoMeta({
-      title: 'Terms of Service — Sosiol',
+      title: 'Terms of Service - Sosiol',
       description: 'Terms of service for using Sosiol AI humanizer and related services.',
       path: '/terms',
     })

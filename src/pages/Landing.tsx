@@ -107,7 +107,7 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Sosiol — AI Humanizer (AI Humaniser) | Natural Writing, Tone Control & PDF Export',
+      title: 'Sosiol - AI Humanizer (AI Humaniser) | Natural Writing, Tone Control & PDF Export',
       description: HOME_META_DESC,
       path: '/',
       keywords: HOME_SEO_KEYWORDS,
