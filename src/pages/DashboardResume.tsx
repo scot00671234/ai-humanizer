@@ -502,21 +502,6 @@ export default function DashboardResume() {
       </header>
 
       <div className="resumeFlow">
-        <section className="resumeSection resumeCard" id="resume-job-description">
-          <h2 className="resumeStepTitle">Context (optional)</h2>
-          <p className="resumeStepHint">
-            Audience, channel, assignment, or goal — helps humanize and analyze tone. Leave blank for a general pass.
-          </p>
-          <textarea
-            className="resumeJobDesc"
-            placeholder="e.g. LinkedIn post for engineers; first-year essay; client email…"
-            value={documentContext}
-            onChange={(e) => setDocumentContext(e.target.value)}
-            rows={4}
-            aria-label="Optional context for AI"
-          />
-        </section>
-
         <section className="resumeSection resumeCard">
           <h2 className="resumeStepTitle">Your text</h2>
           <p className="resumeStepHint">
