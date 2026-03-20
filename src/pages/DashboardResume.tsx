@@ -58,9 +58,6 @@ export default function DashboardResume() {
   const [editorError, setEditorError] = useState<string | null>(null)
   const [uploadLoading, setUploadLoading] = useState(false)
   const [landingRewriteLoading, setLandingRewriteLoading] = useState(false)
-  const [summaryLoading, setSummaryLoading] = useState(false)
-  const [lengthAdjustKind, setLengthAdjustKind] = useState<'shorten' | 'expand' | null>(null)
-  const [summaryError, setSummaryError] = useState<string | null>(null)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null)
   const [currentProjectTitle, setCurrentProjectTitle] = useState<string>('')
@@ -319,34 +316,6 @@ export default function DashboardResume() {
     downloadBlob(blob, 'document.txt')
   }, [getContentToExport, downloadBlob])
 
-  const handleLengthAdjust = useCallback(
-    async (direction: 'shorten' | 'expand') => {
-      if (!editorText?.trim() || editorText.trim().length < 50) {
-        setSummaryError('Add more text (at least a few lines) before shortening or expanding.')
-        return
-      }
-      setSummaryError(null)
-      setLengthAdjustKind(direction)
-      setSummaryLoading(true)
-      try {
-        const { summary } = await api.ai.summary(editorText, {
-          documentContext: documentContext.trim() || undefined,
-          direction,
-        })
-        if (summary?.trim()) {
-          editorRef.current?.replaceFullDocumentFromPlain(summary.trim())
-        }
-        await refreshUser()
-      } catch (err) {
-        setSummaryError(err instanceof Error ? err.message : 'Could not adjust length. Please try again.')
-      } finally {
-        setSummaryLoading(false)
-        setLengthAdjustKind(null)
-      }
-    },
-    [editorText, documentContext, refreshUser]
-  )
-
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const text = e.clipboardData.getData('text/plain')
     if (!text?.trim()) return
@@ -497,7 +466,7 @@ export default function DashboardResume() {
         <section className="resumeSection resumeCard">
           <h2 className="resumeStepTitle">Your text</h2>
           <p className="resumeStepHint">
-            Upload a file or paste below. Format with the toolbar (headings, bold, bullets). Select text and click Humanize, or run Analyze on the full draft. Shorten / expand replaces the whole document.
+            Upload a file or paste below. Format with the toolbar (headings, bold, bullets). Select text and click Humanize, or run Analyze on the full draft.
           </p>
           <div className="resumeToolbar">
             <input
@@ -522,24 +491,6 @@ export default function DashboardResume() {
               disabled={scoreLoading || !editorText.trim()}
             >
               {scoreLoading ? 'Analyzing…' : 'Analyze writing'}
-            </button>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnSecondary"
-              onClick={() => handleLengthAdjust('shorten')}
-              disabled={summaryLoading || !editorText.trim() || editorText.trim().length < 50}
-              title="Make the full document shorter while keeping meaning"
-            >
-              {summaryLoading && lengthAdjustKind === 'shorten' ? 'Shortening…' : 'Shorten all'}
-            </button>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnSecondary"
-              onClick={() => handleLengthAdjust('expand')}
-              disabled={summaryLoading || !editorText.trim() || editorText.trim().length < 50}
-              title="Expand the full document with smoother flow — no new facts"
-            >
-              {summaryLoading && lengthAdjustKind === 'expand' ? 'Expanding…' : 'Expand all'}
             </button>
             <button
               type="button"
@@ -648,13 +599,12 @@ export default function DashboardResume() {
               </label>
             </div>
           </div>
-          {(rewriteError || scoreError || exportError || editorError || summaryError) && (
+          {(rewriteError || scoreError || exportError || editorError) && (
             <div className="resumeErrors">
               {rewriteError && <p className="dashboardSettingsError">{rewriteError}</p>}
               {scoreError && <p className="dashboardSettingsError">{scoreError}</p>}
               {exportError && <p className="dashboardSettingsError">{exportError}</p>}
               {editorError && <p className="dashboardSettingsError">{editorError}</p>}
-              {summaryError && <p className="dashboardSettingsError">{summaryError}</p>}
             </div>
           )}
           <div onPaste={handlePaste} className="resumeEditorWrap">
