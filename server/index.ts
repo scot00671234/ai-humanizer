@@ -15,9 +15,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isProduction = config.nodeEnv === 'production'
 
 const app = express()
-// We are typically behind a reverse proxy (Hostinger/Heroku/etc). Enable trust proxy
-// so express-rate-limit can safely use X-Forwarded-For without throwing.
-app.set('trust proxy', true)
+// We are typically behind a reverse proxy (Hostinger/Heroku/etc).
+// Trust only the first hop so express-rate-limit can safely use X-Forwarded-For.
+app.set('trust proxy', 1)
 
 app.use(securityHeaders)
 app.use(cors({
