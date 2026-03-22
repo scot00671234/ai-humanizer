@@ -1,4 +1,5 @@
 import { config } from '../config'
+import { computeNaturalnessSignalBundle, formatSignalBundleForPrompt } from './naturalnessSignals'
 
 const LANGUAGE_MAP: Record<string, string> = {
   same: 'the same language as the input text',
@@ -184,7 +185,7 @@ export type AnalyzeOptions = {
   targetTone?: string
 }
 
-function buildNaturalnessScorePrompt(text: string, options: AnalyzeOptions): string {
+function buildNaturalnessScorePrompt(text: string, options: AnalyzeOptions, signalsJson: string): string {
   const ctx = options.documentContext?.trim()
   const tone = options.targetTone?.trim()
   const ctxBlock = ctx
@@ -195,20 +196,30 @@ function buildNaturalnessScorePrompt(text: string, options: AnalyzeOptions): str
     : ''
 
   return [
-    `You are an expert writing coach focused on clarity and natural human voice.`,
-    `Task: rate how natural and human-like the following text reads (not factual accuracy).`,
-    `Higher scores = less generic, less "template AI" cadence, more varied rhythm, more specific wording.`,
+    `You are a writing analyst scoring drafts using signals similar to those used in AI-generated text research.`,
+    `Ground your scores in: (1) distributional variance ("burstiness") in sentence length, (2) vocabulary diversity vs repetition,`,
+    `(3) concrete entities and specific verbs vs abstract filler, (4) stock discourse markers and template phrasing common in LLM output.`,
+    `The JSON block below named PRECOMPUTED_SIGNALS was calculated by deterministic code on the same text. Treat it as factual.`,
+    `Align rhythm, specificity, and voice with those numbers (e.g. very low sentence-length CV or many repeated bigrams → lower rhythm;`,
+    `low type-token ratio or many stock-phrase hits → lower voice/specificity as appropriate). You may refine slightly using the full text,`,
+    `but do not contradict strong quantitative signals without clear evidence in the wording.`,
+    ``,
+    `This is NOT a verdict from any commercial AI detector and must not be presented as one; it is an editorial heuristic.`,
+    ``,
+    `PRECOMPUTED_SIGNALS (JSON):`,
+    signalsJson,
     ``,
     `Return ONLY valid JSON (no markdown, no commentary) with this shape:`,
     `{"score":0-100,"breakdown":{"rhythm":0-100,"specificity":0-100,"voice":0-100,"toneFit":0-100},"keywords":["..."],"notes":"optional short note"}`,
     ``,
-    `Field meanings (all 0-100, higher is better for naturalness):`,
-    `- rhythm: sentence length variety and flow; penalize monotonous same-length sentences.`,
-    `- specificity: concrete nouns/verbs vs vague filler ("various", "robust", "leverage").`,
-    `- voice: human connective tissue; penalize clichés and stock AI transitions.`,
-    `- toneFit: if context or tone hint given, alignment with that audience; if none, set toneFit to the same as voice (neutral target).`,
-    `- keywords: up to 24 short phrases (2-5 words) in the text that are the best candidates to rewrite - generic, repetitive, or AI-flavored.`,
-    `- score: overall naturalness; should be roughly consistent with the breakdown.`,
+    `Field meanings (all 0-100, higher = more human-like / less machine-surface in that dimension):`,
+    `- rhythm: Sentence-length variance and cadence (burstiness proxy). Penalize uniform length, parallel skeleton sentences, metronomic flow.`,
+    `- specificity: Lexical concreteness — specific nouns/verbs, numbers, proper-like detail vs vague abstractions ("various", "robust", "leverage", "solutions").`,
+    `- voice: Discourse naturalness — penalize stacked hedges, boilerplate openers/closers, generic transitions; reward idiomatic connective tissue.`,
+    `- toneFit: If context or tone hint given, alignment with that audience; if none, set toneFit equal to voice (same numeric score).`,
+    `- keywords: Up to 24 short phrases (2-5 words) that appear verbatim (or nearly) in the text — prioritize stock AI markers, repeated bigrams, and vague boilerplate.`,
+    `- notes: One short sentence citing at least one PRECOMPUTED_SIGNAL (e.g. CV, type-token ratio, or stock hits) when they influenced the score.`,
+    `- score: Overall "naturalness" vs typical LLM surface patterns; must be consistent with the breakdown and PRECOMPUTED_SIGNALS.`,
     ctxBlock,
     toneBlock,
     ``,
@@ -224,7 +235,9 @@ export async function scoreWithDeepSeek(
   const apiKey = config.deepseek?.apiKey
   if (!apiKey) throw new Error('DEEPSEEK_API_KEY is not set')
 
-  const userContent = buildNaturalnessScorePrompt(documentText, options)
+  const trimmedDoc = documentText.trim().slice(0, 12_000)
+  const signalsJson = formatSignalBundleForPrompt(computeNaturalnessSignalBundle(trimmedDoc))
+  const userContent = buildNaturalnessScorePrompt(trimmedDoc, options, signalsJson)
 
   const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
     method: 'POST',
@@ -232,8 +245,8 @@ export async function scoreWithDeepSeek(
     body: JSON.stringify({
       model: 'deepseek-chat',
       messages: [{ role: 'user', content: userContent }],
-      max_tokens: 520,
-      temperature: 0.2,
+      max_tokens: 600,
+      temperature: 0.22,
     }),
   })
 

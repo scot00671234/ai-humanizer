@@ -122,7 +122,7 @@ router.post('/summary', checkRewriteLimits, async (req: Request, res: Response):
   }
 })
 
-/** POST /api/ai/score — naturalness / AI-like patterns analysis */
+/** POST /api/ai/score — naturalness analysis (deterministic stylometry signals + LLM rubric aligned with AI-text research) */
 router.post('/score', checkScoreLimits, checkScoreCooldown, async (req: Request, res: Response): Promise<void> => {
   const { user } = req as Request & { user: JwtPayload }
   const body = req.body as {

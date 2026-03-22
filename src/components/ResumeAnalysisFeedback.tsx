@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 
 const BREAKDOWN_LABELS: Record<string, string> = {
-  rhythm: 'Sentence rhythm',
-  specificity: 'Specificity',
-  voice: 'Natural voice',
+  rhythm: 'Rhythm (burstiness)',
+  specificity: 'Specificity / concreteness',
+  voice: 'Voice vs. stock phrasing',
   toneFit: 'Tone fit',
 }
 
@@ -16,7 +16,7 @@ type ResumeAnalysisFeedbackProps = {
   className?: string
 }
 
-/** Naturalness score, breakdown, and phrases the model flags for humanizing. */
+/** Naturalness score (detector-style signals + model rubric), breakdown, and phrases to refine. */
 export default function ResumeAnalysisFeedback({
   score,
   breakdown,
@@ -36,13 +36,19 @@ export default function ResumeAnalysisFeedback({
     const list: string[] = []
     if (!breakdown) return list
     if ((breakdown.rhythm ?? 100) < 65) {
-      list.push('Mix short, direct sentences with a few longer ones so the rhythm feels less uniform.')
+      list.push(
+        'Increase burstiness: alternate short punchy sentences with longer ones so length doesn’t stay in a narrow band (a signal statistical detectors use).',
+      )
     }
     if ((breakdown.specificity ?? 100) < 65) {
-      list.push('Swap vague words (e.g. “various”, “robust”, “leverage”) for concrete nouns and verbs.')
+      list.push(
+        'Replace abstract filler (“solutions”, “landscape”, “robust”, “leverage”) with concrete nouns, verbs, and real details already in your story.',
+      )
     }
     if ((breakdown.voice ?? 100) < 65) {
-      list.push('Cut stock transitions and AI clichés; use simpler connectors you’d say out loud.')
+      list.push(
+        'Remove template openers, stacked hedges, and generic transitions; say it the way you would to a colleague.',
+      )
     }
     if ((breakdown.toneFit ?? 100) < 60) {
       list.push('Adjust formality and word choice so they match your audience (see optional context).')

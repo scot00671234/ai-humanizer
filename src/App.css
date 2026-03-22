@@ -3672,6 +3672,13 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   gap: 0.5rem;
 }
 
+.resumeAutosaveStatus {
+  flex: 1 1 100%;
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 .resumeProjectSelect {
   font-size: 0.875rem;
   padding: 0.35rem 0.5rem;

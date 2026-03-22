@@ -72,11 +72,35 @@ export default function DashboardResume() {
   const [projectLoading, setProjectLoading] = useState(false)
   const [saveLoading, setSaveLoading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  /** Shown only when an existing project is open (not during initial load). */
+  const [autosaveIndicator, setAutosaveIndicator] = useState<'auto' | 'saving' | 'saved'>('auto')
   const [rewriteBookmarkHint, setRewriteBookmarkHint] = useState(false)
   const editorRef = useRef<ResumeEditorHandle>(null)
   const exportMenuRef = useRef<HTMLDivElement>(null)
   const atsPanelRef = useRef<HTMLDivElement>(null)
   const wasScoreLoading = useRef(false)
+  const lastPersistedRef = useRef<{
+    content: string
+    documentContext: string
+    title: string
+  } | null>(null)
+  const persistSeqRef = useRef(0)
+  const appliedPersistSeqRef = useRef(0)
+  const draftRef = useRef({
+    content: '',
+    context: '',
+    title: '',
+    projectId: null as string | null,
+  })
+  /** Browser timer id (avoids Node `Timeout` vs DOM `number` mismatch in typings). */
+  const autosaveSavedTimerRef = useRef<number | null>(null)
+
+  draftRef.current = {
+    content: typeof editorContent === 'string' ? editorContent : '',
+    context: documentContext,
+    title: currentProjectTitle.trim() || 'Untitled',
+    projectId: currentProjectId,
+  }
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const projectIdFromUrl = searchParams.get('projectId')
@@ -100,6 +124,8 @@ export default function DashboardResume() {
       setCurrentProjectTitle('')
       setDocumentContext('')
       setSaveError(null)
+      lastPersistedRef.current = null
+      setAutosaveIndicator('auto')
       return
     }
     setProjectLoading(true)
@@ -121,11 +147,91 @@ export default function DashboardResume() {
         setEditorText(computedText)
         setDocumentContext(typeof proj.job_description === 'string' ? proj.job_description : '')
         setProjects((prev) => prev.some((p) => p.id === proj.id) ? prev : [...prev, { id: proj.id, title: proj.title || 'Untitled' }])
+        const loadedTitle = (proj.title || 'Untitled').trim() || 'Untitled'
+        lastPersistedRef.current = {
+          content: proj.content || '',
+          documentContext: typeof proj.job_description === 'string' ? proj.job_description : '',
+          title: loadedTitle,
+        }
+        persistSeqRef.current = 0
+        appliedPersistSeqRef.current = 0
+        setAutosaveIndicator('auto')
       })
       .catch(() => { if (!cancelled) setSaveError('Failed to load project') })
       .finally(() => { if (!cancelled) setProjectLoading(false) })
     return () => { cancelled = true }
   }, [projectIdFromUrl])
+
+  const AUTOSAVE_DEBOUNCE_MS = 2000
+
+  useEffect(() => {
+    return () => {
+      if (autosaveSavedTimerRef.current) clearTimeout(autosaveSavedTimerRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!currentProjectId || projectLoading || saveLoading) return
+    if (projectIdFromUrl && currentProjectId !== projectIdFromUrl) return
+
+    const content = typeof editorContent === 'string' ? editorContent : ''
+    const title = currentProjectTitle.trim() || 'Untitled'
+    const ctx = documentContext
+    const last = lastPersistedRef.current
+    if (!last) return
+    if (content === last.content && ctx === last.documentContext && title === last.title) return
+
+    const debounceTimer = window.setTimeout(() => {
+      const d = draftRef.current
+      if (!d.projectId) return
+      if (projectIdFromUrl && d.projectId !== projectIdFromUrl) return
+
+      const l = lastPersistedRef.current
+      if (l && d.content === l.content && d.context === l.documentContext && d.title === l.title) return
+
+      const mySeq = ++persistSeqRef.current
+      setAutosaveIndicator('saving')
+
+      api.projects
+        .update(d.projectId, {
+          content: d.content,
+          title: d.title,
+          jobDescription: d.context,
+        })
+        .then(() => {
+          if (mySeq <= appliedPersistSeqRef.current) return
+          appliedPersistSeqRef.current = mySeq
+          lastPersistedRef.current = {
+            content: d.content,
+            documentContext: d.context,
+            title: d.title,
+          }
+          setProjects((prev) => prev.map((p) => (p.id === d.projectId ? { ...p, title: d.title } : p)))
+          setAutosaveIndicator('saved')
+          if (autosaveSavedTimerRef.current) clearTimeout(autosaveSavedTimerRef.current)
+          autosaveSavedTimerRef.current = window.setTimeout(() => {
+            setAutosaveIndicator('auto')
+            autosaveSavedTimerRef.current = null
+          }, 2200)
+        })
+        .catch((err) => {
+          console.warn('Autosave failed:', err)
+          setAutosaveIndicator('auto')
+        })
+    }, AUTOSAVE_DEBOUNCE_MS)
+
+    return () => {
+      clearTimeout(debounceTimer)
+    }
+  }, [
+    editorContent,
+    documentContext,
+    currentProjectTitle,
+    currentProjectId,
+    projectIdFromUrl,
+    projectLoading,
+    saveLoading,
+  ])
 
   const handleSave = useCallback(async () => {
     setSaveError(null)
@@ -141,6 +247,9 @@ export default function DashboardResume() {
         })
         setCurrentProjectTitle(name)
         setProjects((prev) => prev.map((p) => (p.id === currentProjectId ? { ...p, title: name } : p)))
+        persistSeqRef.current += 1
+        appliedPersistSeqRef.current = persistSeqRef.current
+        lastPersistedRef.current = { content, documentContext: documentContext, title: name }
       } else {
         const created = await api.projects.create(name)
         setCurrentProjectId(created.id)
@@ -148,6 +257,9 @@ export default function DashboardResume() {
         setProjects((prev) => [...prev, { id: created.id, title: created.title || name }])
         navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
         await api.projects.update(created.id, { content, jobDescription: documentContext })
+        persistSeqRef.current += 1
+        appliedPersistSeqRef.current = persistSeqRef.current
+        lastPersistedRef.current = { content, documentContext: documentContext, title: created.title || name }
       }
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save')
@@ -168,6 +280,10 @@ export default function DashboardResume() {
       setCurrentProjectTitle(created.title || 'Untitled')
       setProjects((prev) => [...prev, { id: created.id, title: created.title || 'Untitled' }])
       navigate(`/dashboard/workspace?projectId=${created.id}`, { replace: true })
+      const finalTitle = created.title || 'Untitled'
+      persistSeqRef.current += 1
+      appliedPersistSeqRef.current = persistSeqRef.current
+      lastPersistedRef.current = { content, documentContext: documentContext, title: finalTitle }
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save as new project')
     } finally {
@@ -478,6 +594,13 @@ export default function DashboardResume() {
           </div>
         </div>
         {saveError && <p className="dashboardSettingsError">{saveError}</p>}
+        {currentProjectId && !projectLoading && (
+          <p className="resumeAutosaveStatus" aria-live="polite">
+            {autosaveIndicator === 'saving' && 'Saving…'}
+            {autosaveIndicator === 'saved' && 'All changes saved'}
+            {autosaveIndicator === 'auto' && 'Edits save automatically while you work.'}
+          </p>
+        )}
         {landingRewriteLoading && (
           <p className="resumeLandingBanner" role="status">
             Humanizing your sample from the landing page…
@@ -704,8 +827,9 @@ export default function DashboardResume() {
             <div className="resumeAtsPanel" ref={atsPanelRef}>
               <h3 className="resumeAtsPanelTitle">Naturalness check</h3>
               <p className="resumeAtsPanelExplainer">
-                We estimate how human-like your draft reads: rhythm, specificity, voice, and (if you added context) tone fit.
-                It’s guidance for editing — not a claim about AI detection tools.
+                We score your draft using linguistic signals aligned with AI-text research — sentence-length variance (burstiness),
+                vocabulary diversity, repetition, and common LLM discourse markers — plus model judgment on the full text.
+                It is editing guidance, not a verdict from any commercial detector.
               </p>
               <div className="resumeAtsPanelActions">
                 <button
