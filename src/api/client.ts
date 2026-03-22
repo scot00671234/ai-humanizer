@@ -24,6 +24,17 @@ export function getGoogleAuthUrl(returnTo?: string): string {
 
 export type ApiError = { error: string; code?: string }
 
+/** Thrown for non-OK HTTP responses so callers can distinguish 401 from transient failures. */
+export class ApiHttpError extends Error {
+  readonly status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiHttpError'
+    this.status = status
+  }
+}
+
 function buildUrl(path: string, params?: Record<string, string>): string {
   if (path.startsWith('http')) return path
   if (!API_BASE) {
@@ -62,7 +73,7 @@ async function request<T>(
     if (res.status === 401) clearToken()
     const data = await res.json().catch(() => ({})) as ApiError
     const message = typeof data?.error === 'string' ? data.error : res.statusText || 'Request failed'
-    throw new Error(message)
+    throw new ApiHttpError(message, res.status)
   }
   if (res.status === 204) return Promise.resolve(undefined as T)
   return res.json() as Promise<T>
@@ -84,7 +95,7 @@ async function requestBlob(
     if (res.status === 401) clearToken()
     const data = await res.json().catch(() => ({})) as ApiError
     const message = typeof data?.error === 'string' ? data.error : res.statusText || 'Request failed'
-    throw new Error(message)
+    throw new ApiHttpError(message, res.status)
   }
   return res.blob()
 }

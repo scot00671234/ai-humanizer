@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { api, getToken, setToken, clearToken } from '../api/client'
+import { api, ApiHttpError, getToken, setToken, clearToken } from '../api/client'
 
 export type User = {
   id: string
@@ -53,9 +53,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { user: u } = await api.auth.me()
       setUser(u)
-    } catch {
-      clearToken()
-      setUser(null)
+    } catch (err) {
+      // Only treat invalid/expired session as logout. Transient /me failures (5xx, network)
+      // must not clear the token — e.g. after a successful score, refreshUser runs and used to
+      // wipe the session if /me hiccuped.
+      const status = err instanceof ApiHttpError ? err.status : undefined
+      if (status === 401) {
+        clearToken()
+        setUser(null)
+      }
     } finally {
       setLoading(false)
     }
