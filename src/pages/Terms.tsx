@@ -5,8 +5,8 @@ import { setSeoMeta } from '../utils/seoMeta'
 export default function Terms() {
   useEffect(() => {
     setSeoMeta({
-      title: 'Terms of Service - Sosiol',
-      description: 'Terms of service for using Sosiol AI humanizer and related services.',
+      title: 'Terms of Service - Humanizer AI',
+      description: 'Terms of service for using Humanizer AI and related services.',
       path: '/terms',
     })
   }, [])
@@ -18,7 +18,7 @@ export default function Terms() {
         <p className="contentSubtitle">Last updated: {new Date().toLocaleDateString('en-US')}</p>
         <div className="contentBody">
           <p>
-            By using Sosiol, you agree to these terms. Please read them carefully.
+            By using Humanizer AI, you agree to these terms. Please read them carefully.
           </p>
           <h2>Acceptance</h2>
           <p>

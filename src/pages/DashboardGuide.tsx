@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export default function DashboardGuide() {
   return (
     <div className="dashboardPage dashboardGuidePage">
-      <h1 className="dashboardPageTitle">How to use Sosiol</h1>
+      <h1 className="dashboardPageTitle">How to use Humanizer AI</h1>
       <p className="dashboardPageSubtitle dashboardGuideLead">
         A short guide to the Workspace: optional context for your audience, naturalness analysis, humanizing selections with tone and intensity,
         and exporting when you are ready.

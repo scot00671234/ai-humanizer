@@ -8,9 +8,9 @@ export default function Blog() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Blog - Sosiol | Natural Writing & Tone Tips',
+      title: 'Blog - Humanizer AI | Natural Writing & Tone Tips',
       description:
-        'AI humanizer tips: humanize AI writing, control tone, improve rhythm and clarity, and rewrite sentences to sound natural, plus export workflows from your Sosiol workspace.',
+        'AI humanizer tips: humanize AI writing, control tone, improve rhythm and clarity, and rewrite sentences to sound natural, plus export workflows from your Humanizer AI workspace.',
       path: '/blog',
       keywords:
         'ai humanizer, ai humaniser, humanize ai text, humanize ai writing, ai writing rewrite, rewrite ai text, tone control, natural writing, text rewriter, ai text editing, writing clarity, paraphrase ai',
@@ -22,7 +22,7 @@ export default function Blog() {
       <div className="blogHero">
         <h1 className="blogHeroTitle">Blog</h1>
         <p className="blogHeroLead">
-          Tips for clearer, more natural writing, aligned with what Sosiol helps you do: analyze drafts, humanize selections,
+          Tips for clearer, more natural writing, aligned with what Humanizer AI helps you do: analyze drafts, humanize selections,
           adjust length, and export when you are done.
         </p>
       </div>

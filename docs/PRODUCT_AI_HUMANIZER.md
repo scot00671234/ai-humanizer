@@ -1,4 +1,4 @@
-# bioqz — AI humanizer (current product)
+# Humanizer AI — AI humanizer (current product)
 
 ## Purpose
 

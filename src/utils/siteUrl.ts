@@ -1,6 +1,6 @@
 /**
  * Canonical site origin for SEO (sitemap, JSON-LD, Open Graph).
- * Set VITE_SITE_URL in production (e.g. https://sosiol.com) — no trailing slash.
+ * Set VITE_SITE_URL in production (e.g. https://www.humanizertextai.com) — no trailing slash.
  */
 export function getSiteUrl(): string {
   const env = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '')
@@ -8,5 +8,5 @@ export function getSiteUrl(): string {
   if (typeof window !== 'undefined' && window.location?.origin) {
     return window.location.origin.replace(/\/$/, '')
   }
-  return 'https://sosiol.com'
+  return 'https://www.humanizertextai.com'
 }

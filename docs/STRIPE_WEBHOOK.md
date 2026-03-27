@@ -13,9 +13,9 @@ Do *not* choose Amazon EventBridge unless you use that.
 
 Use your API base URL + the webhook path:
 
-- **This project (bioqz.com):** use this exact URL in **both** Test and Live mode (same URL, different signing secrets per mode):
+- **This project (humanizertextai.com):** use this exact URL in **both** Test and Live mode (same URL, different signing secrets per mode):
   ```
-  https://bioqz.com/api/auth/stripe-webhook
+  https://www.humanizertextai.com/api/auth/stripe-webhook
   ```
 - **Other / generic:** `https://your-api-domain.com/api/auth/stripe-webhook`
 - **Local:** use Stripe CLI (`stripe listen --forward-to localhost:3001/api/auth/stripe-webhook`) and use the CLI’s signing secret; don’t add a dashboard endpoint for localhost.

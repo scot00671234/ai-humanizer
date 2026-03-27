@@ -97,7 +97,7 @@ function usePathStepVisible() {
 }
 
 const HOME_META_DESC =
-  'Sosiol: AI humanizer (AI humaniser) for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
+  'Humanizer AI: AI humanizer (AI humaniser) for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -107,7 +107,7 @@ export default function Landing() {
 
   useEffect(() => {
     setSeoMeta({
-      title: 'Sosiol - AI Humanizer (AI Humaniser) | Natural Writing, Tone Control & PDF Export',
+      title: 'Humanizer AI - AI Humanizer (AI Humaniser) | Natural Writing, Tone Control & PDF Export',
       description: HOME_META_DESC,
       path: '/',
       keywords: HOME_SEO_KEYWORDS,
@@ -124,7 +124,7 @@ export default function Landing() {
   const homeJsonLd = useMemo(() => {
     const base = getSiteUrl().replace(/\/$/, '')
     const orgId = `${base}/#organization`
-    const org = { '@id': orgId, '@type': 'Organization', name: 'Sosiol', url: base }
+    const org = { '@id': orgId, '@type': 'Organization', name: 'Humanizer AI', url: base }
     return {
       '@context': 'https://schema.org',
       '@graph': [
@@ -132,7 +132,7 @@ export default function Landing() {
         {
           '@type': 'WebSite',
           '@id': `${base}/#website`,
-          name: 'Sosiol',
+          name: 'Humanizer AI',
           url: `${base}/`,
           description: HOME_META_DESC,
           publisher: { '@id': orgId },
@@ -140,7 +140,7 @@ export default function Landing() {
         },
         {
           '@type': 'SoftwareApplication',
-          name: 'Sosiol',
+          name: 'Humanizer AI',
           applicationCategory: 'BusinessApplication',
           operatingSystem: 'Web browser',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -208,9 +208,9 @@ export default function Landing() {
                 Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
               </h1>
               <p className="heroSubtitle">
-                Sosiol analyzes stiff or model-like drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
+                Humanizer AI analyzes stiff or model-like drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
               </p>
-              <ul className="heroValueChips" aria-label="What Sosiol does">
+              <ul className="heroValueChips" aria-label="What Humanizer AI does">
                 <li>Naturalness analysis</li>
                 <li>Humanize selections</li>
                 <li>PDF &amp; Word export</li>
@@ -339,7 +339,7 @@ export default function Landing() {
 
         <section className="section aboutSection" id="about">
         <div className="sectionHeader aboutSectionHeader">
-          <p className="sectionLabel">Why Sosiol</p>
+          <p className="sectionLabel">Why Humanizer AI</p>
           <h2 className="sectionTitle">Make every draft clearer, in a few simple steps.</h2>
           <p className="aboutLead">
             You bring the ideas. We help them land in language readers trust.
@@ -356,7 +356,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="aboutContent aboutContentSimple">
-          <ul className="aboutPoints" aria-label="What Sosiol does for you">
+          <ul className="aboutPoints" aria-label="What Humanizer AI does for you">
             <li><strong>Paste or upload</strong> your draft and optional context (audience, channel, assignment).</li>
             <li><strong>Analyze</strong> for rhythm, specificity, and voice, then humanize line by line.</li>
             <li><strong>Shorten or expand</strong> the whole piece when length needs to change.</li>
@@ -436,7 +436,7 @@ export default function Landing() {
 
         <footer className="footer">
         <div className="footerInner">
-          <Link to="/" className="footerBrand">Sosiol</Link>
+          <Link to="/" className="footerBrand">Humanizer AI</Link>
           <div className="footerLinks">
             <a href="/#about">About</a>
             <a href="/#features">Features</a>
@@ -447,7 +447,7 @@ export default function Landing() {
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
           </div>
-          <span className="footerCopy">© {new Date().getFullYear()} Sosiol. All rights reserved.</span>
+          <span className="footerCopy">© {new Date().getFullYear()} Humanizer AI. All rights reserved.</span>
         </div>
         </footer>
       </div>

@@ -5,9 +5,9 @@ import { setSeoMeta } from '../utils/seoMeta'
 export default function Privacy() {
   useEffect(() => {
     setSeoMeta({
-      title: 'Privacy Policy - Sosiol',
+      title: 'Privacy Policy - Humanizer AI',
       description:
-        'How Sosiol collects and uses data when you use our AI humanizer and writing workspace. Read our privacy policy.',
+        'How Humanizer AI collects and uses data when you use our AI humanizer and writing workspace. Read our privacy policy.',
       path: '/privacy',
     })
   }, [])

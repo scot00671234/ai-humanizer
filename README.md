@@ -1,4 +1,4 @@
-# bioqz
+# Humanizer AI
 
 A minimal SaaS app: landing page, auth (email/password + optional Google), Stripe billing, and an **AI humanizer** (Tiptap editor, DeepSeek humanize + analyze, optional shorten/expand, PDF export, usage caps).
 
@@ -10,7 +10,7 @@ A minimal SaaS app: landing page, auth (email/password + optional Google), Strip
 - **Database:** PostgreSQL via **pg** driver (no Prisma)
 - **Auth:** JWT (email/password, email verification); optional Google (Passport.js)
 - **Billing:** Stripe (Checkout, Customer Portal, webhooks)
-- **bioqz:** DeepSeek API, Tiptap editor, pdfmake (document PDF export)
+- **Humanizer AI:** DeepSeek API, Tiptap editor, pdfmake (document PDF export)
 
 ## Commands
 
@@ -68,7 +68,7 @@ npm run server
 
 ---
 
-## bioqz (AI humanizer)
+## Humanizer AI
 
 Product spec: **[docs/PRODUCT_AI_HUMANIZER.md](docs/PRODUCT_AI_HUMANIZER.md)** · design index: **[docs/PRODUCT_DESIGN.md](docs/PRODUCT_DESIGN.md)**.
 
