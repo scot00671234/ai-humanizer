@@ -118,7 +118,25 @@
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  flex-wrap: wrap;
+  row-gap: 0.65rem;
+}
+
+.navPrimaryLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.navActions > .navCta {
+  margin-left: 0.35rem;
 }
 
 .navLinks a {
@@ -255,6 +273,33 @@ body[data-nav="pill"] .nav.nav--pill .navLinks a::after {
   display: none;
 }
 
+body[data-nav="pill"] .nav.nav--pill .navPrimaryLinks {
+  gap: 1.25rem;
+}
+
+body[data-nav="pill"] .nav.nav--pill .navActions {
+  gap: 0.5rem;
+  padding-left: 1.15rem;
+  margin-left: 0.1rem;
+  border-left: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+body[data-nav="pill"] .nav.nav--pill .navActions > .navCta {
+  margin-left: 0.4rem;
+}
+
+[data-theme="dark"] body[data-nav="pill"] .nav.nav--pill .navActions {
+  border-left-color: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 640px) {
+  body[data-nav="pill"] .nav.nav--pill .navActions {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+}
+
 body[data-nav="pill"] .noise {
   opacity: 0.012;
 }
@@ -357,9 +402,9 @@ body[data-nav="pill"] .noise {
 .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBackdrop::after {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.88) 0%,
-    rgba(248, 249, 252, 0.76) 42%,
-    rgba(236, 239, 245, 0.92) 100%
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(248, 249, 252, 0.82) 42%,
+    rgba(236, 239, 245, 0.94) 100%
   );
 }
 
@@ -389,11 +434,15 @@ body[data-nav="pill"] .noise {
 }
 
 .landingPage--inspired .hero--photo .heroTitleAccent {
-  color: #b8e600;
+  color: #5f7f0a;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 18px rgba(255, 255, 255, 0.5);
 }
 
 [data-theme="dark"] .landingPage--inspired .hero--photo .heroTitleAccent {
   color: #d7ff59;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
 }
 
 .landingPage--inspired .heroCtaPrimary {
@@ -714,6 +763,79 @@ body[data-nav="pill"] .noise {
     0 24px 56px -20px rgba(0, 0, 0, 0.35);
 }
 
+/* Inspired photo hero: left column is text-only (split panel wins over .hero[data-hero-bg] card) */
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroContent.heroContentSplit {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroContent.heroContentSplit {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Light mode: high-contrast type on bright scrim */
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
+  color: #0a0e14;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65),
+    0 0 28px rgba(255, 255, 255, 0.45);
+}
+
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
+  color: #2a3341;
+  opacity: 1;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBadge {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #1a4d2e;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroValueChips li {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(15, 23, 42, 0.18);
+  color: #1e293b;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Dark mode on photo: crisp light type + soft halation for busy backdrop */
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle,
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
+  color: rgba(255, 255, 255, 0.88);
+  opacity: 1;
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBadge {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroValueChips li {
+  background: rgba(0, 0, 0, 0.28);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 .heroBadge {
   display: inline-block;
   padding: 0.4rem 0.85rem;
@@ -743,6 +865,86 @@ body[data-nav="pill"] .noise {
 
 .heroTitleAccent {
   color: var(--accent-text);
+}
+
+/* Hero headline: typewriter → scratch → rewrite demo */
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
+  min-height: clamp(5.5rem, 14vw, 8.5rem);
+}
+
+.heroTitle--scratch {
+  position: relative;
+  color: rgba(90, 98, 112, 0.96);
+}
+
+[data-theme="dark"] .heroTitle--scratch {
+  color: rgba(200, 208, 220, 0.88);
+}
+
+.heroTitle--scratch::after {
+  content: '';
+  position: absolute;
+  left: -1%;
+  right: -1%;
+  top: 50%;
+  height: 0.12em;
+  min-height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(200, 55, 55, 0.88) 12%,
+    rgba(200, 55, 55, 0.95) 50%,
+    rgba(200, 55, 55, 0.88) 88%,
+    transparent 100%
+  );
+  transform: rotate(-2.2deg) scaleX(0);
+  transform-origin: left center;
+  animation: heroScratchDraw 0.62s cubic-bezier(0.33, 0, 0.2, 1) forwards;
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+[data-theme="dark"] .heroTitle--scratch::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 130, 130, 0.92) 12%,
+    rgba(255, 150, 140, 0.98) 50%,
+    rgba(255, 130, 130, 0.92) 88%,
+    transparent 100%
+  );
+}
+
+@keyframes heroScratchDraw {
+  to {
+    transform: rotate(-2.2deg) scaleX(1);
+  }
+}
+
+.heroTitleCursor {
+  display: inline-block;
+  margin-left: 0.06em;
+  font-weight: 400;
+  opacity: 0.9;
+  animation: heroCursorBlink 0.95s step-end infinite;
+}
+
+@keyframes heroCursorBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroTitleCursor {
+    animation: none;
+    opacity: 0.55;
+  }
+
+  .heroTitle--scratch::after {
+    animation: none;
+    transform: rotate(-2.2deg) scaleX(1);
+  }
 }
 
 .heroSubtitle {

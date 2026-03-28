@@ -67,21 +67,25 @@ function Nav() {
           <span>Humanizer AI</span>
         </Link>
         <div className="navLinks">
-          <a href="/#about">About</a>
-          <a href="/#features">Features</a>
-          <a href="/#pricing">Pricing</a>
-          <ThemeToggle />
-          {user ? (
-            <>
-              <Link to="/dashboard">Dashboard</Link>
-              <button type="button" onClick={logout}>Sign out</button>
-            </>
-          ) : (
-            <>
-              <Link to="/register" className="navCta">Get started</Link>
-              <Link to="/login">Sign in</Link>
-            </>
-          )}
+          <div className="navPrimaryLinks">
+            <a href="/#about">About</a>
+            <a href="/#features">Features</a>
+            <a href="/#pricing">Pricing</a>
+          </div>
+          <div className="navActions">
+            <ThemeToggle />
+            {user ? (
+              <>
+                <Link to="/dashboard">Dashboard</Link>
+                <button type="button" onClick={logout}>Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">Sign in</Link>
+                <Link to="/register" className="navCta">Get started</Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

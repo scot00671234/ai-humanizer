@@ -4,6 +4,7 @@ import { HOME_SEO_FAQ, HOME_SEO_KEYWORDS } from '../content/homeSeoFaq'
 import { setPendingRewrite } from '../utils/landingPendingRewrite'
 import { getSiteUrl } from '../utils/siteUrl'
 import { setSeoMeta } from '../utils/seoMeta'
+import HeroAnimatedHeadline from '../components/HeroAnimatedHeadline'
 
 const PATH_STEPS = [
   { id: 1, title: 'Readers feel tone before facts', body: 'Flat, uniform sentences read like a template, whether the draft came from you or a model. Natural rhythm keeps people reading.' },
@@ -204,9 +205,7 @@ export default function Landing() {
           <div className="heroInner">
             <div className="heroContent heroContentSplit">
               <span className="heroBadge">Free to start · No credit card</span>
-              <h1 className="heroTitle">
-                Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
-              </h1>
+              <HeroAnimatedHeadline />
               <p className="heroSubtitle">
                 Stiff or AI-heavy lines in resumes, emails, or essays? Highlight them, match your tone, export when ready.
               </p>
