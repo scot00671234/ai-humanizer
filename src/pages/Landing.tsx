@@ -97,7 +97,7 @@ function usePathStepVisible() {
 }
 
 const HOME_META_DESC =
-  'Humanizer AI: AI humanizer (AI humaniser) for drafts that sound natural. Analyze rhythm and voice, humanize selections with tone controls, shorten or expand, export PDF with a free tier to start.'
+  'Humanizer AI: turn stiff or AI-heavy writing into natural copy—resumes, emails, essays. Highlight text, set tone, check how it reads, export PDF or Word. Free tier to start.'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -145,7 +145,7 @@ export default function Landing() {
           operatingSystem: 'Web browser',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
           description:
-            'Humanize AI-assisted and stiff drafts: naturalness analysis, selection-based rewrites with tone and intensity, shorten/expand, and document export.',
+            'Make stiff or AI-sounding lines read naturally: highlight to rewrite with tone control, optional naturalness check, shorten or expand, then export.',
           featureList: [
             'Humanize selected text',
             'Naturalness analysis',
@@ -208,11 +208,11 @@ export default function Landing() {
                 Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
               </h1>
               <p className="heroSubtitle">
-                Humanizer AI analyzes stiff or model-like drafts, humanizes what you select with tone and intensity controls, and helps you shorten, expand, or export when you are done.
+                Stiff or AI-heavy lines in resumes, emails, or essays? Highlight them, match your tone, export when ready.
               </p>
               <ul className="heroValueChips" aria-label="What Humanizer AI does">
-                <li>Naturalness analysis</li>
-                <li>Humanize selections</li>
+                <li>How natural it reads</li>
+                <li>Humanize by selection</li>
                 <li>PDF &amp; Word export</li>
               </ul>
               <div className="heroCtaRow">
@@ -221,46 +221,38 @@ export default function Landing() {
               </div>
             </div>
 
-            <aside className="heroPreview" aria-label="Product preview">
-              <div className="heroMediaCard" aria-hidden>
-                <img
-                  src="/landing/desk.png"
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
+            <aside className="heroPreview heroPreview--bare" aria-label="Product preview">
               <div className="heroPreviewCard">
-                <div className="heroPreviewTop">
-                  <div className="heroPreviewTitle">Example: Naturalness</div>
-                  <div className="heroPreviewScore" aria-label="Score 78 out of 100">
-                    <span>78</span>
-                    <small>/100</small>
+                <div className="heroPreviewStack">
+                  <header className="heroPreviewTop">
+                    <div className="heroPreviewTitle">Example: Naturalness</div>
+                    <div className="heroPreviewScore" aria-label="Score 78 out of 100">
+                      <span>78</span>
+                      <small>/100</small>
+                    </div>
+                  </header>
+                  <div className="heroPreviewBar" aria-hidden>
+                    <span style={{ width: '78%' }} />
                   </div>
-                </div>
-                <div className="heroPreviewBar" aria-hidden>
-                  <span style={{ width: '78%' }} />
-                </div>
-
-                <div className="heroPreviewGrid" aria-label="Before and after humanize">
-                  <div className="heroPreviewCol">
-                    <div className="heroPreviewLabel">Before</div>
-                    <p className="heroPreviewText">
-                      It is important to note that we leveraged robust solutions to drive impactful outcomes across the stakeholder landscape.
-                    </p>
+                  <div className="heroPreviewGrid" aria-label="Before and after humanize">
+                    <div className="heroPreviewCol">
+                      <div className="heroPreviewLabel">Before</div>
+                      <p className="heroPreviewText">
+                        It is important to note that we leveraged robust solutions to drive impactful outcomes across the stakeholder landscape.
+                      </p>
+                    </div>
+                    <div className="heroPreviewCol heroPreviewColAfter">
+                      <div className="heroPreviewLabel">After</div>
+                      <p className="heroPreviewText">
+                        We shipped simpler tools, cut handoffs, and got clearer results. Our stakeholders finally saw progress they could measure.
+                      </p>
+                    </div>
                   </div>
-                  <div className="heroPreviewCol heroPreviewColAfter">
-                    <div className="heroPreviewLabel">After</div>
-                    <p className="heroPreviewText">
-                      We shipped simpler tools, cut handoffs, and got clearer results. Our stakeholders finally saw progress they could measure.
-                    </p>
+                  <div className="heroPreviewTags" aria-label="What improved">
+                    <span>Clearer rhythm</span>
+                    <span>Concrete wording</span>
+                    <span>Less filler</span>
                   </div>
-                </div>
-
-                <div className="heroPreviewTags" aria-label="What improved">
-                  <span>Clearer rhythm</span>
-                  <span>Concrete wording</span>
-                  <span>Less filler</span>
                 </div>
               </div>
             </aside>

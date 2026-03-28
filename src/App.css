@@ -296,6 +296,11 @@ body[data-page="landing"] .noise {
   z-index: 1;
 }
 
+.landingPage--inspired .heroInner {
+  align-items: start;
+  gap: 2.5rem 2.75rem;
+}
+
 /* Hero backdrop: gradient by default. Photo: public/hero-desk.png when data-hero-bg="true" (override with --hero-bg-image). */
 .heroBackdrop {
   position: absolute;
@@ -462,11 +467,6 @@ body[data-page="landing"] .noise {
 [data-theme="dark"] .landingPage .heroCtaGhost:hover {
   color: #fff;
   border-bottom-color: rgba(215, 255, 89, 0.7);
-}
-
-[data-theme="dark"] .landingPage .heroMediaCard {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 22px 60px -34px rgba(0, 0, 0, 0.75);
 }
 
 [data-theme="dark"] .landingPage .heroPreviewCard {
@@ -877,27 +877,21 @@ body[data-page="landing"] .noise {
 }
 
 /* Hero preview (right column) */
-.heroMediaCard {
-  height: 200px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 18px 48px -28px rgba(15, 23, 42, 0.28);
-  margin-bottom: 1rem;
-}
-
-[data-theme="dark"] .heroMediaCard {
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 48px -28px rgba(0, 0, 0, 0.55);
-}
-
-.heroMediaCard img {
+.heroPreview {
+  min-width: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 45%;
-  display: block;
-  filter: saturate(0.98) contrast(0.98) brightness(1.02);
+}
+
+.landingPage--inspired .heroPreview--bare {
+  max-width: 27.5rem;
+  justify-self: end;
+  padding-top: 0.35rem;
+}
+
+.heroPreview--bare .heroPreviewStack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .heroPreviewCard {
@@ -916,6 +910,94 @@ body[data-page="landing"] .noise {
   box-shadow:
     0 10px 36px -14px rgba(0, 0, 0, 0.6),
     0 28px 56px -22px rgba(0, 0, 0, 0.35);
+}
+
+.heroPreview--bare .heroPreviewCard {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewCard {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.heroPreview--bare .heroPreviewCol,
+.heroPreview--bare .heroPreviewColAfter {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewCol,
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewColAfter {
+  background: transparent;
+  border: none;
+}
+
+.heroPreview--bare .heroPreviewTags span {
+  background: transparent;
+  border-color: rgba(15, 23, 42, 0.18);
+  padding: 0.3rem 0.65rem;
+}
+
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewTags span {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.heroPreview--bare .heroPreviewTop {
+  margin-bottom: 0.55rem;
+}
+
+.heroPreview--bare .heroPreviewBar {
+  margin-bottom: 1.2rem;
+}
+
+.heroPreview--bare .heroPreviewGrid {
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.15rem;
+  align-items: start;
+}
+
+.heroPreview--bare .heroPreviewColAfter {
+  border-left: 1px solid rgba(15, 23, 42, 0.1);
+  padding-left: 1.25rem;
+  margin-left: -0.25rem;
+}
+
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewColAfter {
+  border-left-color: rgba(255, 255, 255, 0.12);
+}
+
+.heroPreview--bare .heroPreviewLabel {
+  margin-bottom: 0.35rem;
+}
+
+.heroPreview--bare .heroPreviewText {
+  font-size: 0.8125rem;
+  line-height: 1.52;
+}
+
+.heroPreview--bare .heroPreviewColAfter .heroPreviewLabel {
+  color: var(--accent-text);
+}
+
+[data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewColAfter .heroPreviewLabel {
+  color: #d7ff59;
+}
+
+.heroPreview--bare .heroPreviewTags {
+  gap: 0.45rem;
 }
 
 .heroPreviewTop {
@@ -1040,13 +1122,16 @@ body[data-page="landing"] .noise {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  .landingPage--inspired .heroPreview--bare {
+    justify-self: center;
+    max-width: 36rem;
+    padding-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
   .heroPreviewCard {
     max-width: 40rem;
     margin: 0 auto;
-  }
-  .heroMediaCard {
-    max-width: 40rem;
-    margin: 0 auto 1rem;
   }
   .heroContentSplit {
     text-align: center;
@@ -1066,6 +1151,16 @@ body[data-page="landing"] .noise {
 @media (max-width: 520px) {
   .heroPreviewGrid {
     grid-template-columns: 1fr;
+  }
+  .heroPreview--bare .heroPreviewColAfter {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+  [data-theme="dark"] .landingPage .heroPreview--bare .heroPreviewColAfter {
+    border-top-color: rgba(255, 255, 255, 0.12);
   }
 }
 
