@@ -203,6 +203,47 @@ body[data-page="landing"] .navCta:hover {
   color: #0a0f14;
 }
 
+/* Landing: floating pill nav (Resume-writer–style shell; copy/brand unchanged) */
+body[data-page="landing"] .nav.nav--landing {
+  top: 1rem;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(1080px, calc(100% - 1.75rem));
+  max-width: calc(100% - 1.75rem);
+  padding: 0.45rem 0.85rem 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 4px 6px -2px rgba(15, 23, 42, 0.04),
+    0 18px 48px -20px rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+[data-theme="dark"] body[data-page="landing"] .nav.nav--landing {
+  background: rgba(14, 18, 26, 0.78);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 6px -2px rgba(0, 0, 0, 0.35),
+    0 22px 56px -24px rgba(0, 0, 0, 0.55);
+}
+
+body[data-page="landing"] .nav.nav--landing .navInner {
+  max-width: none;
+  width: 100%;
+}
+
+body[data-page="landing"] .nav.nav--landing .navLinks a::after {
+  display: none;
+}
+
+body[data-page="landing"] .noise {
+  opacity: 0.012;
+}
+
 .themeToggle {
   display: inline-flex;
   align-items: center;
@@ -284,6 +325,67 @@ body[data-page="landing"] .navCta:hover {
     linear-gradient(90deg, rgba(20, 18, 16, 0.2) 0%, transparent 28%, transparent 72%, rgba(20, 18, 16, 0.2) 100%),
     linear-gradient(165deg, rgba(255, 252, 248, 0.62) 0%, rgba(245, 240, 235, 0.32) 45%, rgba(255, 252, 248, 0.28) 100%);
   pointer-events: none;
+}
+
+/* Landing inspired: muted coworking photo + cool light scrim (copy unchanged) */
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBackdrop {
+  background-image: url('/landing/desk.png');
+  background-position: center 38%;
+  filter: saturate(0.9) contrast(0.96);
+}
+
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBackdrop::after {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(248, 249, 252, 0.76) 42%,
+    rgba(236, 239, 245, 0.92) 100%
+  );
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBackdrop {
+  filter: saturate(0.52) contrast(1.06) brightness(0.88);
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBackdrop::after {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 18, 0.84) 0%,
+    rgba(14, 18, 26, 0.7) 45%,
+    rgba(8, 10, 16, 0.91) 100%
+  );
+}
+
+.landingPage--inspired .heroBg--muted .heroOrb {
+  opacity: 0.1;
+}
+
+.landingPage--inspired .blobs--muted {
+  opacity: 0.12;
+}
+
+[data-theme="dark"] .landingPage--inspired .blobs--muted {
+  opacity: 0.07;
+}
+
+.landingPage--inspired .hero--photo .heroTitleAccent {
+  color: #b8e600;
+}
+
+[data-theme="dark"] .landingPage--inspired .hero--photo .heroTitleAccent {
+  color: #d7ff59;
+}
+
+.landingPage--inspired .heroCtaPrimary {
+  background: #d7ff59;
+  color: #0a0f14;
+  box-shadow: 0 14px 34px -16px rgba(200, 230, 60, 0.42);
+}
+
+.landingPage--inspired .heroCtaPrimary:hover {
+  background: #e2ff70;
+  color: #0a0f14;
+  box-shadow: 0 18px 40px -18px rgba(200, 230, 60, 0.48);
 }
 
 /* When hero photo is NOT full-bleed, keep the backdrop clean */
@@ -742,6 +844,36 @@ body[data-page="landing"] .navCta:hover {
 
 [data-theme="dark"] .heroCtaGhost:hover {
   color: var(--text-primary);
+}
+
+.heroCta.heroCtaOutline {
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(15, 23, 42, 0.22);
+  color: var(--text-primary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.heroCta.heroCtaOutline:hover {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(15, 23, 42, 0.3);
+  transform: translateY(-2px);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .landingPage--inspired .heroCta.heroCtaOutline {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .landingPage--inspired .heroCta.heroCtaOutline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: #fff;
 }
 
 /* Hero preview (right column) */
@@ -1362,6 +1494,99 @@ body[data-page="landing"] .navCta:hover {
   margin: 0;
 }
 
+/* Path: vertical timeline list (inspired layout; same step copy) */
+.pathSection--timeline {
+  background: linear-gradient(180deg, #eef0f4 0%, #f4f5f7 48%, var(--bg-base) 100%);
+}
+
+[data-theme="dark"] .pathSection--timeline {
+  background: linear-gradient(180deg, #0c1018 0%, var(--bg-base) 72%);
+}
+
+.pathSection--timeline .pathSectionTitle {
+  margin-bottom: 2.25rem;
+}
+
+.pathSectionInner--timeline {
+  max-width: 40rem;
+}
+
+.pathTimeline {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.pathTimelineLine {
+  position: absolute;
+  left: 1.0625rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 1px;
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 1px;
+}
+
+[data-theme="dark"] .pathTimelineLine {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.pathTimelineItem {
+  position: relative;
+  padding: 1.25rem 0 1.6rem 2.65rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.pathTimelineItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pathTimelineItem--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pathTimelineDot {
+  position: absolute;
+  left: 0.625rem;
+  top: 1.35rem;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #c8e830;
+  background: transparent;
+  box-shadow: 0 0 0 3px #f0f2f5;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .pathTimelineDot {
+  border-color: #d7ff59;
+  box-shadow: 0 0 0 3px var(--bg-base);
+}
+
+.pathSection--timeline .pathTimelineItem:first-child .pathTimelineDot {
+  top: 1.15rem;
+}
+
+.pathTimelineTitle {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.45rem;
+  line-height: 1.3;
+}
+
+.pathTimelineText {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .pathSectionInner {
     max-width: 28rem;
@@ -1373,6 +1598,21 @@ body[data-page="landing"] .navCta:hover {
   }
   .pathImageTile {
     height: 180px;
+  }
+  .pathSectionInner--timeline {
+    max-width: none;
+  }
+  .pathTimeline {
+    padding: 0 0.5rem;
+  }
+  .pathTimelineLine {
+    left: 0.875rem;
+  }
+  .pathTimelineItem {
+    padding-left: 2.35rem;
+  }
+  .pathTimelineDot {
+    left: 0.4375rem;
   }
   .pathSteps {
     padding-left: 2.5rem;

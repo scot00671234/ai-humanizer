@@ -30,9 +30,11 @@ function LegacyResumeToWorkspace() {
 
 function Nav() {
   const { user, logout } = useAuth()
+  const location = useLocation()
+  const isLanding = location.pathname === '/'
 
   return (
-    <nav className="nav">
+    <nav className={`nav${isLanding ? ' nav--landing' : ''}`}>
       <div className="navInner">
         <Link to="/" className="navBrand">
           <img src="/logo.svg" alt="" className="navLogo" width="28" height="28" />

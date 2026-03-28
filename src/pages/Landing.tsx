@@ -189,15 +189,15 @@ export default function Landing() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
-      <div className="landingPage">
-        <main className="hero" data-hero-bg="false">
+      <div className="landingPage landingPage--inspired">
+        <main className="hero hero--photo" data-hero-bg="true">
           <div className="heroBackdrop" aria-hidden />
-          <div className="heroBg" aria-hidden>
+          <div className="heroBg heroBg--muted" aria-hidden>
             <div className="heroOrb heroOrbTop" />
             <div className="heroOrb heroOrbBottom" />
             <div className="heroOrb heroOrbCenter" />
           </div>
-          <div className="blobs">
+          <div className="blobs blobs--muted" aria-hidden>
             <BlobTop />
             <BlobBottom />
           </div>
@@ -217,7 +217,7 @@ export default function Landing() {
               </ul>
               <div className="heroCtaRow">
                 <Link to="/register" className="heroCta heroCtaPrimary">Get started free</Link>
-                <a href="#try" className="heroCtaGhost">Try one paragraph first</a>
+                <a href="#try" className="heroCta heroCtaOutline">Try one paragraph first</a>
               </div>
             </div>
 
@@ -267,7 +267,7 @@ export default function Landing() {
           </div>
         </main>
 
-        <section className="section pathSection" id="path" aria-label="Why natural writing matters">
+        <section className="section pathSection pathSection--timeline" id="path" aria-label="Why natural writing matters">
         <h2 className="pathSectionTitle">The right voice changes everything</h2>
         <div className="pathImagesRow" aria-label="Professional workspace">
           <div className="landingPhotoCard pathImageTile">
@@ -287,19 +287,20 @@ export default function Landing() {
             />
           </div>
         </div>
-        <div className="pathSectionInner">
-          <div className="pathSteps">
-            <div className="pathLine" aria-hidden />
+        <div className="pathSectionInner pathSectionInner--timeline">
+          <div className="pathTimeline" role="list">
+            <div className="pathTimelineLine" aria-hidden />
             {PATH_STEPS.map((step, i) => (
               <div
                 key={step.id}
-                className={`pathStep pathStep${i % 2 === 0 ? 'Left' : 'Right'} ${visible.has(i) ? 'pathStepVisible' : ''}`}
+                role="listitem"
+                className={`pathTimelineItem ${visible.has(i) ? 'pathTimelineItem--visible' : ''}`}
                 ref={(el) => { refs.current[i] = el }}
               >
-                <div className="pathNode" aria-hidden />
-                <div className="pathCard">
-                  <h3 className="pathCardTitle">{step.title}</h3>
-                  <p className="pathCardBody">{step.body}</p>
+                <div className="pathTimelineDot" aria-hidden />
+                <div className="pathTimelineBody">
+                  <h3 className="pathTimelineTitle">{step.title}</h3>
+                  <p className="pathTimelineText">{step.body}</p>
                 </div>
               </div>
             ))}
