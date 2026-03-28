@@ -29,38 +29,38 @@
   box-shadow: 0 14px 44px -22px rgba(0, 0, 0, 0.55);
 }
 
-/* Landing: nav floats over dark hero */
-[data-theme="dark"] body[data-page="landing"] .nav {
+/* Public pill nav: floats over page (dark theme link colors on photo-style heroes) */
+[data-theme="dark"] body[data-nav="pill"] .nav {
   background: rgba(8, 12, 18, 0.22);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: none;
 }
 
-[data-theme="dark"] body[data-page="landing"] .navLinks a,
-[data-theme="dark"] body[data-page="landing"] .navLinks button,
-[data-theme="dark"] body[data-page="landing"] .themeToggle {
+[data-theme="dark"] body[data-nav="pill"] .navLinks a,
+[data-theme="dark"] body[data-nav="pill"] .navLinks button,
+[data-theme="dark"] body[data-nav="pill"] .themeToggle {
   color: rgba(255, 255, 255, 0.78);
 }
 
 /* Landing: keep CTA text dark even though other links are light */
-[data-theme="dark"] body[data-page="landing"] .navLinks a.navCta {
+[data-theme="dark"] body[data-nav="pill"] .navLinks a.navCta {
   color: #0a0f14;
 }
 
-[data-theme="dark"] body[data-page="landing"] .navLinks a.navCta:hover {
+[data-theme="dark"] body[data-nav="pill"] .navLinks a.navCta:hover {
   color: #0a0f14;
 }
 
-[data-theme="dark"] body[data-page="landing"] .navLinks a:hover,
-[data-theme="dark"] body[data-page="landing"] .navLinks button:hover {
+[data-theme="dark"] body[data-nav="pill"] .navLinks a:hover,
+[data-theme="dark"] body[data-nav="pill"] .navLinks button:hover {
   color: #fff;
 }
 
-[data-theme="dark"] body[data-page="landing"] .navBrand {
+[data-theme="dark"] body[data-nav="pill"] .navBrand {
   color: rgba(255, 255, 255, 0.92);
 }
 
-[data-theme="dark"] body[data-page="landing"] .navBrand:hover {
+[data-theme="dark"] body[data-nav="pill"] .navBrand:hover {
   color: #fff;
 }
 
@@ -73,18 +73,18 @@
   color: #fff;
 }
 
-[data-theme="dark"] body[data-page="landing"] .themeToggle {
+[data-theme="dark"] body[data-nav="pill"] .themeToggle {
   border-color: rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="dark"] body[data-page="landing"] .navCta {
+[data-theme="dark"] body[data-nav="pill"] .navCta {
   background: #d7ff59;
   color: #0a0f14;
   box-shadow: 0 10px 24px -12px rgba(215, 255, 89, 0.5);
 }
 
-[data-theme="dark"] body[data-page="landing"] .navCta:hover {
+[data-theme="dark"] body[data-nav="pill"] .navCta:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 28px -14px rgba(215, 255, 89, 0.55);
 }
@@ -194,21 +194,21 @@
     0 22px 52px -22px rgba(215, 255, 89, 0.28);
 }
 
-/* Landing CTA: lime button needs dark text for contrast (override global navCta color) */
-body[data-page="landing"] .navCta {
+/* Pill nav CTA: lime button needs dark text for contrast */
+body[data-nav="pill"] .navCta {
   color: #0a0f14;
 }
 
-body[data-page="landing"] .navCta:hover {
+body[data-nav="pill"] .navCta:hover {
   color: #0a0f14;
 }
 
-/* Landing: floating pill nav (Resume-writer–style shell; copy/brand unchanged) */
-body[data-page="landing"] .nav.nav--landing {
+/* Floating pill top nav (all public routes; hidden on dashboard with sidebar) */
+body[data-nav="pill"] .nav.nav--pill {
   top: 1rem;
   left: 50%;
   right: auto;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   width: min(1080px, calc(100% - 1.75rem));
   max-width: calc(100% - 1.75rem);
   padding: 0.45rem 0.85rem 0.45rem 1rem;
@@ -221,9 +221,24 @@ body[data-page="landing"] .nav.nav--landing {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+  transition:
+    transform 0.38s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.32s ease;
 }
 
-[data-theme="dark"] body[data-page="landing"] .nav.nav--landing {
+body[data-nav="pill"] .nav.nav--pill.nav--concealed {
+  transform: translate(-50%, calc(-100% - 1.35rem));
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-nav="pill"] .nav.nav--pill {
+    transition-duration: 0.08s;
+  }
+}
+
+[data-theme="dark"] body[data-nav="pill"] .nav.nav--pill {
   background: rgba(14, 18, 26, 0.78);
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow:
@@ -231,16 +246,16 @@ body[data-page="landing"] .nav.nav--landing {
     0 22px 56px -24px rgba(0, 0, 0, 0.55);
 }
 
-body[data-page="landing"] .nav.nav--landing .navInner {
+body[data-nav="pill"] .nav.nav--pill .navInner {
   max-width: none;
   width: 100%;
 }
 
-body[data-page="landing"] .nav.nav--landing .navLinks a::after {
+body[data-nav="pill"] .nav.nav--pill .navLinks a::after {
   display: none;
 }
 
-body[data-page="landing"] .noise {
+body[data-nav="pill"] .noise {
   opacity: 0.012;
 }
 
@@ -1421,23 +1436,6 @@ body[data-page="landing"] .noise {
   margin: 0 0 1.5rem;
 }
 
-.pathImagesRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  max-width: 48rem;
-  margin: 0 auto 3rem;
-  padding: 0 1rem;
-}
-
-.pathImageTile {
-  height: 200px;
-}
-
-.pathImageTile img {
-  object-position: center center;
-}
-
 .pathSectionInner {
   position: relative;
   max-width: 56rem;
@@ -1685,14 +1683,6 @@ body[data-page="landing"] .noise {
 @media (max-width: 768px) {
   .pathSectionInner {
     max-width: 28rem;
-  }
-  .pathImagesRow {
-    grid-template-columns: 1fr;
-    max-width: 22rem;
-    margin-bottom: 2.5rem;
-  }
-  .pathImageTile {
-    height: 180px;
   }
   .pathSectionInner--timeline {
     max-width: none;

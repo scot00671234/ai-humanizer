@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Routes, Route, Link, useLocation, Navigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import ThemeToggle from './components/ThemeToggle'
@@ -30,11 +31,36 @@ function LegacyResumeToWorkspace() {
 
 function Nav() {
   const { user, logout } = useAuth()
-  const location = useLocation()
-  const isLanding = location.pathname === '/'
+  const [pillConcealed, setPillConcealed] = useState(false)
+  const lastScrollY = useRef(0)
+
+  useEffect(() => {
+    lastScrollY.current = window.scrollY
+
+    const DELTA = 8
+    const TOP_THRESHOLD = 48
+
+    function onScroll() {
+      const y = window.scrollY
+      const prev = lastScrollY.current
+
+      if (y < TOP_THRESHOLD) {
+        setPillConcealed(false)
+      } else if (y > prev + DELTA) {
+        setPillConcealed(true)
+      } else if (y < prev - DELTA) {
+        setPillConcealed(false)
+      }
+
+      lastScrollY.current = y
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <nav className={`nav${isLanding ? ' nav--landing' : ''}`}>
+    <nav className={`nav nav--pill${pillConcealed ? ' nav--concealed' : ''}`}>
       <div className="navInner">
         <Link to="/" className="navBrand">
           <img src="/logo.svg" alt="" className="navLogo" width="28" height="28" />
@@ -65,6 +91,17 @@ function Nav() {
 function App() {
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
+
+  useEffect(() => {
+    if (isDashboard) {
+      delete document.body.dataset.nav
+      return
+    }
+    document.body.dataset.nav = 'pill'
+    return () => {
+      delete document.body.dataset.nav
+    }
+  }, [isDashboard])
 
   return (
     <>

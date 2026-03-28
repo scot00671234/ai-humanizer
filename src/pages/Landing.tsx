@@ -261,24 +261,6 @@ export default function Landing() {
 
         <section className="section pathSection pathSection--timeline" id="path" aria-label="Why natural writing matters">
         <h2 className="pathSectionTitle">The right voice changes everything</h2>
-        <div className="pathImagesRow" aria-label="Professional workspace">
-          <div className="landingPhotoCard pathImageTile">
-            <img
-              src="/landing/desk.png"
-              alt="A clean desk with laptop and notebook"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="landingPhotoCard pathImageTile">
-            <img
-              src="/landing/conversation.png"
-              alt="Two people collaborating over a laptop"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </div>
         <div className="pathSectionInner pathSectionInner--timeline">
           <div className="pathTimeline" role="list">
             <div className="pathTimelineLine" aria-hidden />
