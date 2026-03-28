@@ -6,7 +6,7 @@ const STIFF_HEADLINE =
 
 const FINAL_PREFIX = 'Writing that sounds '
 const FINAL_ACCENT = 'human'
-const FINAL_SUFFIX = ', not rehearsed.'
+const FINAL_SUFFIX = '.'
 const FINAL_FULL = FINAL_PREFIX + FINAL_ACCENT + FINAL_SUFFIX
 
 const TYPE_STIFF_MS = 28
@@ -129,7 +129,7 @@ export default function HeroAnimatedHeadline() {
   if (reduceMotion) {
     return (
       <h1 className="heroTitle" id="hero-main-headline">
-        Writing that sounds <span className="heroTitleAccent">human</span>, not rehearsed.
+        Writing that sounds <span className="heroTitleAccent">human</span>.
       </h1>
     )
   }

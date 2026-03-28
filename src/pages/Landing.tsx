@@ -220,7 +220,7 @@ export default function Landing() {
               </div>
             </div>
 
-            <aside className="heroPreview heroPreview--bare" aria-label="Product preview">
+            <aside className="heroPreview heroPreview--bare heroPreview--glass" aria-label="Product preview">
               <div className="heroPreviewCard">
                 <div className="heroPreviewStack">
                   <header className="heroPreviewTop">
