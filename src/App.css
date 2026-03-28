@@ -1789,13 +1789,33 @@ body[data-nav="pill"] .noise {
   margin: 0;
 }
 
-/* Path: vertical timeline list (inspired layout; same step copy) */
+/* Path: vertical timeline — no panel fill (section max-width would box the gradient vs full-bleed page) */
 .pathSection--timeline {
-  background: linear-gradient(180deg, #eef0f4 0%, #f4f5f7 48%, var(--bg-base) 100%);
+  background: transparent;
 }
 
 [data-theme="dark"] .pathSection--timeline {
-  background: linear-gradient(180deg, #0c1018 0%, var(--bg-base) 72%);
+  background: transparent;
+}
+
+/* Dark: barely-there full-bleed vignette (not a centered max-width “card”) */
+[data-theme="dark"] .pathSection--timeline::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, transparent 70%);
+}
+
+.pathSection--timeline .pathSectionTitle,
+.pathSection--timeline .pathSectionInner--timeline {
+  position: relative;
+  z-index: 1;
 }
 
 .pathSection--timeline .pathSectionTitle {
