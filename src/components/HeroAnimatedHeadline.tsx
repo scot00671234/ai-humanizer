@@ -6,7 +6,7 @@ const STIFF_HEADLINE =
 
 const FINAL_PREFIX = 'Writing that sounds '
 const FINAL_ACCENT = 'human'
-const FINAL_SUFFIX = '.'
+const FINAL_SUFFIX = '. Same facts, natural flow.'
 const FINAL_FULL = FINAL_PREFIX + FINAL_ACCENT + FINAL_SUFFIX
 
 const TYPE_STIFF_MS = 28
@@ -129,7 +129,8 @@ export default function HeroAnimatedHeadline() {
   if (reduceMotion) {
     return (
       <h1 className="heroTitle" id="hero-main-headline">
-        Writing that sounds <span className="heroTitleAccent">human</span>.
+        Writing that sounds <span className="heroTitleAccent">human</span>
+        {FINAL_SUFFIX}
       </h1>
     )
   }
@@ -145,9 +146,11 @@ export default function HeroAnimatedHeadline() {
     inner = renderFinalProgress(finalLen)
   }
 
+  const typing = phase !== 'done'
+
   return (
     <h1
-      className={`heroTitle${phase === 'scratch' ? ' heroTitle--scratch' : ''}`}
+      className={`heroTitle${phase === 'scratch' ? ' heroTitle--scratch' : ''}${typing ? ' heroTitle--typing' : ''}`}
       id="hero-main-headline"
       aria-label={FINAL_FULL}
     >

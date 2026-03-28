@@ -433,16 +433,20 @@ body[data-nav="pill"] .noise {
   opacity: 0.07;
 }
 
+/* Lime accent on “human” — match CTAs; slight edge shadow on light scrim */
 .landingPage--inspired .hero--photo .heroTitleAccent {
-  color: #5f7f0a;
+  color: #d7ff59;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.75),
-    0 0 18px rgba(255, 255, 255, 0.5);
+    0 0 1px rgba(15, 23, 42, 0.45),
+    0 1px 2px rgba(255, 255, 255, 0.55),
+    0 0 14px rgba(255, 255, 255, 0.35);
 }
 
 [data-theme="dark"] .landingPage--inspired .hero--photo .heroTitleAccent {
   color: #d7ff59;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.75),
+    0 0 12px rgba(215, 255, 89, 0.25);
 }
 
 .landingPage--inspired .heroCtaPrimary {
@@ -780,28 +784,28 @@ body[data-nav="pill"] .noise {
   -webkit-backdrop-filter: none;
 }
 
-/* Light mode: high-contrast type on bright scrim */
-.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
+/* Light mode only: dark type on bright scrim (unqualified rule was winning in dark mode too) */
+:root:not([data-theme="dark"]) .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
   color: #0a0e14;
   text-shadow:
     0 1px 0 rgba(255, 255, 255, 0.65),
     0 0 28px rgba(255, 255, 255, 0.45);
 }
 
-.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
+:root:not([data-theme="dark"]) .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
   color: #2a3341;
   opacity: 1;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBadge {
+:root:not([data-theme="dark"]) .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBadge {
   background: rgba(255, 255, 255, 0.72);
   border-color: rgba(15, 23, 42, 0.12);
   color: #1a4d2e;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
 }
 
-.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroValueChips li {
+:root:not([data-theme="dark"]) .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroValueChips li {
   background: rgba(255, 255, 255, 0.42);
   border-color: rgba(15, 23, 42, 0.18);
   color: #1e293b;
@@ -809,17 +813,20 @@ body[data-nav="pill"] .noise {
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* Dark mode on photo: crisp light type + soft halation for busy backdrop */
-[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle,
-[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
+/* Dark + photo hero: explicit light title (beats unscoped light rule that used to apply here) */
+[data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
+  color: rgba(255, 255, 255, 0.96);
   text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.75),
-    0 0 20px rgba(0, 0, 0, 0.35);
+    0 1px 3px rgba(0, 0, 0, 0.85),
+    0 0 24px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroSubtitle {
   color: rgba(255, 255, 255, 0.88);
   opacity: 1;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="dark"] .landingPage--inspired .hero--photo[data-hero-bg="true"] .heroBadge {
@@ -867,9 +874,9 @@ body[data-nav="pill"] .noise {
   color: var(--accent-text);
 }
 
-/* Hero headline: typewriter → scratch → rewrite demo */
-.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle {
-  min-height: clamp(5.5rem, 14vw, 8.5rem);
+/* Typewriter: reserve height only while animating (avoids huge gap after shorter final line) */
+.landingPage--inspired .hero--photo[data-hero-bg="true"] .heroTitle.heroTitle--typing {
+  min-height: clamp(5.25rem, 16vw, 9.5rem);
 }
 
 .heroTitle--scratch {
