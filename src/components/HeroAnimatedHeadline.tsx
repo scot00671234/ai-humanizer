@@ -6,7 +6,7 @@ const STIFF_HEADLINE =
 
 const FINAL_PREFIX = 'Writing that sounds '
 const FINAL_ACCENT = 'human'
-const FINAL_SUFFIX = '. Same facts, natural flow.'
+const FINAL_SUFFIX = '. Humanize your text with natural flow.'
 const FINAL_FULL = FINAL_PREFIX + FINAL_ACCENT + FINAL_SUFFIX
 
 const TYPE_STIFF_MS = 28

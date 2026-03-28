@@ -433,13 +433,13 @@ body[data-nav="pill"] .noise {
   opacity: 0.07;
 }
 
-/* Lime accent on “human” — match CTAs; slight edge shadow on light scrim */
-.landingPage--inspired .hero--photo .heroTitleAccent {
-  color: #d7ff59;
-  text-shadow:
-    0 0 1px rgba(15, 23, 42, 0.45),
-    0 1px 2px rgba(255, 255, 255, 0.55),
-    0 0 14px rgba(255, 255, 255, 0.35);
+/*
+ * “human” accent: bright lime (#d7ff59) only works on dark UI (CTA fill).
+ * On light hero scrim use a deep chartreuse so it stays lime-family but passes contrast.
+ */
+:root:not([data-theme="dark"]) .landingPage--inspired .hero--photo .heroTitleAccent {
+  color: #5a6d0e;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 [data-theme="dark"] .landingPage--inspired .hero--photo .heroTitleAccent {
