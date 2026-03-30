@@ -1534,6 +1534,7 @@ body[data-nav="pill"] .noise {
 [data-theme="dark"] .landingPage .pathCardBody,
 [data-theme="dark"] .landingPage .featureCard p,
 [data-theme="dark"] .landingPage .pricingDesc,
+[data-theme="dark"] .landingPage .pricingRefundNote,
 [data-theme="dark"] .landingPage .landingTrySubtitle,
 [data-theme="dark"] .landingPage .landingTryHint,
 [data-theme="dark"] .landingPage .landingTryLogin,
@@ -2450,6 +2451,15 @@ body[data-nav="pill"] .noise {
 
 .pricingCardFeatured .pricingCta:hover {
   background: rgba(90, 122, 138, 0.18);
+}
+
+.landingPage .pricingRefundNote {
+  margin: 1.75rem auto 0;
+  max-width: 42rem;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 /* —— CTA strip —— */
