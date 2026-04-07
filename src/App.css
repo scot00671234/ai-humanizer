@@ -187,26 +187,58 @@
   color: var(--text-primary);
 }
 
-.navCta {
+/* —— Shared button system —— */
+:where(.navCta, .heroCta, .pricingCta, .landingTryCta, .dashboardBtn, .authSubmit, .authGoogleBtn, .dashboardLogout) {
   display: inline-flex;
   align-items: center;
-  padding: 0.55rem 1.05rem;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0.62rem 1.18rem;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+:where(.navCta, .heroCta, .pricingCta, .landingTryCta, .dashboardBtn, .authSubmit, .authGoogleBtn, .dashboardLogout):hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+:where(.navCta, .heroCta, .pricingCta, .landingTryCta, .dashboardBtn, .authSubmit, .authGoogleBtn, .dashboardLogout):active:not(:disabled) {
+  transform: translateY(0);
+}
+
+:where(.navCta, .heroCta, .pricingCta, .landingTryCta, .dashboardBtn, .authSubmit, .authGoogleBtn, .dashboardLogout):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+:where(.navCta, .heroCta, .pricingCta, .landingTryCta, .dashboardBtn, .authSubmit, .authGoogleBtn, .dashboardLogout):disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.navCta {
+  padding: 0.58rem 1.05rem;
   background: linear-gradient(165deg, var(--accent) 0%, var(--accent-strong) 100%);
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   font-size: 0.875rem;
-  font-weight: 600;
   color: var(--btn-primary-text);
-  text-decoration: none;
   box-shadow:
     0 6px 18px -6px rgba(215, 255, 89, 0.35),
     0 18px 44px -18px rgba(215, 255, 89, 0.22);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .navCta:hover {
   color: var(--btn-primary-text);
-  transform: translateY(-1px);
   box-shadow:
     0 10px 22px -8px rgba(215, 255, 89, 0.42),
     0 22px 52px -22px rgba(215, 255, 89, 0.28);
@@ -999,15 +1031,9 @@ body[data-nav="pill"] .noise {
 }
 
 .heroCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8125rem 1.75rem;
-  border-radius: var(--radius-full);
+  padding: 0.78rem 1.55rem;
+  border-radius: 999px;
   font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 /* Bottom-of-page CTA (no primary fill) */
@@ -2118,14 +2144,11 @@ body[data-nav="pill"] .noise {
 }
 
 .landingTryCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   align-self: center;
-  padding: 0.625rem 1.25rem;
+  padding: 0.68rem 1.28rem;
   margin-top: 0.5rem;
   font-size: 0.9375rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--text-primary);
   background: var(--glass-bg-strong);
@@ -2135,7 +2158,6 @@ body[data-nav="pill"] .noise {
   border-radius: var(--radius-full);
   cursor: pointer;
   box-shadow: var(--shadow-glass);
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .landingTryCta:hover {
@@ -2425,18 +2447,18 @@ body[data-nav="pill"] .noise {
 }
 
 .pricingCta {
-  display: block;
+  display: inline-flex;
+  width: 100%;
   text-align: center;
-  padding: 0.625rem 1.25rem;
+  padding: 0.68rem 1.25rem;
   margin-top: 1.5rem;
   background: var(--glass-bg-strong);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
-  text-decoration: none;
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.28);
 }
 
 .pricingCta:hover {
@@ -3024,20 +3046,20 @@ body[data-page="auth"] .authPage {
 }
 
 .authSubmit {
-  padding: 0.625rem 1.25rem;
+  width: 100%;
+  padding: 0.7rem 1.25rem;
   margin-top: 0.25rem;
-  background: var(--glass-bg-strong);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  background: linear-gradient(165deg, var(--accent) 0%, var(--accent-strong) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent-strong) 58%, transparent);
+  border-radius: 12px;
   font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--text-primary);
+  color: var(--btn-primary-text);
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 12px 30px -20px color-mix(in srgb, var(--accent) 72%, transparent);
 }
 
 .authSubmit:hover {
-  background: var(--glass-bg-strong);
+  color: var(--btn-primary-text);
 }
 
 .authDivider {
@@ -3048,20 +3070,18 @@ body[data-page="auth"] .authPage {
 }
 
 .authGoogleBtn {
-  display: block;
   width: 100%;
-  padding: 0.625rem 1.25rem;
+  padding: 0.68rem 1.25rem;
   margin-top: 0.25rem;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
   text-align: center;
-  text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.26);
 }
 
 .authGoogleBtn:hover {
@@ -3752,15 +3772,15 @@ body[data-page="dashboard"] .dashboard {
 
 .dashboardLogout {
   width: 100%;
-  padding: 0.5rem 0.75rem;
+  padding: 0.62rem 0.75rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
   background: none;
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  box-shadow: 0 8px 18px -18px rgba(15, 23, 42, 0.28);
 }
 
 .dashboardLogout:hover {
@@ -4248,13 +4268,13 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 }
 
 .dashboardBtn {
-  padding: 0.5rem 1.25rem;
+  padding: 0.62rem 1.2rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 10px 26px -20px rgba(15, 23, 42, 0.28);
 }
 
 .dashboardBtnPrimary {
@@ -4270,7 +4290,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 .dashboardBtnSecondary {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .dashboardBtnSecondary:hover {
@@ -4310,7 +4330,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 
 /* —— Resume Builder —— */
 .dashboardResume {
-  max-width: 720px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
@@ -4579,6 +4599,63 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   margin-bottom: 0;
 }
 
+.resumeWorkspace {
+  padding: 1.1rem;
+}
+
+.resumeWorkspaceGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.resumeDocPane {
+  min-width: 0;
+}
+
+.resumeDocHeader {
+  margin-bottom: 0.75rem;
+}
+
+.resumeAssistPane {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.resumeAssistCard {
+  padding: 0.9rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg-strong);
+}
+
+.resumeAssistTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.resumeAssistHint {
+  margin: 0.3rem 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.resumeAssistActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resumeAssistActions .dashboardBtn {
+  width: 100%;
+}
+
 .resumeRewriteOptionsPanel {
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;
@@ -4679,7 +4756,7 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin: 0 0.5rem 0 0;
-  max-width: 28rem;
+  max-width: 30rem;
 }
 
 [data-theme="dark"] body[data-page="dashboard"] .resumeUploadHint,
@@ -4733,7 +4810,6 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 }
 
 .resumeExportHint {
-  flex-basis: 100%;
   margin: 0.35rem 0 0;
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -4744,15 +4820,14 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 }
 
 .resumeEditorWrap {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
   width: 100%;
 }
 
 .resumeEditorWrap .resumeEditor {
   width: 100%;
-  max-width: 52rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin: 0;
 }
 
 .resumeEditorWordCount {
@@ -4760,11 +4835,11 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
   color: var(--text-muted);
   margin-top: 0.5rem;
   margin-bottom: 0;
-  text-align: center;
+  text-align: left;
   width: 100%;
-  max-width: 52rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .resumeScoreCard .resumeScore {
@@ -5059,14 +5134,14 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 
 /* —— Editor ATS score panel —— */
 .resumeAtsPanel {
-  margin-top: 1.5rem;
-  padding: 1.25rem 1.35rem;
+  margin-top: 0;
+  padding: 0.95rem 1rem;
   background: var(--glass-bg-strong);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  max-width: 52rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
   width: 100%;
   box-sizing: border-box;
   text-align: left;
@@ -5074,16 +5149,26 @@ body[data-page="dashboard"] .resumeAtsPanel::before {
 
 .resumeAtsPanelTitle {
   margin: 0 0 0.5rem;
-  font-size: 1.0625rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .resumeAtsPanelExplainer {
   margin: 0 0 0.85rem;
-  font-size: 0.875rem;
-  line-height: 1.65;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   color: var(--text-secondary);
+}
+
+@media (max-width: 1080px) {
+  .resumeWorkspaceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resumeAssistPane {
+    position: static;
+  }
 }
 
 .resumeAtsPanelBullets {

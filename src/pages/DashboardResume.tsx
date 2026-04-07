@@ -665,201 +665,215 @@ export default function DashboardResume() {
           </section>
         )}
 
-        <section className="resumeSection resumeCard">
-          <h2 className="resumeStepTitle">Your text</h2>
-          <p className="resumeStepHint">
-            Upload a file or paste below. Format with the toolbar (headings, bold, bullets). Select text and click Humanize, or run Analyze on the full draft.
-          </p>
-          <div className="resumeToolbar">
-            <input
-              type="file"
-              accept={RESUME_UPLOAD_ACCEPT}
-              onChange={handleFileUpload}
-              className="resumeFileInput"
-              id="resume-upload"
-              disabled={uploadLoading}
-              aria-describedby="resume-upload-hint"
-            />
-            <label htmlFor="resume-upload" className="dashboardBtn dashboardBtnSecondary">
-              {uploadLoading ? 'Reading…' : 'Upload file'}
-            </label>
-            <p id="resume-upload-hint" className="resumeUploadHint">
-              Word, Google Docs (.docx), Open Office (.odt), PDF (up to 20 pages), or Text. Can&apos;t upload? Paste your text into the editor below.
-            </p>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnPrimary"
-              onClick={handleScore}
-              disabled={scoreLoading || !editorText.trim()}
-            >
-              {scoreLoading ? 'Analyzing…' : 'Analyze writing'}
-            </button>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnSecondary"
-              onClick={handleRewrite}
-              disabled={rewriteLoading}
-              title={editorRef.current?.getSelectedText()?.trim() ? 'Replace selection with humanized text' : 'Select text in the editor first'}
-            >
-              {rewriteLoading ? 'Humanizing…' : 'Humanize selection'}
-            </button>
-            <button
-              type="button"
-              className="dashboardBtn dashboardBtnSecondary"
-              onClick={handleHumanizeFullDocument}
-              disabled={rewriteLoading || !editorText.trim()}
-              title="Humanize the full draft while preserving meaning"
-            >
-              {rewriteLoading ? 'Humanizing…' : 'Humanize full draft'}
-            </button>
-            <div className="resumeExportWrap" ref={exportMenuRef}>
-              <button
-                type="button"
-                className="dashboardBtn dashboardBtnSecondary"
-                onClick={() => setExportMenuOpen((o) => !o)}
-                disabled={exportLoading || !editorText.trim()}
-                aria-expanded={exportMenuOpen}
-                aria-haspopup="true"
-                aria-label="Export document"
-              >
-                {exportLoading ? 'Exporting…' : 'Export'}
-              </button>
-              {exportMenuOpen && (
-                <div className="resumeExportDropdown" role="menu">
-                  <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportPdf} disabled={exportLoading}>
-                    PDF
-                  </button>
-                  <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportDocx} disabled={exportLoading}>
-                    Word (.docx)
-                  </button>
-                  <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportText}>
-                    Text (.txt)
-                  </button>
+        <section className="resumeSection resumeCard resumeWorkspace">
+          <div className="resumeWorkspaceGrid">
+            <div className="resumeDocPane">
+              <div className="resumeDocHeader">
+                <h2 className="resumeStepTitle">Document</h2>
+                <p className="resumeStepHint">
+                  Write in the editor, then use the assistant panel to analyze, humanize, and export.
+                </p>
+              </div>
+
+              <div className="resumeToolbar">
+                <input
+                  type="file"
+                  accept={RESUME_UPLOAD_ACCEPT}
+                  onChange={handleFileUpload}
+                  className="resumeFileInput"
+                  id="resume-upload"
+                  disabled={uploadLoading}
+                  aria-describedby="resume-upload-hint"
+                />
+                <label htmlFor="resume-upload" className="dashboardBtn dashboardBtnSecondary">
+                  {uploadLoading ? 'Reading…' : 'Upload file'}
+                </label>
+                <p id="resume-upload-hint" className="resumeUploadHint">
+                  Word, Google Docs (.docx), Open Office (.odt), PDF (up to 20 pages), or Text.
+                </p>
+              </div>
+
+              {(rewriteError || scoreError || exportError || editorError) && (
+                <div className="resumeErrors">
+                  {rewriteError && <p className="dashboardSettingsError">{rewriteError}</p>}
+                  {scoreError && <p className="dashboardSettingsError">{scoreError}</p>}
+                  {exportError && <p className="dashboardSettingsError">{exportError}</p>}
+                  {editorError && <p className="dashboardSettingsError">{editorError}</p>}
                 </div>
               )}
-            </div>
-            <p className="resumeExportHint">PDF, Word, or Text. Upload the Word file to Google Docs if you use it.</p>
-          </div>
-          <div className="resumeRewriteOptionsPanel">
-            <p className="resumeRewriteOptionsHeading">Humanize options</p>
-            <p className="resumeRewriteOptionsHint">
-              Tone, intensity, language, and extra instructions apply to both Humanize selection and Humanize full draft. Tone also guides Analyze.
-            </p>
-            {rewriteBookmarkHint && (
-              <p className="resumeRewriteBookmarkHint" role="status">
-                Selection saved for humanize — click in the document when you want to clear it.
-              </p>
-            )}
-            <div className="resumeRewriteOptions">
-              <label className="resumeRewriteOption">
-                <span className="resumeRewriteOptionLabel">Style / tone</span>
-                <select
-                  className="resumeRewriteSelect"
-                  value={rewriteTone}
-                  onChange={(e) => setRewriteTone(e.target.value)}
-                  aria-label="Tone or style for AI"
-                >
-                  {REWRITE_TONES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="resumeRewriteOption">
-                <span className="resumeRewriteOptionLabel">Intensity</span>
-                <select
-                  className="resumeRewriteSelect"
-                  value={humanizeIntensity}
-                  onChange={(e) => setHumanizeIntensity(e.target.value as 'light' | 'medium' | 'strong')}
-                  aria-label="How strongly to humanize the selection"
-                >
-                  <option value="light">Light touch</option>
-                  <option value="medium">Balanced</option>
-                  <option value="strong">Strong rewrite</option>
-                </select>
-              </label>
-              <label className="resumeRewriteOption">
-                <span className="resumeRewriteOptionLabel">Language</span>
-                <select
-                  className="resumeRewriteSelect"
-                  value={rewriteLanguage}
-                  onChange={(e) => setRewriteLanguage(e.target.value)}
-                  aria-label="Output language for humanize"
-                >
-                  {REWRITE_LANGUAGES.map((l) => (
-                    <option key={l.value} value={l.value}>{l.label}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="resumeRewriteOption resumeRewriteContextWrap">
-                <span className="resumeRewriteOptionLabel">Instructions (optional)</span>
-                <input
-                  type="text"
-                  className="resumeRewriteContext"
-                  placeholder="e.g. warmer opening, fewer adverbs"
-                  value={rewriteContext}
-                  onChange={(e) => setRewriteContext(e.target.value)}
-                  aria-label="Additional instructions for humanize"
-                />
-              </label>
-            </div>
-          </div>
-          {(rewriteError || scoreError || exportError || editorError) && (
-            <div className="resumeErrors">
-              {rewriteError && <p className="dashboardSettingsError">{rewriteError}</p>}
-              {scoreError && <p className="dashboardSettingsError">{scoreError}</p>}
-              {exportError && <p className="dashboardSettingsError">{exportError}</p>}
-              {editorError && <p className="dashboardSettingsError">{editorError}</p>}
-            </div>
-          )}
-          <div onPaste={handlePaste} className="resumeEditorWrap">
-            <div className="resumeEditorColumn">
-              <ResumeEditor
-                ref={editorRef}
-                content={editorContent}
-                onChange={handleEditorChange}
-                onRewriteBookmarkHint={setRewriteBookmarkHint}
-              />
-            </div>
-            <p className="resumeEditorWordCount" aria-live="polite">
-              {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
-            </p>
 
-            <div className="resumeAtsPanel" ref={atsPanelRef}>
-              <h3 className="resumeAtsPanelTitle">Naturalness check</h3>
-              <p className="resumeAtsPanelExplainer">
-                We score your draft using linguistic signals aligned with AI-text research — sentence-length variance (burstiness),
-                vocabulary diversity, repetition, and common LLM discourse markers — plus model judgment on the full text.
-                It is editing guidance, not a verdict from any commercial detector.
-              </p>
-              <div className="resumeAtsPanelActions">
-                <button
-                  type="button"
-                  className="dashboardBtn dashboardBtnPrimary"
-                  onClick={handleScore}
-                  disabled={scoreLoading || !editorText.trim()}
-                >
-                  {scoreLoading ? 'Analyzing…' : score !== null ? 'Refresh analysis' : 'Run analysis'}
-                </button>
-                {!editorText.trim() && (
-                  <p className="resumeAtsPanelNeed">Add text in the editor, then run analysis.</p>
-                )}
-              </div>
-              {score !== null && (
-                <div className="resumeAtsPanelResults">
-                  <p className="resumeAtsPanelRefreshHint">
-                    Edited something? Tap <strong>Refresh analysis</strong>.
-                  </p>
-                  <ResumeAnalysisFeedback
-                    score={score}
-                    breakdown={scoreBreakdown}
-                    keywords={keywords}
-                    resumeText={editorText}
-                    notes={analysisNotes}
-                    className="resumeAtsPanelFeedback"
+              <div onPaste={handlePaste} className="resumeEditorWrap">
+                <div className="resumeEditorColumn">
+                  <ResumeEditor
+                    ref={editorRef}
+                    content={editorContent}
+                    onChange={handleEditorChange}
+                    onRewriteBookmarkHint={setRewriteBookmarkHint}
                   />
                 </div>
-              )}
+                <p className="resumeEditorWordCount" aria-live="polite">
+                  {editorText.trim() ? `${editorText.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
+                </p>
+              </div>
             </div>
+
+            <aside className="resumeAssistPane">
+              <div className="resumeAssistCard">
+                <h3 className="resumeAssistTitle">AI assistant</h3>
+                <p className="resumeAssistHint">Select text in your document, then run an action.</p>
+                <div className="resumeAssistActions">
+                  <button
+                    type="button"
+                    className="dashboardBtn dashboardBtnPrimary"
+                    onClick={handleScore}
+                    disabled={scoreLoading || !editorText.trim()}
+                  >
+                    {scoreLoading ? 'Analyzing…' : 'Analyze writing'}
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboardBtn dashboardBtnSecondary"
+                    onClick={handleRewrite}
+                    disabled={rewriteLoading}
+                    title={editorRef.current?.getSelectedText()?.trim() ? 'Replace selection with humanized text' : 'Select text in the editor first'}
+                  >
+                    {rewriteLoading ? 'Humanizing…' : 'Humanize selection'}
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboardBtn dashboardBtnSecondary"
+                    onClick={handleHumanizeFullDocument}
+                    disabled={rewriteLoading || !editorText.trim()}
+                    title="Humanize the full draft while preserving meaning"
+                  >
+                    {rewriteLoading ? 'Humanizing…' : 'Humanize full draft'}
+                  </button>
+                  <div className="resumeExportWrap" ref={exportMenuRef}>
+                    <button
+                      type="button"
+                      className="dashboardBtn dashboardBtnSecondary"
+                      onClick={() => setExportMenuOpen((o) => !o)}
+                      disabled={exportLoading || !editorText.trim()}
+                      aria-expanded={exportMenuOpen}
+                      aria-haspopup="true"
+                      aria-label="Export document"
+                    >
+                      {exportLoading ? 'Exporting…' : 'Export'}
+                    </button>
+                    {exportMenuOpen && (
+                      <div className="resumeExportDropdown" role="menu">
+                        <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportPdf} disabled={exportLoading}>
+                          PDF
+                        </button>
+                        <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportDocx} disabled={exportLoading}>
+                          Word (.docx)
+                        </button>
+                        <button type="button" className="resumeExportItem" role="menuitem" onClick={handleExportText}>
+                          Text (.txt)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="resumeExportHint">PDF, Word, or Text export.</p>
+              </div>
+
+              <div className="resumeRewriteOptionsPanel">
+                <p className="resumeRewriteOptionsHeading">Humanize options</p>
+                <p className="resumeRewriteOptionsHint">
+                  Tone, intensity, language, and instructions apply to both rewrite actions.
+                </p>
+                {rewriteBookmarkHint && (
+                  <p className="resumeRewriteBookmarkHint" role="status">
+                    Selection saved for humanize — click in the document when you want to clear it.
+                  </p>
+                )}
+                <div className="resumeRewriteOptions">
+                  <label className="resumeRewriteOption">
+                    <span className="resumeRewriteOptionLabel">Style / tone</span>
+                    <select
+                      className="resumeRewriteSelect"
+                      value={rewriteTone}
+                      onChange={(e) => setRewriteTone(e.target.value)}
+                      aria-label="Tone or style for AI"
+                    >
+                      {REWRITE_TONES.map((t) => (
+                        <option key={t.value} value={t.value}>{t.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="resumeRewriteOption">
+                    <span className="resumeRewriteOptionLabel">Intensity</span>
+                    <select
+                      className="resumeRewriteSelect"
+                      value={humanizeIntensity}
+                      onChange={(e) => setHumanizeIntensity(e.target.value as 'light' | 'medium' | 'strong')}
+                      aria-label="How strongly to humanize the selection"
+                    >
+                      <option value="light">Light touch</option>
+                      <option value="medium">Balanced</option>
+                      <option value="strong">Strong rewrite</option>
+                    </select>
+                  </label>
+                  <label className="resumeRewriteOption">
+                    <span className="resumeRewriteOptionLabel">Language</span>
+                    <select
+                      className="resumeRewriteSelect"
+                      value={rewriteLanguage}
+                      onChange={(e) => setRewriteLanguage(e.target.value)}
+                      aria-label="Output language for humanize"
+                    >
+                      {REWRITE_LANGUAGES.map((l) => (
+                        <option key={l.value} value={l.value}>{l.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="resumeRewriteOption resumeRewriteContextWrap">
+                    <span className="resumeRewriteOptionLabel">Instructions (optional)</span>
+                    <input
+                      type="text"
+                      className="resumeRewriteContext"
+                      placeholder="e.g. warmer opening, fewer adverbs"
+                      value={rewriteContext}
+                      onChange={(e) => setRewriteContext(e.target.value)}
+                      aria-label="Additional instructions for humanize"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="resumeAtsPanel" ref={atsPanelRef}>
+                <h3 className="resumeAtsPanelTitle">Naturalness check</h3>
+                <p className="resumeAtsPanelExplainer">
+                  Score guidance based on rhythm, vocabulary diversity, repetition, and model judgment.
+                </p>
+                <div className="resumeAtsPanelActions">
+                  <button
+                    type="button"
+                    className="dashboardBtn dashboardBtnPrimary"
+                    onClick={handleScore}
+                    disabled={scoreLoading || !editorText.trim()}
+                  >
+                    {scoreLoading ? 'Analyzing…' : score !== null ? 'Refresh analysis' : 'Run analysis'}
+                  </button>
+                  {!editorText.trim() && (
+                    <p className="resumeAtsPanelNeed">Add text in the editor, then run analysis.</p>
+                  )}
+                </div>
+                {score !== null && (
+                  <div className="resumeAtsPanelResults">
+                    <ResumeAnalysisFeedback
+                      score={score}
+                      breakdown={scoreBreakdown}
+                      keywords={keywords}
+                      resumeText={editorText}
+                      notes={analysisNotes}
+                      className="resumeAtsPanelFeedback"
+                    />
+                  </div>
+                )}
+              </div>
+            </aside>
           </div>
         </section>
 
