@@ -42,21 +42,30 @@ function GuideIcon() {
 function SettingsIcon() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 1 0 12 8.5z" />
-      <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1.2 1.2 0 0 1 0 1.7l-.2.2a1.2 1.2 0 0 1-1.7 0l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V19a1.2 1.2 0 0 1-1.2 1.2h-.3A1.2 1.2 0 0 1 13.3 19v-.1a1 1 0 0 0-.6-.9 1 1 0 0 0-1.1.2l-.1.1a1.2 1.2 0 0 1-1.7 0l-.2-.2a1.2 1.2 0 0 1 0-1.7l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H8.9A1.2 1.2 0 0 1 7.7 13v-.3a1.2 1.2 0 0 1 1.2-1.2H9a1 1 0 0 0 .9-.6 1 1 0 0 0-.2-1.1l-.1-.1a1.2 1.2 0 0 1 0-1.7l.2-.2a1.2 1.2 0 0 1 1.7 0l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V5a1.2 1.2 0 0 1 1.2-1.2h.3A1.2 1.2 0 0 1 16 5v.1a1 1 0 0 0 .6.9 1 1 0 0 0 1.1-.2l.1-.1a1.2 1.2 0 0 1 1.7 0l.2.2a1.2 1.2 0 0 1 0 1.7l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6h.1a1.2 1.2 0 0 1 1.2 1.2v.3a1.2 1.2 0 0 1-1.2 1.2h-.1a1 1 0 0 0-.9.6z" />
+      <circle cx="12" cy="12" r="3.25" />
+      <path d="M12 2.9v2.2" />
+      <path d="M12 18.9v2.2" />
+      <path d="M21.1 12h-2.2" />
+      <path d="M5.1 12H2.9" />
+      <path d="M18.4 5.6l-1.6 1.6" />
+      <path d="M7.2 16.8l-1.6 1.6" />
+      <path d="M18.4 18.4l-1.6-1.6" />
+      <path d="M7.2 7.2 5.6 5.6" />
     </svg>
   )
 }
 
-function CollapseIcon({ collapsed }: { collapsed: boolean }) {
-  // Chevron points toward the sidebar edge that will move.
+function SidebarToggleIcon({ collapsed }: { collapsed: boolean }) {
   return collapsed ? (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9 18l6-6-6-6" />
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
     </svg>
   ) : (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M15 18l-6-6 6-6" />
+      <path d="M6 6l12 12" />
+      <path d="M18 6 6 18" />
     </svg>
   )
 }
@@ -136,7 +145,7 @@ export default function DashboardLayout() {
           aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          <CollapseIcon collapsed={!sidebarOpen} />
+          <SidebarToggleIcon collapsed={!sidebarOpen} />
         </button>
         <Link to={basePath} className="dashboardBrand">
           <img src="/logo.svg" alt="" className="dashboardLogo" width="24" height="24" />
